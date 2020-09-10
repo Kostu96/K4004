@@ -4,6 +4,8 @@
 #include <string>
 #include <stdio.h>
 
+#include "lexer.hpp"
+
 void printStuff(const Byte& bus, const mcs4::K4001& rom, const mcs4::K4004 cpu)
 {
     const Byte* romData = rom.getRomContents();
@@ -38,6 +40,9 @@ void printStuff(const Byte& bus, const mcs4::K4001& rom, const mcs4::K4004 cpu)
 
 int main()
 {
+    Lexer lexer;
+    lexer.open("programs/4bit_addition.asm");
+
     using namespace mcs4;
 
     Byte sumOfTwo4BitNumbers[] = { 0x20, 0xA2, 0xA0, 0x81, 0xB1, 0x40, 0x05, };

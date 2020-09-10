@@ -25,6 +25,7 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/app PREFIX source FILES ${K4004_AP
 
 target_link_libraries(${TARGET_APP_NAME} PRIVATE
     ${TARGET_EMULATOR_NAME}
+    ${TARGET_ASSEMBLER_NAME}
 )
 
 if(MSVC)
