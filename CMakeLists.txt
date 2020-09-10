@@ -13,6 +13,7 @@ set(TARGET_EMULATOR_NAME K4004-emulator-lib)
 add_subdirectory(emulator)
 
 set(TARGET_ASSEMBLER_NAME K4004-assembler-lib)
+add_subdirectory(assembler)
 
 set(TARGET_APP_NAME K4004-app)
 set(K4004_APP_SOURCES
