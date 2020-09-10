@@ -1,0 +1,21 @@
+set(K4004_LIB_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/cycle_types.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/cycle_types.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4001.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4001.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4002.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4002.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4003.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4003.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4004.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4004.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/MCS4.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/types.hpp
+)
+
+add_library(${TARGET_EMULATOR_NAME} STATIC ${K4004_LIB_SOURCES})
+source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/source PREFIX source FILES ${K4004_LIB_SOURCES})
+
+target_include_directories(${TARGET_EMULATOR_NAME} PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/source
+)

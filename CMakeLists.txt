@@ -9,28 +9,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/output/release)
 
 project(K4004-proj LANGUAGES CXX)
 
-set(TARGET_LIB_NAME K4004-lib)
-set(K4004_LIB_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/cycle_types.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/cycle_types.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4001.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4001.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4002.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4002.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4003.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4003.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4004.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4004.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/MCS4.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/types.hpp
-)
+set(TARGET_EMULATOR_NAME K4004-emulator-lib)
+add_subdirectory(emulator)
 
-add_library(${TARGET_LIB_NAME} STATIC ${K4004_LIB_SOURCES})
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/source PREFIX source FILES ${K4004_LIB_SOURCES})
-
-target_include_directories(${TARGET_LIB_NAME} PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/source
-)
+set(TARGET_ASSEMBLER_NAME K4004-assembler-lib)
 
 set(TARGET_APP_NAME K4004-app)
 set(K4004_APP_SOURCES
@@ -41,7 +23,7 @@ add_executable(${TARGET_APP_NAME} ${K4004_APP_SOURCES})
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/app PREFIX source FILES ${K4004_APP_SOURCES})
 
 target_link_libraries(${TARGET_APP_NAME} PRIVATE
-    ${TARGET_LIB_NAME}
+    ${TARGET_EMULATOR_NAME}
 )
 
 if(MSVC)
