@@ -4,7 +4,11 @@
 #include <iostream>
 #include <sstream>
 
-bool Assembler::assemble(const char* filename)
+std::unordered_map<std::string, std::uint16_t> Assembler::m_symbolTable;
+std::uint16_t Assembler::m_address;
+
+
+bool Assembler::assemble(const char* filename, std::uint8_t* output, size_t* outputSize)
 {
     std::fstream file(filename);
     if (!file.is_open())
@@ -26,25 +30,81 @@ bool Assembler::assemble(const char* filename)
         if (line.empty()) continue;
 
         parseLine(line);
+        if (line.empty()) continue;
 
         ss << line << '\n';
     }
+    
     std::cout << ss.str();
     return true;
 }
 
 void Assembler::parseLine(std::string& line)
 {
-    size_t tokenEnd = line.find_first_of(" ");
-    std::string token = line.substr(0, tokenEnd);
+    size_t token2Beg, token2End, token1End = line.find_first_of(" ");
+    std::string token = line.substr(0, token1End); // TODO: change token to string_view
+    std::uint8_t byte;
 
     MnemonicDesc desc;
     if (isMnemonic(token, desc)) {
+        switch (desc.type) {
+        case InsType::Simple:
+            if (token1End != line.npos) {
+                // Error: More than one instruction in line
+            }
+            line = std::to_string(desc.byte);
+            break;
+        case InsType::Complex:
+            if (token1End == line.npos) {
+                // Error: Missing instruction operand
+            }
+            token2Beg = line.find_first_not_of(" ", token1End);
+            token2End = line.find_first_of(" ", token2Beg);
+            token = line.substr(token2Beg, token2End - token2Beg + 1);
+            byte = parseOperand(token);
+            line = std::to_string(desc.byte | byte);
+            break;
+        case InsType::TwoByte:
+            if (token1End == line.npos) {
+                // Error: Missing instruction operand
+            }
+            token2Beg = line.find_first_not_of(" ", token1End);
+            token2End = line.find_first_of(" ", token2Beg);
+            token = line.substr(token2Beg, token2End - token2Beg + 1);
+            break;
+        }
+        // For Debug:
+        line = std::to_string(m_address) + " " + line;
+
         m_address += desc.type == InsType::TwoByte ? 2 : 1;
     }
     else {
-
+        // take as label for now:
+        m_symbolTable.insert(std::make_pair<>(token, m_address));
+        line = "";
     }
+}
+
+std::uint8_t Assembler::parseOperand(const std::string& token)
+{
+    if (token[0] == 'R') { // Register operand
+        if (token.size() != 2) {
+            // Error
+        }
+        if (token[1] <= '0' || token[1] >= '8') {
+            if (token[1] <= 'A' || token[1] >= 'F') {
+                // Error: Wrong register number
+            }
+            else {
+
+            }
+        }
+        else {
+            return token[1] - '0';
+        }
+    }
+
+    return 0u;
 }
 
 bool Assembler::isMnemonic(const std::string& token, MnemonicDesc& desc)
@@ -93,32 +153,48 @@ bool Assembler::isMnemonic(const std::string& token, MnemonicDesc& desc)
             }
         }
         else if (token[1] == 'M') {
-            switch (token[2]) {
-            case 'A': return true; // CMA
-            case 'C': return true; // CMC
+            if (token[2] == 'A') {
+                desc.type = InsType::Simple;
+                desc.byte = 0xF4;
+                return true; // CMA
+            }
+            if (token[2] == 'C') {
+                desc.type = InsType::Simple;
+                desc.byte = 0xF3;
+                return true; // CMC
             }
         }
         break;
     case 'D':
-        switch (token[1]) {
-        case 'A':
-            switch (token[2]) {
-            case 'A': return true; // DAA
-            case 'C': return true; // DAC
+        if (token[1] == 'A') {
+            if (token[2] == 'A') {
+                desc.type = InsType::Simple;
+                desc.byte = 0xFB;
+                return true; // DAA
             }
-            break;
-        case 'C':
-            if (token[2] == 'L') {
-                return true; // DCL
+            if (token[2] == 'C') {
+                desc.type = InsType::Simple;
+                desc.byte = 0xF8;
+                return true; // DAC
             }
-            break;
+        }
+        else if (token[1] == 'C' && token[2] == 'L') {
+            desc.type = InsType::Simple;
+            desc.byte = 0xFD;
+            return true; // DCL
         }
         break;
     case 'F':
         if (token[1] == 'I') {
-            switch (token[2]) {
-            case 'M': return true; // FIM
-            case 'N': return true; // FIN
+            if (token[2] == 'M') {
+                desc.type = InsType::TwoByte;
+                desc.byte = 0x20;
+                return true; // FIM
+            }
+            if (token[2] == 'N') {
+                desc.type = InsType::Complex;
+                desc.byte = 0x30;
+                return true; // FIN
             }
         }
         break;
@@ -126,16 +202,22 @@ bool Assembler::isMnemonic(const std::string& token, MnemonicDesc& desc)
         switch (token[1]) {
         case 'A':
             if (token[2] == 'C') {
+                desc.type = InsType::Simple;
+                desc.byte = 0xF2;
                 return true; // IAC
             }
             break;
         case 'N':
             if (token[2] == 'C') {
+                desc.type = InsType::Complex;
+                desc.byte = 0x60;
                 return true; // INC
             }
             break;
         case 'S':
             if (token[2] == 'Z') {
+                desc.type = InsType::TwoByte;
+                desc.byte = 0x70;
                 return true; // ISZ
             }
             break;
@@ -143,50 +225,71 @@ bool Assembler::isMnemonic(const std::string& token, MnemonicDesc& desc)
         break;
     case 'J':
         if (token[1] == 'C' && token[2] == 'N') {
+
             return true; // JCN
         }
         if (token[1] == 'I' && token[2] == 'N') {
+
             return true; // JIN
         }
         if (token[1] == 'M' && token[2] == 'S') {
+            
             return true; // JMS
         }
         if (token[1] == 'U' && token[2] == 'N') {
+            
             return true; // JUN
         }
         break;
     case 'K':
         if (token[1] == 'B' && token[2] == 'P') {
+            
             return true; // KBP
         }
         break;
     case 'L':
         if (token[1] == 'D' && token[2] == 'M') {
+            
             return true; // LDM
         }
         break;
     case 'N':
         if (token[1] == 'O' && token[2] == 'P') {
+            
             return true; // NOP
         }
         break;
     case 'R':
         if (token[1] == 'A') {
             if (token[2] == 'L') {
+                
                 return true; // RAL
             }
             if (token[2] == 'R') {
+                
                 return true; // RAR
             }
         }
         else if (token[1] == 'D') {
             switch (token[2]) {
-            case '0': return true; // RD0
-            case '1': return true; // RD1
-            case '2': return true; // RD2
-            case '3': return true; // RD3
-            case 'M': return true; // RDM
-            case 'R': return true; // RDR
+            case '0':
+                
+                return true; // RD0
+            case '1':
+                
+                return true; // RD1
+            case '2':
+                
+                return true; // RD2
+            case '3':
+                
+                return true; // RD3
+            case 'M':
+                
+                return true; // RDM
+            case 'R':
+                
+                return true; // RDR
             }
         }
         break;
@@ -194,21 +297,25 @@ bool Assembler::isMnemonic(const std::string& token, MnemonicDesc& desc)
         switch (token[1]) {
         case 'B':
             if (token[2] == 'M') {
+                
                 return true; // SBM
             }
             break;
         case 'R':
             if (token[2] == 'C') {
+                
                 return true; // SRC
             }
             break;
         case 'T':
             if (token[2] == 'C') {
+                
                 return true; // STC
             }
             break;
         case 'U':
             if (token[2] == 'B') {
+                
                 return true; // SUB
             }
             break;
@@ -217,30 +324,46 @@ bool Assembler::isMnemonic(const std::string& token, MnemonicDesc& desc)
     case 'T':
         if (token[1] == 'C') {
             if (token[2] == 'C') {
+                
                 return true; // TCC
             }
             if (token[2] == 'S') {
+                
                 return true; // TCS
             }
         }
         break;
     case 'W':
         if (token[1] == 'M' && token[2] == 'P') {
+            
             return true; // WMP
         }
         if (token[1] == 'R') {
             switch (token[2]) {
-            case '0': return true; // WR0
-            case '1': return true; // WR1
-            case '2': return true; // WR2
-            case '3': return true; // WR3
-            case 'M': return true; // WRM
-            case 'R': return true; // WRR
+            case '0':
+                
+                return true; // WR0
+            case '1':
+                
+                return true; // WR1
+            case '2':
+                
+                return true; // WR2
+            case '3':
+                
+                return true; // WR3
+            case 'M':
+                
+                return true; // WRM
+            case 'R':
+                
+                return true; // WRR
             }
         }
         break;
     case 'X':
         if (token[1] == 'C' && token[2] == 'H') {
+            
             return true; // XCH
         }
         break;
