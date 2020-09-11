@@ -40,7 +40,9 @@ void printStuff(const Byte& bus, const mcs4::K4001& rom, const mcs4::K4004 cpu)
 
 int main()
 {
-    Assembler::assemble("programs/4bit_addition.asm");
+    std::uint8_t* bytecode;
+    std::size_t codeSize;
+    Assembler::assemble("programs/4bit_addition.asm", bytecode, codeSize);
 
     using namespace mcs4;
 

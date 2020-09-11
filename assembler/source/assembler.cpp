@@ -8,7 +8,7 @@ std::unordered_map<std::string, std::uint16_t> Assembler::m_symbolTable;
 std::uint16_t Assembler::m_address;
 
 
-bool Assembler::assemble(const char* filename, std::uint8_t* output, size_t* outputSize)
+bool Assembler::assemble(const char* filename, std::uint8_t*& output, size_t& outputSize)
 {
     std::fstream file(filename);
     if (!file.is_open())
@@ -70,7 +70,18 @@ void Assembler::parseLine(std::string& line)
             }
             token2Beg = line.find_first_not_of(" ", token1End);
             token2End = line.find_first_of(" ", token2Beg);
-            token = line.substr(token2Beg, token2End - token2Beg + 1);
+            token = line.substr(token2Beg, token2End - token2Beg);
+            if (token[token.size() - 1] == ',') {
+                // Should be 2 operands
+                token = token.substr(0, token.size() - 1);
+                byte = parseOperand(token);
+                desc.byte |= byte;
+                token = line.substr(token2End + 1);
+                byte = parseOperand(token);
+            }
+            else {
+                // Should be address
+            }
             break;
         }
         // For Debug:
@@ -87,21 +98,40 @@ void Assembler::parseLine(std::string& line)
 
 std::uint8_t Assembler::parseOperand(const std::string& token)
 {
-    if (token[0] == 'R') { // Register operand
+    switch (token[0]) {
+    case 'R': { // Register operand
         if (token.size() != 2) {
             // Error
+            return 0u;
         }
-        if (token[1] <= '0' || token[1] >= '8') {
-            if (token[1] <= 'A' || token[1] >= 'F') {
-                // Error: Wrong register number
-            }
-            else {
 
+        if (token[1] < '0' || token[1] > '9') {
+            if (token[1] < 'A' || token[1] > 'F') {
+                // Error: Wrong register number
+                return 0u;
             }
+
+            return token[1] - 55; // to transform 'A'-'F' into 10-15
         }
-        else {
-            return token[1] - '0';
+
+        return token[1] - '0'; // to transform '0'-'9' into 0-9
+    }
+    case 'P': { // Registers pair operand
+        if (token.size() != 2) {
+            // Error
+            return 0u;
         }
+
+        if (token[1] < '0' || token[1] > '8') {
+            // Error: Wrong registers pair number
+            return 0u;
+        }
+
+        return 2 * (token[1] - '0');  // to transform '0'-'8' into 0, 2, 4, .., E
+    }
+    case '$': {
+
+    }
     }
 
     return 0u;

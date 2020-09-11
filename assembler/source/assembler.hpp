@@ -6,7 +6,7 @@
 class Assembler
 {
 public:
-    static bool assemble(const char* filename, std::uint8_t* output, size_t* outputSize);
+    static bool assemble(const char* filename, std::uint8_t*& output, size_t& outputSize);
 private:
     enum class InsType {
         Simple,
