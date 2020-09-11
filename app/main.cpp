@@ -4,7 +4,7 @@
 #include <string>
 #include <stdio.h>
 
-#include "lexer.hpp"
+#include "assembler.hpp"
 
 void printStuff(const Byte& bus, const mcs4::K4001& rom, const mcs4::K4004 cpu)
 {
@@ -40,8 +40,7 @@ void printStuff(const Byte& bus, const mcs4::K4001& rom, const mcs4::K4004 cpu)
 
 int main()
 {
-    Lexer lexer;
-    lexer.open("programs/4bit_addition.asm");
+    Assembler::assemble("programs/4bit_addition.asm");
 
     using namespace mcs4;
 
