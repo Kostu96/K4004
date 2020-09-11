@@ -7,6 +7,7 @@ class Assembler
 {
 public:
     static bool assemble(const char* filename, std::uint8_t*& output, size_t& outputSize);
+    static void freeOutput(std::uint8_t* output) { delete[] output; }
 private:
     enum class InsType {
         Simple,
@@ -25,4 +26,5 @@ private:
 
     static std::unordered_map<std::string, std::uint16_t> m_symbolTable;
     static std::uint16_t m_address;
+    static std::size_t m_codeSize;
 };

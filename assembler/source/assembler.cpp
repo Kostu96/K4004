@@ -6,6 +6,7 @@
 
 std::unordered_map<std::string, std::uint16_t> Assembler::m_symbolTable;
 std::uint16_t Assembler::m_address;
+std::size_t Assembler::m_codeSize;
 
 
 bool Assembler::assemble(const char* filename, std::uint8_t*& output, size_t& outputSize)
@@ -16,6 +17,7 @@ bool Assembler::assemble(const char* filename, std::uint8_t*& output, size_t& ou
 
     m_symbolTable.clear();
     m_address = 0u;
+    m_codeSize = 0u;
 
     std::stringstream ss;
     std::string line;
@@ -34,8 +36,25 @@ bool Assembler::assemble(const char* filename, std::uint8_t*& output, size_t& ou
 
         ss << line << '\n';
     }
-    
     std::cout << ss.str();
+    
+    output = new std::uint8_t[m_codeSize];
+    outputSize = m_codeSize;
+    
+    std::uint16_t byte;
+    std::string token;
+    for (size_t i = 0; i < m_codeSize; ++i) {
+        ss >> byte;
+        if (!ss.fail())
+            output[i] = byte & 0x00FF;
+        else {
+            ss.clear();
+            ss >> token;
+            byte = m_symbolTable.at(token);
+            // TODO: fix labels!
+        }
+    }
+
     return true;
 }
 
@@ -78,16 +97,18 @@ void Assembler::parseLine(std::string& line)
                 desc.byte |= byte;
                 token = line.substr(token2End + 1);
                 byte = parseOperand(token);
+                line = std::to_string(desc.byte) + " " + std::to_string(byte);
             }
             else {
-                // Should be address
+                // Should be address or label
+                // take as label for now
+                line = std::to_string(desc.byte) + " " + token;
             }
             break;
         }
-        // For Debug:
-        line = std::to_string(m_address) + " " + line;
 
         m_address += desc.type == InsType::TwoByte ? 2 : 1;
+        m_codeSize += desc.type == InsType::TwoByte ? 2 : 1;
     }
     else {
         // take as label for now:
@@ -129,8 +150,25 @@ std::uint8_t Assembler::parseOperand(const std::string& token)
 
         return 2 * (token[1] - '0');  // to transform '0'-'8' into 0, 2, 4, .., E
     }
-    case '$': {
-
+    case '$': { // Hex value operand
+        std::uint8_t byte = 0u;
+        if (token[1] >= '0' && token[1] <= '9')
+            byte = 16 * (token[1] - '0');
+        else if (token[1] >= 'A' && token[1] <= 'F')
+            byte = 16 * (token[1] - 55);
+        else {
+            // Error: Illformed hex number
+            return 0u;
+        }
+        if (token[2] >= '0' && token[2] <= '9')
+            byte += token[2] - '0';
+        else if (token[2] >= 'A' && token[2] <= 'F')
+            byte += token[2] - 55;
+        else {
+            // Error: Illformed hex number
+            return 0u;
+        }
+        return byte;
     }
     }
 
@@ -267,7 +305,8 @@ bool Assembler::isMnemonic(const std::string& token, MnemonicDesc& desc)
             return true; // JMS
         }
         if (token[1] == 'U' && token[2] == 'N') {
-            
+            desc.type = InsType::TwoByte;
+            desc.byte = 0x40;
             return true; // JUN
         }
         break;
@@ -393,7 +432,8 @@ bool Assembler::isMnemonic(const std::string& token, MnemonicDesc& desc)
         break;
     case 'X':
         if (token[1] == 'C' && token[2] == 'H') {
-            
+            desc.type = InsType::Complex;
+            desc.byte = 0xB0;
             return true; // XCH
         }
         break;
