@@ -1,10 +1,32 @@
-#include "rom.hpp"
-#include "K4004.hpp"
 #include <iostream>
 #include <string>
 #include <stdio.h>
 
-#include "assembler.hpp"
+#include "MCS4.hpp"
+
+#define OLC_PGE_APPLICATION
+#include "olcPixelGameEngine.h"
+
+class App :
+    public olc::PixelGameEngine
+{
+public:
+    App() {
+        sAppName = "Intel4004 Emulator";
+    }
+private:
+    bool OnUserCreate() override
+    {
+        
+        return true;
+    }
+
+    bool OnUserUpdate(float fElapsedTime) override
+    {
+        
+        return true;
+    }
+};
 
 void printStuff(const Byte& bus, const mcs4::ROM& rom, const mcs4::K4004 cpu)
 {
@@ -40,7 +62,13 @@ void printStuff(const Byte& bus, const mcs4::ROM& rom, const mcs4::K4004 cpu)
 
 int main()
 {
-    Byte sumOfTwo4BitNumbers[] = { 0x20, 0xA2, 0xA0, 0x81, 0xB1, 0x40, 0x05, };
+    App app;
+    if (app.Construct(512, 240, 2, 2))
+        app.Start();
+
+    return 0;
+
+    /*Byte sumOfTwo4BitNumbers[] = { 0x20, 0xA2, 0xA0, 0x81, 0xB1, 0x40, 0x05, };
     Byte intelAndRoutine[] = { 0x28, 0x00, 0x29, 0xEA, 0xB0, 0x68, 0x29, 0xEA, 0xB1, 0x50,
                                0x10, 0xB2, 0xE1, 0x40, 0x00, 0x00, 0xF0, 0xB2, 0xD4, 0xB0,
                                0xF6, 0xB0, 0x1A, 0x22, 0xB1, 0xF6, 0xB1, 0xB2, 0xF6, 0xB2,
@@ -54,19 +82,11 @@ int main()
         if (bytecode[i] != sumOfTwo4BitNumbers[i])
             std::cout << "Code doesn't match! Byte nr." << i << " compiled: " << bytecode[i] << " ref: " << sumOfTwo4BitNumbers[i] << '\n';
 
-    Assembler::freeOutput(bytecode);
+    Assembler::freeOutput(bytecode);*/
 
     using namespace mcs4;
 
-    Byte bus = 0x0;
-    CycleType currentCycle = CycleType::A1;
-    ROM rom;
-    rom.connect(&bus);
-    rom.load(0x00, intelAndRoutine, sizeof(intelAndRoutine) / sizeof(Byte));
-    K4004 cpu;
-    cpu.connect(&bus);
-
-    std::string command = "";
+    /*std::string command = "";
     unsigned int value;
     while (command != "quit")
     {
@@ -102,7 +122,5 @@ int main()
                 ++currentCycle;
             }
         }
-    }
-
-    return 0;
+    }*/
 }
