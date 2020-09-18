@@ -1,4 +1,4 @@
-#include "K4001.hpp"
+#include "rom.hpp"
 #include "K4004.hpp"
 #include <iostream>
 #include <string>
@@ -6,7 +6,7 @@
 
 #include "assembler.hpp"
 
-void printStuff(const Byte& bus, const mcs4::K4001& rom, const mcs4::K4004 cpu)
+void printStuff(const Byte& bus, const mcs4::ROM& rom, const mcs4::K4004 cpu)
 {
     const Byte* romData = rom.getRomContents();
     static const Byte numberOfColumns = 32;
@@ -60,7 +60,7 @@ int main()
 
     Byte bus = 0x0;
     CycleType currentCycle = CycleType::A1;
-    K4001 rom(0);
+    ROM rom;
     rom.connect(&bus);
     rom.load(0x00, intelAndRoutine, sizeof(intelAndRoutine) / sizeof(Byte));
     K4004 cpu;

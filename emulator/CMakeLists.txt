@@ -1,15 +1,16 @@
 set(K4004_EMULATOR_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/source/cycle_types.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/source/cycle_types.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4001.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4001.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/source/K4002.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/source/K4002.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/source/K4003.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/source/K4003.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/source/K4004.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/source/K4004.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/MCS4.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/source/MCS4.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/rom.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/rom.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/source/types.hpp
 )
 

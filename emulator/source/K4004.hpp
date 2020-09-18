@@ -5,6 +5,9 @@ namespace mcs4 {
 
     enum class CycleType : Byte;
 
+    /**
+     *  \brief Represents intel4004 cpu
+     */
     class K4004
     {
     private:
@@ -48,7 +51,7 @@ namespace mcs4 {
         Byte IR;
         Byte m_registers[REGISTERS_SIZE];
         Stack m_stack;
-        Byte* m_bus;
+        Byte* m_bus = nullptr;
     };
 
 } // namespace mcs4
