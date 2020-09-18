@@ -4,11 +4,6 @@
 #include <iostream>
 #include <sstream>
 
-std::unordered_map<std::string, std::uint16_t> Assembler::m_symbolTable;
-std::uint16_t Assembler::m_address;
-std::size_t Assembler::m_codeSize;
-
-
 bool Assembler::assemble(const char* filename, std::uint8_t*& output, size_t& outputSize)
 {
     std::fstream file(filename);
@@ -17,45 +12,68 @@ bool Assembler::assemble(const char* filename, std::uint8_t*& output, size_t& ou
 
     m_symbolTable.clear();
     m_address = 0u;
-    m_codeSize = 0u;
 
-    std::stringstream ss;
+    std::stringstream ss, ss1;
     std::string line;
     while (std::getline(file, line)) {
-        line = line.substr(0, line.find_first_of(';')); // trim comments
-        if (line.empty()) continue;
-
-        size_t off = line.find_first_not_of(" \t");
-        if (off == line.npos) off = 0;
-        size_t count = line.find_last_not_of(" \t") - off + 1;
-        line = line.substr(off, count); // trim whitespace
-        if (line.empty()) continue;
-
-        parseLine(line);
-        if (line.empty()) continue;
-
+        if (trimComments(line)) continue;
+        if (trimWhiteSpaces(line)) continue;
+        if (checkForSymbols(line)) continue;
         ss << line << '\n';
     }
-    std::cout << ss.str();
-    
-    output = new std::uint8_t[m_codeSize];
-    outputSize = m_codeSize;
-    
+    std::cout << ss.str() << '\n';
+    file.close();
+
+    output = new std::uint8_t[m_address];
+    outputSize = m_address;
+
+    while (std::getline(ss, line)) {
+        parseLine(line);
+        ss1 << line << ' ';
+    }
+    std::cout << ss1.str() << '\n';
+
     std::uint16_t byte;
     std::string token;
-    for (size_t i = 0; i < m_codeSize; ++i) {
-        ss >> byte;
-        if (!ss.fail())
-            output[i] = byte & 0x00FF;
-        else {
-            ss.clear();
-            ss >> token;
-            byte = m_symbolTable.at(token);
-            // TODO: fix labels!
-        }
+    for (size_t i = 0; i < m_address; ++i) {
+        ss1 >> byte;
+        output[i] = byte & 0x00FF;
     }
 
     return true;
+}
+
+bool Assembler::trimComments(std::string& line)
+{
+    line = line.substr(0, line.find_first_of(';'));
+    return line.empty();
+}
+
+bool Assembler::trimWhiteSpaces(std::string& line)
+{
+    size_t off = line.find_first_not_of(" \t");
+    if (off == line.npos) off = 0;
+    size_t count = line.find_last_not_of(" \t") - off + 1;
+    line = line.substr(off, count);
+    return line.empty();
+}
+
+bool Assembler::checkForSymbols(std::string& line)
+{
+    size_t token1End = line.find_first_of(" ");
+    std::string token = line.substr(0, token1End); // TODO: change token to string_view
+    
+    MnemonicDesc desc;
+    if (!isMnemonic(token, desc)) {
+        // take as label for now:
+        m_symbolTable.insert(std::make_pair<>(token, m_address));
+        line = token1End != line.npos ? line.substr(token1End) : "";
+    }
+    else {
+        m_address += desc.type == InsType::TwoByte ? 2 : 1;
+    }
+
+    return line.empty();
 }
 
 void Assembler::parseLine(std::string& line)
@@ -100,20 +118,19 @@ void Assembler::parseLine(std::string& line)
                 line = std::to_string(desc.byte) + " " + std::to_string(byte);
             }
             else {
-                // Should be address or label
-                // take as label for now
-                line = std::to_string(desc.byte) + " " + token;
+                // Should be address or sth
+                // take as address for now
+                std::uint16_t addr = m_symbolTable[token];
+                byte = addr & 0x00FF;
+                addr &= 0x0F00;
+                addr >>= 8;
+                line = std::to_string(desc.byte | addr) + " " + std::to_string(byte);
             }
             break;
         }
-
-        m_address += desc.type == InsType::TwoByte ? 2 : 1;
-        m_codeSize += desc.type == InsType::TwoByte ? 2 : 1;
     }
     else {
-        // take as label for now:
-        m_symbolTable.insert(std::make_pair<>(token, m_address));
-        line = "";
+        // Error
     }
 }
 
@@ -177,267 +194,63 @@ std::uint8_t Assembler::parseOperand(const std::string& token)
 
 bool Assembler::isMnemonic(const std::string& token, MnemonicDesc& desc)
 {
-    if (token == "LD") {
-        desc.type = InsType::Complex;
-        desc.byte = 0xA0;
-        return true; // LD
-    }
+    if (token.size() > 3) return false;
 
-    if (token.size() != 3) return false;
-
-    switch (token[0]) {
-    case 'A':
-        if (token[1] == 'D') {
-            if (token[2] == 'D') {
-                desc.type = InsType::Complex;
-                desc.byte = 0x80;
-                return true; // ADD
-            }
-            if (token[2] == 'M') {
-                desc.type = InsType::Simple;
-                desc.byte = 0xEB;
-                return true; // ADM
-            }
-        }
-        break;
-    case 'B':
-        if (token[1] == 'B' && token[2] == 'L') {
-            desc.type = InsType::Complex;
-            desc.byte = 0xC0;
-            return true; // BBL
-        }
-        break;
-    case 'C':
-        if (token[1] == 'L') {
-            if (token[2] == 'B') {
-                desc.type = InsType::Simple;
-                desc.byte = 0xF0;
-                return true; // CLB
-            }
-            if (token[2] == 'C') {
-                desc.type = InsType::Simple;
-                desc.byte = 0xF1;
-                return true; // CLC
-            }
-        }
-        else if (token[1] == 'M') {
-            if (token[2] == 'A') {
-                desc.type = InsType::Simple;
-                desc.byte = 0xF4;
-                return true; // CMA
-            }
-            if (token[2] == 'C') {
-                desc.type = InsType::Simple;
-                desc.byte = 0xF3;
-                return true; // CMC
-            }
-        }
-        break;
-    case 'D':
-        if (token[1] == 'A') {
-            if (token[2] == 'A') {
-                desc.type = InsType::Simple;
-                desc.byte = 0xFB;
-                return true; // DAA
-            }
-            if (token[2] == 'C') {
-                desc.type = InsType::Simple;
-                desc.byte = 0xF8;
-                return true; // DAC
-            }
-        }
-        else if (token[1] == 'C' && token[2] == 'L') {
-            desc.type = InsType::Simple;
-            desc.byte = 0xFD;
-            return true; // DCL
-        }
-        break;
-    case 'F':
-        if (token[1] == 'I') {
-            if (token[2] == 'M') {
-                desc.type = InsType::TwoByte;
-                desc.byte = 0x20;
-                return true; // FIM
-            }
-            if (token[2] == 'N') {
-                desc.type = InsType::Complex;
-                desc.byte = 0x30;
-                return true; // FIN
-            }
-        }
-        break;
-    case 'I':
-        switch (token[1]) {
-        case 'A':
-            if (token[2] == 'C') {
-                desc.type = InsType::Simple;
-                desc.byte = 0xF2;
-                return true; // IAC
-            }
-            break;
-        case 'N':
-            if (token[2] == 'C') {
-                desc.type = InsType::Complex;
-                desc.byte = 0x60;
-                return true; // INC
-            }
-            break;
-        case 'S':
-            if (token[2] == 'Z') {
-                desc.type = InsType::TwoByte;
-                desc.byte = 0x70;
-                return true; // ISZ
-            }
-            break;
-        }
-        break;
-    case 'J':
-        if (token[1] == 'C' && token[2] == 'N') {
-
-            return true; // JCN
-        }
-        if (token[1] == 'I' && token[2] == 'N') {
-
-            return true; // JIN
-        }
-        if (token[1] == 'M' && token[2] == 'S') {
-            
-            return true; // JMS
-        }
-        if (token[1] == 'U' && token[2] == 'N') {
-            desc.type = InsType::TwoByte;
-            desc.byte = 0x40;
-            return true; // JUN
-        }
-        break;
-    case 'K':
-        if (token[1] == 'B' && token[2] == 'P') {
-            
-            return true; // KBP
-        }
-        break;
-    case 'L':
-        if (token[1] == 'D' && token[2] == 'M') {
-            
-            return true; // LDM
-        }
-        break;
-    case 'N':
-        if (token[1] == 'O' && token[2] == 'P') {
-            
-            return true; // NOP
-        }
-        break;
-    case 'R':
-        if (token[1] == 'A') {
-            if (token[2] == 'L') {
-                
-                return true; // RAL
-            }
-            if (token[2] == 'R') {
-                
-                return true; // RAR
-            }
-        }
-        else if (token[1] == 'D') {
-            switch (token[2]) {
-            case '0':
-                
-                return true; // RD0
-            case '1':
-                
-                return true; // RD1
-            case '2':
-                
-                return true; // RD2
-            case '3':
-                
-                return true; // RD3
-            case 'M':
-                
-                return true; // RDM
-            case 'R':
-                
-                return true; // RDR
-            }
-        }
-        break;
-    case 'S':
-        switch (token[1]) {
-        case 'B':
-            if (token[2] == 'M') {
-                
-                return true; // SBM
-            }
-            break;
-        case 'R':
-            if (token[2] == 'C') {
-                
-                return true; // SRC
-            }
-            break;
-        case 'T':
-            if (token[2] == 'C') {
-                
-                return true; // STC
-            }
-            break;
-        case 'U':
-            if (token[2] == 'B') {
-                
-                return true; // SUB
-            }
-            break;
-        }
-        break;
-    case 'T':
-        if (token[1] == 'C') {
-            if (token[2] == 'C') {
-                
-                return true; // TCC
-            }
-            if (token[2] == 'S') {
-                
-                return true; // TCS
-            }
-        }
-        break;
-    case 'W':
-        if (token[1] == 'M' && token[2] == 'P') {
-            
-            return true; // WMP
-        }
-        if (token[1] == 'R') {
-            switch (token[2]) {
-            case '0':
-                
-                return true; // WR0
-            case '1':
-                
-                return true; // WR1
-            case '2':
-                
-                return true; // WR2
-            case '3':
-                
-                return true; // WR3
-            case 'M':
-                
-                return true; // WRM
-            case 'R':
-                
-                return true; // WRR
-            }
-        }
-        break;
-    case 'X':
-        if (token[1] == 'C' && token[2] == 'H') {
-            desc.type = InsType::Complex;
-            desc.byte = 0xB0;
-            return true; // XCH
-        }
-        break;
+    auto& x = m_mnemonics.find(token);
+    if (x != m_mnemonics.end()) {
+        desc = x->second;
+        return true;
     }
 
     return false;
 }
+
+std::uint16_t Assembler::m_address;
+std::unordered_map<std::string, std::uint16_t> Assembler::m_symbolTable;
+std::unordered_map<std::string, Assembler::MnemonicDesc> Assembler::m_mnemonics = { // TODO: make it constexpr
+    { "ADD", { InsType::Complex, 0x80 } },
+    { "ADM", { InsType::Simple,  0xEB } },
+    { "BBL", { InsType::Complex, 0xC0 } },
+    { "CLB", { InsType::Simple,  0xF0 } },
+    { "CLC", { InsType::Simple,  0xF1 } },
+    { "CMA", { InsType::Simple,  0xF4 } },
+    { "CMC", { InsType::Simple,  0xF3 } },
+    { "DAA", { InsType::Simple,  0xFB } },
+    { "DAC", { InsType::Simple,  0xF8 } },
+    { "DCL", { InsType::Simple,  0xFD } },
+    { "FIM", { InsType::TwoByte, 0x20 } },
+    { "FIN", { InsType::TwoByte, 0x30 } },
+    { "IAC", { InsType::Simple,  0xF2 } },
+    { "INC", { InsType::Complex, 0x60 } },
+    { "ISZ", { InsType::TwoByte, 0x70 } },
+    { "JCN", { InsType::TwoByte, 0x10 } },
+    { "JIN", { InsType::Complex, 0x31 } },
+    { "JMS", { InsType::TwoByte, 0x50 } },
+    { "JUN", { InsType::TwoByte, 0x40 } },
+    { "KBP", { InsType::Simple,  0xFC } },
+    { "LD",  { InsType::Complex, 0xA0 } },
+    { "LDM", { InsType::Complex, 0xD0 } },
+    { "NOP", { InsType::Simple,  0x00 } },
+    { "RAL", { InsType::Simple,  0xF5 } },
+    { "RAR", { InsType::Simple,  0xF6 } },
+    { "RD0", { InsType::Simple,  0xF6 } },
+    { "RD1", { InsType::Simple,  0xF6 } },
+    { "RD2", { InsType::Simple,  0xF6 } },
+    { "RD3", { InsType::Simple,  0xF6 } },
+    { "RDM", { InsType::Simple,  0xF6 } },
+    { "RDR", { InsType::Simple,  0xF6 } },
+    { "SBM", { InsType::Simple,  0xE8 } },
+    { "SRC", { InsType::Complex, 0x21 } },
+    { "STC", { InsType::Simple,  0xFA } },
+    { "SUB", { InsType::Complex, 0x90 } },
+    { "TCC", { InsType::Simple,  0xF7 } },
+    { "TCS", { InsType::Simple,  0xF9 } },
+    { "WMP", { InsType::Simple,  0xE1 } },
+    { "WR0", { InsType::Simple,  0xE4 } },
+    { "WR1", { InsType::Simple,  0xE5 } },
+    { "WR2", { InsType::Simple,  0xE6 } },
+    { "WR3", { InsType::Simple,  0xE7 } },
+    { "WRM", { InsType::Simple,  0xE0 } },
+    { "WRR", { InsType::Simple,  0xE2 } },
+    { "XCH", { InsType::Complex, 0xB0 } }
+};

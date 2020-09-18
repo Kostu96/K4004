@@ -6,7 +6,7 @@ namespace mcs4 {
 
     constexpr Byte INS_NOP = 0x00;
     constexpr Byte INS_WRM = 0xE0;
-    constexpr Byte INS_WRP = 0xE1;
+    constexpr Byte INS_WMP = 0xE1;
     constexpr Byte INS_WRR = 0xE2;
     constexpr Byte INS_WR0 = 0xE4;
     constexpr Byte INS_WR1 = 0xE5;
@@ -86,7 +86,7 @@ namespace mcs4 {
             switch (opcode) {
             case INS_NOP: break;
             case INS_WRM: break;
-            case INS_WRP: break;
+            case INS_WMP: break;
             case INS_WRR: break;
             case INS_WR0: break;
             case INS_WR1: break;
