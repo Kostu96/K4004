@@ -13,6 +13,7 @@ namespace mcs4 {
     {
     public:
         MCS4();
+        bool loadProgram(const char* filename);
     private:
         CycleType m_currentCycle;
         Byte m_bus = 0x0;

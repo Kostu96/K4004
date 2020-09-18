@@ -12,4 +12,9 @@ namespace mcs4 {
         m_cpu.connect(&m_bus);
     }
 
+    bool MCS4::loadProgram(const char* filename)
+    {
+        return false;
+    }
+
 } // namespace mcs4

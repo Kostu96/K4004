@@ -20,3 +20,7 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/source PREFIX source FILES ${K4004
 target_include_directories(${TARGET_EMULATOR_NAME} PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/source
 )
+
+target_link_libraries(${TARGET_EMULATOR_NAME} PRIVATE
+    ${TARGET_ASSEMBLER_NAME}
+)
