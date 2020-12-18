@@ -16,7 +16,7 @@ namespace mcs4 {
         bool loadProgram(const char* filename);
 
         const Byte* getROMData() const { return m_rom.getRomContents(); }
-        Word getROMSize() const { return m_rom.ROM_SIZE; }
+        constexpr static Word getROMSize() { return ROM::ROM_SIZE; }
     private:
         CycleType m_currentCycle;
         Byte m_bus = 0x0;

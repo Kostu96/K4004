@@ -26,9 +26,11 @@ add_subdirectory(emulator)
 
 set(TARGET_APP_NAME K4004-app)
 set(K4004_APP_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/app.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/app.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/app/main.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/olcPixelGameEngine.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/app/olcPixelGameEngine.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/olc/olcPixelGameEngine.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/app/olc/olcPixelGameEngine.h
 )
 
 add_executable(${TARGET_APP_NAME} ${K4004_APP_SOURCES})
