@@ -43,24 +43,6 @@ int main()
 //    std::printf("\n");
 //}
 
-
-
-    /*Byte sumOfTwo4BitNumbers[] = { 0x20, 0xA2, 0xA0, 0x81, 0xB1, 0x40, 0x05, };
-    Byte intelAndRoutine[] = { 0x28, 0x00, 0x29, 0xEA, 0xB0, 0x68, 0x29, 0xEA, 0xB1, 0x50,
-                               0x10, 0xB2, 0xE1, 0x40, 0x00, 0x00, 0xF0, 0xB2, 0xD4, 0xB0,
-                               0xF6, 0xB0, 0x1A, 0x22, 0xB1, 0xF6, 0xB1, 0xB2, 0xF6, 0xB2,
-                               0xF8, 0x1C, 0x13, 0xC0, 0xB1, 0xF6, 0xB1, 0xF1, 0x40, 0x1B, };
-    
-    std::uint8_t* bytecode;
-    std::size_t codeSize;
-    Assembler::assemble("programs/4bit_addition.asm", bytecode, codeSize);
-
-    for (size_t i = 0u; i < 7u; ++i)
-        if (bytecode[i] != sumOfTwo4BitNumbers[i])
-            std::cout << "Code doesn't match! Byte nr." << i << " compiled: " << bytecode[i] << " ref: " << sumOfTwo4BitNumbers[i] << '\n';
-
-    Assembler::freeOutput(bytecode);*/
-
     /*std::string command = "";
     unsigned int value;
     while (command != "quit")

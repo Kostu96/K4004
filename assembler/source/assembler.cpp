@@ -196,7 +196,7 @@ bool Assembler::isMnemonic(const std::string& token, MnemonicDesc& desc)
 {
     if (token.size() > 3) return false;
 
-    auto& x = m_mnemonics.find(token);
+    auto x = m_mnemonics.find(token);
     if (x != m_mnemonics.end()) {
         desc = x->second;
         return true;

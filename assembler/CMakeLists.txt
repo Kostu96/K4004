@@ -1,11 +1,5 @@
-set(K4004_ASSEMBLER_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/assembler.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/assembler.hpp
-)
+add_subdirectory(source)
 
-add_library(${TARGET_ASSEMBLER_NAME} STATIC ${K4004_ASSEMBLER_SOURCES})
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/source PREFIX source FILES ${K4004_ASSEMBLER_SOURCES})
-
-target_include_directories(${TARGET_ASSEMBLER_NAME} PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/source
-)
+if (${BUILD_TESTS})
+    add_subdirectory(tests)
+endif()
