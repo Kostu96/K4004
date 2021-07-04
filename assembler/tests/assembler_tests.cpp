@@ -18,7 +18,8 @@ TEST_P(AssemblerTests, given4bitAdditionAssemblerCodeWhenAssemblingThenCorrectBy
     
     std::uint8_t* byteCode;
     std::size_t byteCodeSize;
-    Assembler::assemble(testParam.sourceFilename, byteCode, byteCodeSize);
+    bool ret = Assembler::assemble(testParam.sourceFilename, byteCode, byteCodeSize);
+    ASSERT_TRUE(ret);
 
     EXPECT_EQ(byteCodeSize, testParam.refByteCode.size());
 

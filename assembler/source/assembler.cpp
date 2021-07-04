@@ -13,30 +13,28 @@ bool Assembler::assemble(const char* filename, std::uint8_t*& output, size_t& ou
     m_symbolTable.clear();
     m_address = 0u;
 
-    std::stringstream ss, ss1;
+    std::stringstream firstPass, secondPass;
     std::string line;
     while (std::getline(file, line)) {
         if (trimComments(line)) continue;
         if (trimWhiteSpaces(line)) continue;
         if (checkForSymbols(line)) continue;
-        ss << line << '\n';
+        firstPass << line << '\n';
     }
-    std::cout << ss.str() << '\n';
     file.close();
 
     output = new std::uint8_t[m_address];
     outputSize = m_address;
 
-    while (std::getline(ss, line)) {
+    while (std::getline(firstPass, line)) {
         parseLine(line);
-        ss1 << line << ' ';
+        secondPass << line << ' ';
     }
-    std::cout << ss1.str() << '\n';
 
     std::uint16_t byte;
     std::string token;
     for (size_t i = 0; i < m_address; ++i) {
-        ss1 >> byte;
+        secondPass >> byte;
         output[i] = byte & 0x00FF;
     }
 
@@ -58,16 +56,40 @@ bool Assembler::trimWhiteSpaces(std::string& line)
     return line.empty();
 }
 
+// TODO: refactor parsing of different number formats
+
 bool Assembler::checkForSymbols(std::string& line)
 {
     size_t token1End = line.find_first_of(" ");
     std::string token = line.substr(0, token1End); // TODO: change token to string_view
     
+    if (token[0] == '*') {
+        token = token.substr(2);
+        uint16_t newAddress = std::atoi(token.c_str());
+        uint16_t addressDiff = newAddress - m_address;
+        m_address = newAddress;
+        line = line.substr(0, 2) + std::to_string(addressDiff);
+        return false;
+    }
+
     MnemonicDesc desc;
     if (!isMnemonic(token, desc)) {
-        // take as label for now:
-        m_symbolTable.insert(std::make_pair<>(token, m_address));
-        line = token1End != line.npos ? line.substr(token1End) : "";
+        size_t hasEqualSign = token.find('=');
+        if (hasEqualSign == token.npos) {
+            m_symbolTable.insert(std::make_pair<>(token, m_address));
+            if (token1End != line.npos) {
+                size_t token2Start = line.find_first_not_of(" ", token1End);
+                line = line.substr(token2Start);
+            }
+            else
+                line = "";
+        }
+        else {
+            uint16_t value = std::atoi(token.c_str() + hasEqualSign + 1);
+            token = token.substr(0, hasEqualSign);
+            m_symbolTable.insert(std::make_pair<>(token, value));
+            line = "";
+        }
     }
     else {
         m_address += desc.type == InsType::TwoByte ? 2 : 1;
@@ -78,6 +100,14 @@ bool Assembler::checkForSymbols(std::string& line)
 
 void Assembler::parseLine(std::string& line)
 {
+    if (line[0] == '*') {
+        uint16_t diff = std::atoi(line.c_str() + 2);
+        line = "";
+        for (uint16_t i = 0; i < diff - 1; ++i)
+            line += "0 ";
+        line += '0';
+    }
+
     size_t token2Beg, token2End, token1End = line.find_first_of(" ");
     std::string token = line.substr(0, token1End); // TODO: change token to string_view
     std::uint8_t byte;
