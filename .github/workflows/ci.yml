@@ -1,0 +1,151 @@
+name: GHActionsCI
+
+on:
+  [pull_request, push]:
+    branches:    
+      - master
+
+env:
+  NINJA_VERSION: 1.10.0
+    
+jobs:
+  ci:
+    name: ${{matrix.config.name}}
+    runs-on: ${{matrix.config.os}}
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        - {
+            name: "Windows MSVC Release",
+            os: windows-latest,
+            build_type: "Release",
+            cc: "cl",
+            cxx: "cl",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          }
+        - {
+            name: "Windows MSVC Debug",
+            os: windows-latest,
+            build_type: "Debug",
+            cc: "cl",
+            cxx: "cl",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          }
+        #- {
+        #    name: "Ubuntu GCC Release",
+        #    os: ubuntu-latest,
+        #    build_type: "Release",
+        #    cc: "gcc",
+        #    cxx: "g++"
+        #  }
+        #- {
+        #    name: "Ubuntu GCC Debug",
+        #    os: ubuntu-latest,
+        #    build_type: "Debug",
+        #    cc: "gcc",
+        #    cxx: "g++"
+        #  }
+        #- {
+        #    name: "Ubuntu Clang Release",
+        #    os: ubuntu-latest,
+        #    build_type: "Release",
+        #    cc: "clang",
+        #    cxx: "clang++"
+        #  }
+        #- {
+        #    name: "Ubuntu Clang Debug",
+        #    os: ubuntu-latest,
+        #    build_type: "Debug",
+        #    cc: "clang",
+        #    cxx: "clang++"
+        #  }
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+      
+    #- name: Download Ninja
+    #  id: ninja
+    #  shell: cmake -P {0}
+    # run: |
+    #   if ("${{runner.os}}" STREQUAL "Windows")
+    #      set(ninja_suffix "win.zip")
+    #    elseif ("${{runner.os}}" STREQUAL "Linux")
+    #      set(ninja_suffix "linux.zip")
+    #    endif()
+    #    set(ninja_url "https://github.com/ninja-build/ninja/releases/download/v$ENV{NINJA_VERSION}/ninja-${ninja_suffix}")
+    #    file(DOWNLOAD "${ninja_url}" ./ninja.zip)
+    #    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./ninja.zip)
+    #    
+    #    if (NOT "${{runner.os}}" STREQUAL "Windows")
+    #      execute_process(COMMAND chmod +x ninja)
+    #    endif()
+    
+    - name: Configure
+      shell: cmake -P {0}
+      run: |
+        set(ENV{CC} ${{matrix.config.cc}})
+        set(ENV{CXX} ${{matrix.config.cxx}})
+        
+        if ("${{runner.os}}" STREQUAL "Windows" AND NOT "x${{matrix.config.environment_script}}" STREQUAL "x")
+          execute_process(COMMAND "${{matrix.config.environment_script}}" && set OUTPUT_FILE environment_script_output.txt)
+          file(STRINGS environment_script_output.txt output_lines)
+          foreach(line IN LISTS output_lines)
+            if (line MATCHES "^([a-zA-Z0-9_-]+)=(.*)$")
+              set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
+            endif()
+          endforeach()
+        endif()
+        
+        set(path_separator ":")
+        if ("${{ runner.os }}" STREQUAL "Windows")
+          set(path_separator ";")
+        endif()
+        set(ENV{PATH} "$ENV{GITHUB_WORKSPACE}${path_separator}$ENV{PATH}")
+        
+        file(TO_CMAKE_PATH "$ENV{GITHUB_WORKSPACE}/ninja" ninja_program)
+        execute_process(COMMAND ${CMAKE_COMMAND}
+          -S .
+          -B build
+          -D CMAKE_BUILD_TYPE=${{matrix.config.build_type}}
+          -G Ninja
+          -D CMAKE_MAKE_PROGRAM=ninja
+          RESULT_VARIABLE result)
+          
+        if (NOT result EQUAL 0)
+          message(FATAL_ERROR "Bad exit status")
+        endif()
+    
+    - name: Build
+      shell: cmake -P {0}
+      run: |
+        set(ENV{NINJA_STATUS} "[%f/%t] ")
+        
+        if ("${{ runner.os }}" STREQUAL "Windows" AND NOT "x${{ matrix.config.environment_script }}" STREQUAL "x")
+          file(STRINGS environment_script_output.txt output_lines)
+          foreach(line IN LISTS output_lines)
+            if (line MATCHES "^([a-zA-Z0-9_-]+)=(.*)$")
+              set(ENV{${CMAKE_MATCH_1}} "${CMAKE_MATCH_2}")
+            endif()
+          endforeach()
+        endif()
+        
+        set(path_separator ":")
+        if ("${{ runner.os }}" STREQUAL "Windows")
+          set(path_separator ";")
+        endif()
+        set(ENV{PATH} "$ENV{GITHUB_WORKSPACE}${path_separator}$ENV{PATH}")
+        
+        execute_process(COMMAND ${CMAKE_COMMAND} --build build RESULT_VARIABLE result)
+        
+        if (NOT result EQUAL 0)
+          message(FATAL_ERROR "Bad exit status")
+        endif()
+    
+    - name: Run Tests
+      shell: cmake -P {0}
+      run: |
+        ls
