@@ -117,12 +117,14 @@ jobs:
     - name: Run Tests
       shell: cmake -P {0}
       run: |
+        message(STATUS "Running Assembler tests...")
         execute_process(COMMAND "./build/output/${{matrix.config.build_type}}/bin/assembler_tests.exe" RESULT_VARIABLE result)
         
         if (NOT result EQUAL 0)
           message(FATAL_ERROR "Bad exit status")
         endif()
         
+        message(STATUS "Running Emulator tests...")
         execute_process(COMMAND "./build/output/${{matrix.config.build_type}}/bin/emulator_tests.exe" RESULT_VARIABLE result)
         
         if (NOT result EQUAL 0)
