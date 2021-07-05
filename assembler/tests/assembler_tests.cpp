@@ -11,14 +11,16 @@ struct AssemblerTestParam {
         refByteCode(pRefByteCode) {}
 };
 
-struct AssemblerTests : public testing::TestWithParam<AssemblerTestParam> {};
+struct AssemblerTests : public testing::TestWithParam<AssemblerTestParam> {
+    Assembler assembler;
+};
 
 TEST_P(AssemblerTests, given4bitAdditionAssemblerCodeWhenAssemblingThenCorrectByteCodeIsReturned) {
     auto& testParam = GetParam();
     
     std::uint8_t* byteCode;
     std::size_t byteCodeSize;
-    bool ret = Assembler::assemble(testParam.sourceFilename, byteCode, byteCodeSize);
+    bool ret = assembler.assemble(testParam.sourceFilename, byteCode, byteCodeSize);
     ASSERT_TRUE(ret);
 
     EXPECT_EQ(byteCodeSize, testParam.refByteCode.size());
@@ -26,7 +28,7 @@ TEST_P(AssemblerTests, given4bitAdditionAssemblerCodeWhenAssemblingThenCorrectBy
     for (size_t i = 0u; i < byteCodeSize; ++i)
         EXPECT_EQ(byteCode[i], testParam.refByteCode[i]);
 
-    Assembler::freeOutput(byteCode);
+    assembler.freeOutput(byteCode);
 }
 
 INSTANTIATE_TEST_SUITE_P(Parametrized, AssemblerTests,

@@ -4,6 +4,56 @@
 #include <iostream>
 #include <sstream>
 
+Assembler::Assembler() :
+    m_address(0u),
+    m_mnemonics({ // TODO: Make it constexpr
+        { "ADD", { InsType::Complex, 0x80 } },
+        { "ADM", { InsType::Simple,  0xEB } },
+        { "BBL", { InsType::Complex, 0xC0 } },
+        { "CLB", { InsType::Simple,  0xF0 } },
+        { "CLC", { InsType::Simple,  0xF1 } },
+        { "CMA", { InsType::Simple,  0xF4 } },
+        { "CMC", { InsType::Simple,  0xF3 } },
+        { "DAA", { InsType::Simple,  0xFB } },
+        { "DAC", { InsType::Simple,  0xF8 } },
+        { "DCL", { InsType::Simple,  0xFD } },
+        { "FIM", { InsType::TwoByte, 0x20 } },
+        { "FIN", { InsType::TwoByte, 0x30 } },
+        { "IAC", { InsType::Simple,  0xF2 } },
+        { "INC", { InsType::Complex, 0x60 } },
+        { "ISZ", { InsType::TwoByte, 0x70 } },
+        { "JCN", { InsType::TwoByte, 0x10 } },
+        { "JIN", { InsType::Complex, 0x31 } },
+        { "JMS", { InsType::TwoByte, 0x50 } },
+        { "JUN", { InsType::TwoByte, 0x40 } },
+        { "KBP", { InsType::Simple,  0xFC } },
+        { "LD",  { InsType::Complex, 0xA0 } },
+        { "LDM", { InsType::Complex, 0xD0 } },
+        { "NOP", { InsType::Simple,  0x00 } },
+        { "RAL", { InsType::Simple,  0xF5 } },
+        { "RAR", { InsType::Simple,  0xF6 } },
+        { "RD0", { InsType::Simple,  0xF6 } },
+        { "RD1", { InsType::Simple,  0xF6 } },
+        { "RD2", { InsType::Simple,  0xF6 } },
+        { "RD3", { InsType::Simple,  0xF6 } },
+        { "RDM", { InsType::Simple,  0xF6 } },
+        { "RDR", { InsType::Simple,  0xF6 } },
+        { "SBM", { InsType::Simple,  0xE8 } },
+        { "SRC", { InsType::Complex, 0x21 } },
+        { "STC", { InsType::Simple,  0xFA } },
+        { "SUB", { InsType::Complex, 0x90 } },
+        { "TCC", { InsType::Simple,  0xF7 } },
+        { "TCS", { InsType::Simple,  0xF9 } },
+        { "WMP", { InsType::Simple,  0xE1 } },
+        { "WR0", { InsType::Simple,  0xE4 } },
+        { "WR1", { InsType::Simple,  0xE5 } },
+        { "WR2", { InsType::Simple,  0xE6 } },
+        { "WR3", { InsType::Simple,  0xE7 } },
+        { "WRM", { InsType::Simple,  0xE0 } },
+        { "WRR", { InsType::Simple,  0xE2 } },
+        { "XCH", { InsType::Complex, 0xB0 } }
+    }) {}
+
 bool Assembler::assemble(const char* filename, std::uint8_t*& output, size_t& outputSize)
 {
     std::fstream file(filename);
@@ -234,53 +284,3 @@ bool Assembler::isMnemonic(const std::string& token, MnemonicDesc& desc)
 
     return false;
 }
-
-std::uint16_t Assembler::m_address;
-std::unordered_map<std::string, std::uint16_t> Assembler::m_symbolTable;
-std::unordered_map<std::string, Assembler::MnemonicDesc> Assembler::m_mnemonics = { // TODO: make it constexpr
-    { "ADD", { InsType::Complex, 0x80 } },
-    { "ADM", { InsType::Simple,  0xEB } },
-    { "BBL", { InsType::Complex, 0xC0 } },
-    { "CLB", { InsType::Simple,  0xF0 } },
-    { "CLC", { InsType::Simple,  0xF1 } },
-    { "CMA", { InsType::Simple,  0xF4 } },
-    { "CMC", { InsType::Simple,  0xF3 } },
-    { "DAA", { InsType::Simple,  0xFB } },
-    { "DAC", { InsType::Simple,  0xF8 } },
-    { "DCL", { InsType::Simple,  0xFD } },
-    { "FIM", { InsType::TwoByte, 0x20 } },
-    { "FIN", { InsType::TwoByte, 0x30 } },
-    { "IAC", { InsType::Simple,  0xF2 } },
-    { "INC", { InsType::Complex, 0x60 } },
-    { "ISZ", { InsType::TwoByte, 0x70 } },
-    { "JCN", { InsType::TwoByte, 0x10 } },
-    { "JIN", { InsType::Complex, 0x31 } },
-    { "JMS", { InsType::TwoByte, 0x50 } },
-    { "JUN", { InsType::TwoByte, 0x40 } },
-    { "KBP", { InsType::Simple,  0xFC } },
-    { "LD",  { InsType::Complex, 0xA0 } },
-    { "LDM", { InsType::Complex, 0xD0 } },
-    { "NOP", { InsType::Simple,  0x00 } },
-    { "RAL", { InsType::Simple,  0xF5 } },
-    { "RAR", { InsType::Simple,  0xF6 } },
-    { "RD0", { InsType::Simple,  0xF6 } },
-    { "RD1", { InsType::Simple,  0xF6 } },
-    { "RD2", { InsType::Simple,  0xF6 } },
-    { "RD3", { InsType::Simple,  0xF6 } },
-    { "RDM", { InsType::Simple,  0xF6 } },
-    { "RDR", { InsType::Simple,  0xF6 } },
-    { "SBM", { InsType::Simple,  0xE8 } },
-    { "SRC", { InsType::Complex, 0x21 } },
-    { "STC", { InsType::Simple,  0xFA } },
-    { "SUB", { InsType::Complex, 0x90 } },
-    { "TCC", { InsType::Simple,  0xF7 } },
-    { "TCS", { InsType::Simple,  0xF9 } },
-    { "WMP", { InsType::Simple,  0xE1 } },
-    { "WR0", { InsType::Simple,  0xE4 } },
-    { "WR1", { InsType::Simple,  0xE5 } },
-    { "WR2", { InsType::Simple,  0xE6 } },
-    { "WR3", { InsType::Simple,  0xE7 } },
-    { "WRM", { InsType::Simple,  0xE0 } },
-    { "WRR", { InsType::Simple,  0xE2 } },
-    { "XCH", { InsType::Complex, 0xB0 } }
-};

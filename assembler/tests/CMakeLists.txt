@@ -2,6 +2,7 @@ set(TARGET_ASSEMBLER_TESTS_NAME assembler_tests)
 
 set(K4004_ASSEMBLER_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt
+    ${CMAKE_CURRENT_SOURCE_DIR}/assembler_internals_tests.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/assembler_tests.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 )
