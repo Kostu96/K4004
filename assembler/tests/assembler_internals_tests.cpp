@@ -2,6 +2,8 @@
 
 #include <gtest/gtest.h>
 
+#include "assembler/source/conversion_functions.hpp"
+
 template<>
 struct WhiteBox<Assembler> {
     static uint8_t callParseOperand(Assembler& assembler, const std::string& token) {
@@ -33,7 +35,7 @@ TEST_F(AssemblerInternalsTests, givenValidOperandWhenParseOperandThenCorrectValu
 
     // Octal Numbers
     EXPECT_EQ(WhiteBox<Assembler>::callParseOperand(assembler, "0254"), 0254u);
-    EXPECT_EQ(WhiteBox<Assembler>::callParseOperand(assembler, "0100"), 0100u);
+    EXPECT_EQ(WhiteBox<Assembler>::callParseOperand(assembler, "0101"), 0101u);
 
     // Registers
     EXPECT_EQ(WhiteBox<Assembler>::callParseOperand(assembler, "R0"), 0u);
@@ -49,5 +51,5 @@ TEST_F(AssemblerInternalsTests, givenValidOperandWhenParseOperandThenCorrectValu
     EXPECT_EQ(WhiteBox<Assembler>::callParseOperand(assembler, "RF"), 15u);
 
     // Register Pairs
-
+    
 }

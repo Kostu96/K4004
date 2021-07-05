@@ -26,7 +26,7 @@ TEST_P(AssemblerTests, given4bitAdditionAssemblerCodeWhenAssemblingThenCorrectBy
     EXPECT_EQ(byteCodeSize, testParam.refByteCode.size());
 
     for (size_t i = 0u; i < byteCodeSize; ++i)
-        EXPECT_EQ(byteCode[i], testParam.refByteCode[i]);
+        EXPECT_EQ(byteCode[i], testParam.refByteCode[i]) << "At byte " << i;
 
     assembler.freeOutput(byteCode);
 }

@@ -1,4 +1,5 @@
-#include "assembler.hpp"
+#include "assembler/source/assembler.hpp"
+#include "assembler/source/conversion_functions.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -32,12 +33,12 @@ Assembler::Assembler() :
         { "NOP", { InsType::Simple,  0x00 } },
         { "RAL", { InsType::Simple,  0xF5 } },
         { "RAR", { InsType::Simple,  0xF6 } },
-        { "RD0", { InsType::Simple,  0xF6 } },
-        { "RD1", { InsType::Simple,  0xF6 } },
-        { "RD2", { InsType::Simple,  0xF6 } },
-        { "RD3", { InsType::Simple,  0xF6 } },
-        { "RDM", { InsType::Simple,  0xF6 } },
-        { "RDR", { InsType::Simple,  0xF6 } },
+        { "RD0", { InsType::Simple,  0xEC } },
+        { "RD1", { InsType::Simple,  0xED } },
+        { "RD2", { InsType::Simple,  0xEE } },
+        { "RD3", { InsType::Simple,  0xEF } },
+        { "RDM", { InsType::Simple,  0xE9 } },
+        { "RDR", { InsType::Simple,  0xEA } },
         { "SBM", { InsType::Simple,  0xE8 } },
         { "SRC", { InsType::Complex, 0x21 } },
         { "STC", { InsType::Simple,  0xFA } },
@@ -106,13 +107,14 @@ bool Assembler::trimWhiteSpaces(std::string& line)
     return line.empty();
 }
 
-// TODO: refactor parsing of different number formats
-
 bool Assembler::checkForSymbols(std::string& line)
 {
     size_t token1End = line.find_first_of(" ");
     std::string token = line.substr(0, token1End); // TODO: change token to string_view
     
+    if (token[0] == '$')
+        return true;
+
     if (token[0] == '*') {
         token = token.substr(2);
         uint16_t newAddress = std::atoi(token.c_str());
@@ -130,6 +132,7 @@ bool Assembler::checkForSymbols(std::string& line)
             if (token1End != line.npos) {
                 size_t token2Start = line.find_first_not_of(" ", token1End);
                 line = line.substr(token2Start);
+                return checkForSymbols(line);
             }
             else
                 line = "";
@@ -191,20 +194,28 @@ void Assembler::parseLine(std::string& line)
             if (token[token.size() - 1] == ',') {
                 // Should be 2 operands
                 token = token.substr(0, token.size() - 1);
-                byte = parseOperand(token);
+                auto ret = m_symbolTable.find(token);
+                byte = ret != m_symbolTable.end() ? ret->second : parseOperand(token);
                 desc.byte |= byte;
                 token = line.substr(token2End + 1);
-                byte = parseOperand(token);
+                ret = m_symbolTable.find(token);
+                byte = ret != m_symbolTable.end() ? ret->second : parseOperand(token);
                 line = std::to_string(desc.byte) + " " + std::to_string(byte);
             }
             else {
                 // Should be address or sth
                 // take as address for now
-                std::uint16_t addr = m_symbolTable[token];
-                byte = addr & 0x00FF;
-                addr &= 0x0F00;
-                addr >>= 8;
-                line = std::to_string(desc.byte | addr) + " " + std::to_string(byte);
+                auto ret = m_symbolTable.find(token);
+                if (ret != m_symbolTable.end()) {
+                    std::uint16_t addr = ret->second;
+                    byte = addr & 0x00FF;
+                    addr &= 0x0F00;
+                    addr >>= 8;
+                    line = std::to_string(desc.byte | addr) + " " + std::to_string(byte);
+                }
+                else {
+                    // Error: Missing Symbol
+                }
             }
             break;
         }
@@ -217,66 +228,59 @@ void Assembler::parseLine(std::string& line)
 std::uint8_t Assembler::parseOperand(const std::string& token)
 {
     switch (token[0]) {
-    case 'R': { // Register operand
-        if (token.size() != 2) {
-            // Error
-            return 0u;
-        }
+    case 'R': {
+        if (token.size() != 2)
+            return 0u; // Error
 
         if (token[1] < '0' || token[1] > '9') {
             if (token[1] < 'A' || token[1] > 'F') {
-                // Error: Wrong register number
-                return 0u;
+                if (token[1] < 'a' || token[1] > 'f')
+                    return 0u; // Error: Wrong register number
+
+                return token[1] - 'a' + 10;
             }
-
-            return token[1] - 55; // to transform 'A'-'F' into 10-15
+            return token[1] - 'A' + 10;
         }
-
-        return token[1] - '0'; // to transform '0'-'9' into 0-9
+        return token[1] - '0';
     }
-    case 'P': { // Registers pair operand
-        if (token.size() != 2) {
+    case 'P': {
+        if (token.size() != 2)
+            return 0u; // Error
+
+        if (token[1] < '0' || token[1] > '8')
+            return 0u; // Error: Wrong registers pair number
+
+        return 2 * (token[1] - '0');
+    }
+    case '$': {
+        std::uint8_t byte = 0u;
+        if (hexStrToUint8(token.c_str() + 1, byte))
+            return byte;
+        else {
             // Error
             return 0u;
         }
-
-        if (token[1] < '0' || token[1] > '8') {
-            // Error: Wrong registers pair number
-            return 0u;
-        }
-
-        return 2 * (token[1] - '0');  // to transform '0'-'8' into 0, 2, 4, .., E
-    }
-    case '$': { // Hex value operand
-        std::uint8_t byte = 0u;
-        if (token[1] >= '0' && token[1] <= '9')
-            byte = 16 * (token[1] - '0');
-        else if (token[1] >= 'A' && token[1] <= 'F')
-            byte = 16 * (token[1] - 'A' + 10);
-        else if (token[1] >= 'a' && token[1] <= 'f')
-            byte = 16 * (token[1] - 'a' + 10);
-        else {
-            // Error: Illformed hex number
-            return 0u;
-        }
-        if (token[2] >= '0' && token[2] <= '9')
-            byte += token[2] - '0';
-        else if (token[2] >= 'A' && token[2] <= 'F')
-            byte += token[2] - 'A' + 10;
-        else if (token[2] >= 'a' && token[2] <= 'f')
-            byte += token[2] - 'a' + 10;
-        else {
-            // Error: Illformed hex number
-            return 0u;
-        }
-        return byte;
     }
     case '0': {
-        if (token.size() > 1) {
-            // octal
+        if (token.size() == 1)
+            break;
+
+        std::uint8_t byte = 0u;
+        if (octStrToUint8(token.c_str() + 1, byte))
+            return byte;
+        else {
+            // Error
             return 0u;
         }
-        return 0u;
+    }
+    case '%': {
+        std::uint8_t byte = 0u;
+        if (binStrToUint8(token.c_str() + 1, byte))
+            return byte;
+        else {
+            // Error
+            return 0u;
+        }
     }
     }
 
