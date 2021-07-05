@@ -69,23 +69,6 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: true
-      
-    #- name: Download Ninja
-    #  id: ninja
-    #  shell: cmake -P {0}
-    # run: |
-    #   if ("${{runner.os}}" STREQUAL "Windows")
-    #      set(ninja_suffix "win.zip")
-    #    elseif ("${{runner.os}}" STREQUAL "Linux")
-    #      set(ninja_suffix "linux.zip")
-    #    endif()
-    #    set(ninja_url "https://github.com/ninja-build/ninja/releases/download/v$ENV{NINJA_VERSION}/ninja-${ninja_suffix}")
-    #    file(DOWNLOAD "${ninja_url}" ./ninja.zip)
-    #    execute_process(COMMAND ${CMAKE_COMMAND} -E tar xvf ./ninja.zip)
-    #    
-    #    if (NOT "${{runner.os}}" STREQUAL "Windows")
-    #      execute_process(COMMAND chmod +x ninja)
-    #    endif()
     
     - name: Configure
       shell: cmake -P {0}
