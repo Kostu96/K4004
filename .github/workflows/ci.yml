@@ -134,7 +134,7 @@ jobs:
     - name: Run Tests
       shell: cmake -P {0}
       run: |
-        execute_process(COMMAND "./build/bin/assembler_tests.exe" RESULT_VARIABLE result))
+        execute_process(COMMAND "./build/bin/assembler_tests.exe" RESULT_VARIABLE result)
         
         if (NOT result EQUAL 0)
           message(FATAL_ERROR "Bad exit status")
