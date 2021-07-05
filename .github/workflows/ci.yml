@@ -1,8 +1,11 @@
 name: GHActionsCI
 
 on:
-  [pull_request, push]:
+  pull_request:
     branches:    
+      - master
+  push:
+    branches:
       - master
 
 env:
