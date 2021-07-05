@@ -7,9 +7,6 @@ on:
   push:
     branches:
       - master
-
-env:
-  NINJA_VERSION: 1.10.0
     
 jobs:
   ci:
@@ -48,20 +45,6 @@ jobs:
         #    build_type: "Debug",
         #    cc: "gcc",
         #    cxx: "g++"
-        #  }
-        #- {
-        #    name: "Ubuntu Clang Release",
-        #    os: ubuntu-latest,
-        #    build_type: "Release",
-        #    cc: "clang",
-        #    cxx: "clang++"
-        #  }
-        #- {
-        #    name: "Ubuntu Clang Debug",
-        #    os: ubuntu-latest,
-        #    build_type: "Debug",
-        #    cc: "clang",
-        #    cxx: "clang++"
         #  }
     
     steps:
@@ -134,7 +117,7 @@ jobs:
     - name: Run Tests
       shell: cmake -P {0}
       run: |
-        execute_process(COMMAND "./build/bin/assembler_tests.exe" RESULT_VARIABLE result)
+        execute_process(COMMAND "./build/output/${{matrix.config.build_type}}/bin/assembler_tests.exe" RESULT_VARIABLE result)
         
         if (NOT result EQUAL 0)
           message(FATAL_ERROR "Bad exit status")
