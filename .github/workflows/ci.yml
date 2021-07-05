@@ -151,4 +151,8 @@ jobs:
     - name: Run Tests
       shell: cmake -P {0}
       run: |
-        ls
+        execute_process(COMMAND ls RESULT_VARIABLE result))
+        
+        if (NOT result EQUAL 0)
+          message(FATAL_ERROR "Bad exit status")
+        endif()
