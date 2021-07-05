@@ -1,7 +1,8 @@
 #pragma once
 #include "MCS4.hpp"
 
-#include "assembler.hpp"
+#include "assembler/source/assembler.hpp"
+
 #include "cycle_types.hpp"
 #include "rom.hpp"
 
@@ -16,13 +17,14 @@ namespace mcs4 {
 
     bool MCS4::loadProgram(const char* filename)
     {
+        Assembler assembler;
         std::uint8_t* bytecode;
         std::size_t codeSize;
-        bool ret = Assembler::assemble(filename, bytecode, codeSize);
+        bool ret = assembler.assemble(filename, bytecode, codeSize);
 
         if (ret) {
             m_rom.load(0x00, bytecode, codeSize);
-            Assembler::freeOutput(bytecode);
+            assembler.freeOutput(bytecode);
         }
 
         return ret;

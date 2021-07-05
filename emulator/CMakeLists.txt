@@ -1,26 +1,5 @@
-set(K4004_EMULATOR_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/cycle_types.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/cycle_types.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4002.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4002.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4003.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4003.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4004.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/K4004.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/MCS4.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/MCS4.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/rom.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/rom.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/source/types.hpp
-)
+add_subdirectory(source)
 
-add_library(${TARGET_EMULATOR_NAME} STATIC ${K4004_EMULATOR_SOURCES})
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/source PREFIX source FILES ${K4004_EMULATOR_SOURCES})
-
-target_include_directories(${TARGET_EMULATOR_NAME} PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/source
-)
-
-target_link_libraries(${TARGET_EMULATOR_NAME} PRIVATE
-    ${TARGET_ASSEMBLER_NAME}
-)
+if (${BUILD_TESTS})
+    add_subdirectory(tests)
+endif()

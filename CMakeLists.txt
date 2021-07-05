@@ -25,10 +25,10 @@ add_subdirectory(third_party)
 set(TARGET_ASSEMBLER_NAME assembler_lib)
 add_subdirectory(assembler)
 
-#set(TARGET_EMULATOR_NAME emulator_lib)
-#add_subdirectory(emulator)
+set(TARGET_EMULATOR_NAME emulator_lib)
+add_subdirectory(emulator)
 
-#set(TARGET_APP_NAME K4004_app)
+set(TARGET_APP_NAME K4004_app)
 #set(K4004_APP_SOURCES
 #    ${CMAKE_CURRENT_SOURCE_DIR}/app/app.cpp
 #    ${CMAKE_CURRENT_SOURCE_DIR}/app/app.hpp
