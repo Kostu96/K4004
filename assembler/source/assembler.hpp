@@ -1,4 +1,6 @@
 #pragma once
+#include "assembler/source/global.hpp"
+
 #include <cinttypes>
 #include <string>
 #include <unordered_map>
@@ -32,4 +34,6 @@ private:
     std::uint16_t m_address;
     std::unordered_map<std::string, std::uint16_t> m_symbolTable;
     std::unordered_map<std::string, MnemonicDesc> m_mnemonics;
+
+    ALLOW_WHITEBOX(Assembler);
 };

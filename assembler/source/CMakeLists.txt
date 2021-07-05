@@ -2,6 +2,9 @@ set(K4004_ASSEMBLER_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt
     ${CMAKE_CURRENT_SOURCE_DIR}/assembler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/assembler.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/conversion_functions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/conversion_functions.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/global.hpp
 )
 
 add_library(${TARGET_ASSEMBLER_NAME} STATIC ${K4004_ASSEMBLER_SOURCES})

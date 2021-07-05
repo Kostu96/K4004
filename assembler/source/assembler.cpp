@@ -252,7 +252,9 @@ std::uint8_t Assembler::parseOperand(const std::string& token)
         if (token[1] >= '0' && token[1] <= '9')
             byte = 16 * (token[1] - '0');
         else if (token[1] >= 'A' && token[1] <= 'F')
-            byte = 16 * (token[1] - 55);
+            byte = 16 * (token[1] - 'A' + 10);
+        else if (token[1] >= 'a' && token[1] <= 'f')
+            byte = 16 * (token[1] - 'a' + 10);
         else {
             // Error: Illformed hex number
             return 0u;
@@ -260,16 +262,25 @@ std::uint8_t Assembler::parseOperand(const std::string& token)
         if (token[2] >= '0' && token[2] <= '9')
             byte += token[2] - '0';
         else if (token[2] >= 'A' && token[2] <= 'F')
-            byte += token[2] - 55;
+            byte += token[2] - 'A' + 10;
+        else if (token[2] >= 'a' && token[2] <= 'f')
+            byte += token[2] - 'a' + 10;
         else {
             // Error: Illformed hex number
             return 0u;
         }
         return byte;
     }
+    case '0': {
+        if (token.size() > 1) {
+            // octal
+            return 0u;
+        }
+        return 0u;
+    }
     }
 
-    return 0u;
+    return std::atoi(token.c_str());
 }
 
 bool Assembler::isMnemonic(const std::string& token, MnemonicDesc& desc)
