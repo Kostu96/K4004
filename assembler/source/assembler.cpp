@@ -244,19 +244,20 @@ std::uint16_t Assembler::parseOperand(const std::string& token)
 {
     switch (token[0]) {
     case 'R': {
-        if (token.size() != 2)
+        if (token.size() < 2 || token.size() > 3)
             return 0u; // Error
-
-        if (token[1] < '0' || token[1] > '9') {
-            if (token[1] < 'A' || token[1] > 'F') {
-                if (token[1] < 'a' || token[1] > 'f')
-                    return 0u; // Error: Wrong register number
-
-                return token[1] - 'a' + 10;
-            }
-            return token[1] - 'A' + 10;
+        // TODO: do sth better here
+        if (token[1] >= '0' && token[1] <= '9') {
+            if (token.size() > 2)
+                return (token[1] - '0') * 10 + (token[2] - '0');
+            return token[1] - '0';
         }
-        return token[1] - '0';
+        if (token[1] >= 'A' && token[1] <= 'F')
+            return token[1] - 'A' + 10;
+        if (token[1] >= 'a' && token[1] <= 'f')
+            return token[1] - 'a' + 10;
+
+        return 0u; // Error: Wrong register number
     }
     case 'P': {
         if (token.size() != 2)
