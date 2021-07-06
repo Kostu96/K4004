@@ -45,7 +45,7 @@
        RAL
        WMP
        JCN %1010, $47 ; Jump if CY == 0
-       JCN %1100,     ; Jump if A != 0
+       JCN %1100, $4F ; Jump if A != 0
        JCN %1001, $50 ; Jump if T == 1
        JCN %0010, $50 ; Jump if CY == 1
        JCN %0100, $52 ; Jump if A == 0
