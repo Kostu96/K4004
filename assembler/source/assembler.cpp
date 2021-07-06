@@ -19,7 +19,7 @@ Assembler::Assembler() :
         { "DAC", { InsType::Simple,  0xF8 } },
         { "DCL", { InsType::Simple,  0xFD } },
         { "FIM", { InsType::TwoByte, 0x20 } },
-        { "FIN", { InsType::TwoByte, 0x30 } },
+        { "FIN", { InsType::Complex, 0x30 } },
         { "IAC", { InsType::Simple,  0xF2 } },
         { "INC", { InsType::Complex, 0x60 } },
         { "ISZ", { InsType::TwoByte, 0x70 } },
@@ -124,6 +124,17 @@ bool Assembler::checkForSymbols(std::string& line)
         return false;
     }
 
+    if (token[0] == '.') {
+        if (token == ".BYTE") {
+            line = '.' + line.substr(5);
+            return false;
+        }
+        else {
+            // Error
+            return true;
+        }
+    }
+
     MnemonicDesc desc;
     if (!isMnemonic(token, desc)) {
         size_t hasEqualSign = token.find('=');
@@ -159,11 +170,20 @@ void Assembler::parseLine(std::string& line)
         for (uint16_t i = 0; i < diff - 1; ++i)
             line += "0 ";
         line += '0';
+        return;
+    }
+
+    std::uint8_t byte;
+    if (line[0] == '.') {
+        line = line.substr(1);
+        trimWhiteSpaces(line);
+        byte = parseOperand(line);
+        line = std::to_string(byte);
+        return;
     }
 
     size_t token2Beg, token2End, token1End = line.find_first_of(" ");
     std::string token = line.substr(0, token1End); // TODO: change token to string_view
-    std::uint8_t byte;
 
     MnemonicDesc desc;
     if (isMnemonic(token, desc)) {
