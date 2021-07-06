@@ -28,7 +28,7 @@ private:
     bool trimWhiteSpaces(std::string& line);
     bool checkForSymbols(std::string& line);
     void parseLine(std::string& line);
-    std::uint8_t parseOperand(const std::string& token);
+    std::uint16_t parseOperand(const std::string& token);
     bool isMnemonic(const std::string& token, MnemonicDesc& desc);
 
     std::uint16_t m_address;

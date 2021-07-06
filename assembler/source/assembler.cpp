@@ -127,6 +127,7 @@ bool Assembler::checkForSymbols(std::string& line)
     if (token[0] == '.') {
         if (token == ".BYTE") {
             line = '.' + line.substr(5);
+            ++m_address;
             return false;
         }
         else {
@@ -223,19 +224,13 @@ void Assembler::parseLine(std::string& line)
                 line = std::to_string(desc.byte) + " " + std::to_string(byte);
             }
             else {
-                // Should be address or sth
-                // take as address for now
+                // TODO: not sure if this could only be address for here
                 auto ret = m_symbolTable.find(token);
-                if (ret != m_symbolTable.end()) {
-                    std::uint16_t addr = ret->second;
-                    byte = addr & 0x00FF;
-                    addr &= 0x0F00;
-                    addr >>= 8;
-                    line = std::to_string(desc.byte | addr) + " " + std::to_string(byte);
-                }
-                else {
-                    // Error: Missing Symbol
-                }
+                std::uint16_t addr = ret != m_symbolTable.end() ? ret->second : parseOperand(token);
+                byte = addr & 0x00FF;
+                addr &= 0x0F00;
+                addr >>= 8;
+                line = std::to_string(desc.byte | addr) + " " + std::to_string(byte);
             }
             break;
         }
@@ -245,7 +240,7 @@ void Assembler::parseLine(std::string& line)
     }
 }
 
-std::uint8_t Assembler::parseOperand(const std::string& token)
+std::uint16_t Assembler::parseOperand(const std::string& token)
 {
     switch (token[0]) {
     case 'R': {
@@ -273,9 +268,9 @@ std::uint8_t Assembler::parseOperand(const std::string& token)
         return 2 * (token[1] - '0');
     }
     case '$': {
-        std::uint8_t byte = 0u;
-        if (hexStrToUint8(token.c_str() + 1, byte))
-            return byte;
+        std::uint16_t word = 0u;
+        if (hexStrToUint8(token.c_str() + 1, word))
+            return word;
         else {
             // Error
             return 0u;
@@ -285,18 +280,18 @@ std::uint8_t Assembler::parseOperand(const std::string& token)
         if (token.size() == 1)
             break;
 
-        std::uint8_t byte = 0u;
-        if (octStrToUint8(token.c_str() + 1, byte))
-            return byte;
+        std::uint16_t word = 0u;
+        if (octStrToUint8(token.c_str() + 1, word))
+            return word;
         else {
             // Error
             return 0u;
         }
     }
     case '%': {
-        std::uint8_t byte = 0u;
-        if (binStrToUint8(token.c_str() + 1, byte))
-            return byte;
+        std::uint16_t word = 0u;
+        if (binStrToUint8(token.c_str() + 1, word))
+            return word;
         else {
             // Error
             return 0u;
