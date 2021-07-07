@@ -103,7 +103,7 @@ bool Assembler::trimWhiteSpaces(std::string& line)
 bool Assembler::checkForSymbols(std::string& line)
 {
     size_t token1End = line.find_first_of(" ");
-    std::string token = line.substr(0, token1End); // TODO: change token to string_view
+    std::string token = line.substr(0, token1End);
     
     if (token[0] == '$')
         return true;
@@ -237,80 +237,81 @@ std::uint16_t Assembler::parseOperand(const std::string& token)
     std::uint16_t word = 0u;
     switch (token[0]) {
     case 'R':
-        parseRegisterOperand(token, word);
+        parseRegister(token, word);
         return word;
     case 'P':
-        parseRegisterPairOperand(token, word);
+        parseRegisterPair(token, word);
         return word;
     case '$':
-        parseHexNumberOperand(token, word);
+        parseHexNumber(token, word);
         return word;
     case '0':
         if (token.size() == 1)
             break;
 
-        parseOctNumberOperand(token, word);
+        parseOctNumber(token, word);
         return word;
     case '%':
-        parseBinNumberOperand(token, word);
+        parseBinNumber(token, word);
         return word;
     }
 
-    return std::atoi(token.c_str());
+    parseDecNumber(token, word);
+    return word;
 }
 
-bool Assembler::parseRegisterOperand(const std::string& token, uint16_t& value)
+bool Assembler::parseRegister(const std::string_view& str, uint16_t& value)
 {
-    if (token.size() < 2 || token.size() > 3)
+    if (str.size() < 2 || str.size() > 3)
         return false;
 
-    if (token[1] >= '0' && token[1] <= '9') {
-        if (token.size() > 2)
-            if (token[2] >= '0' && token[2] <= '9')
-                value = (token[1] - '0') * 10 + (token[2] - '0');
+    if (str[1] >= '0' && str[1] <= '9') {
+        if (str.size() > 2)
+            if (str[2] >= '0' && str[2] <= '9')
+                value = (str[1] - '0') * 10 + (str[2] - '0');
             else
                 return false;
         else 
-            value = token[1] - '0';
+            value = str[1] - '0';
     }
 
-    if (token[1] >= 'A' && token[1] <= 'F')
-        value = token[1] - 'A' + 10;
-    else if (token[1] >= 'a' && token[1] <= 'f')
-        value = token[1] - 'a' + 10;
+    if (str[1] >= 'A' && str[1] <= 'F')
+        value = str[1] - 'A' + 10;
+    else if (str[1] >= 'a' && str[1] <= 'f')
+        value = str[1] - 'a' + 10;
     else
         return false;
     
     return true;
 }
 
-bool Assembler::parseRegisterPairOperand(const std::string& token, uint16_t& value)
+bool Assembler::parseRegisterPair(const std::string_view& str, uint16_t& value)
 {
-    if (token.size() != 2)
+    if (str.size() != 2)
         return false;
 
-    if (token[1] < '0' || token[1] > '7')
+    if (str[1] < '0' || str[1] > '7')
         return false;
 
 
-    value = 2 * (token[1] - '0');
+    value = 2 * (str[1] - '0');
     return true;
 }
 
-bool Assembler::parseHexNumberOperand(const std::string& token, uint16_t& value)
+bool Assembler::parseHexNumber(const std::string_view& str, uint16_t& value)
 {
-    size_t length = token.size();
-    if (length == 6 || length == 0)
+    size_t length = str.size();
+    if (length == 5 || length == 0)
         return false; // String representation of a to big number or empty
 
     value = 0;
     for (size_t i = 1; i < length; ++i) {
-        if (token[i] >= '0' && token[i] <= '9')
-            value += (1 << 4 * (length - i - 1)) * (token[i] - '0');
-        else if (token[i] >= 'a' && token[i] <= 'f')
-            value += (1 << 4 * (length - i - 1)) * (token[i] - 'a' + 10);
-        else if (token[i] >= 'A' && token[i] <= 'F')
-            value += (1 << 4 * (length - i - 1)) * (token[i] - 'A' + 10);
+        if (str[i] >= '0' && str[i] <= '9')
+            value += (1 << 4 * (length - i - 1)) * (str[i] - '0');
+        else if (str[i] >= 'a' && str[i] <= 'f')
+            value += (1 << 4 * (length - i - 1)) * (str[i] - 'a' + 10);
+        else if (str[i] >= 'A' && str[i] <= 'F')
+            value += (1 << 4 * (length - i - 1)) * (str[i] - 'A' + 10);
         else
             return false; // Illformed bin number
     }
@@ -318,33 +319,33 @@ bool Assembler::parseHexNumberOperand(const std::string& token, uint16_t& value)
     return true;
 }
 
-bool Assembler::parseBinNumberOperand(const std::string& token, uint16_t& value)
+bool Assembler::parseBinNumber(const std::string_view& str, uint16_t& value)
 {
-    size_t length = token.size();
+    size_t length = str.size();
     if (length == 18 || length == 0)
         return false; // String representation of a to big number or empty
 
     value = 0;
     for (size_t i = 1; i < length; ++i) {
-        if (token[i] == '1')
+        if (str[i] == '1')
             value += 1 << (length - i - 1);
-        else if (token[i] != '0')
+        else if (str[i] != '0')
             return false; // Illformed bin number
     }
 
     return true;
 }
 
-bool Assembler::parseOctNumberOperand(const std::string& token, uint16_t& value)
+bool Assembler::parseOctNumber(const std::string_view& str, uint16_t& value)
 {
-    size_t length = token.size();
+    size_t length = str.size();
     if (length == 8 || length == 0)
         return false; // String representation of a to big number or empty
 
     value = 0;
     for (size_t i = 0; i < length; ++i) {
-        if (token[i] >= '0' && token[i] <= '7')
-            value += (1 << 3 * (length - i - 1)) * (token[i] - '0');
+        if (str[i] >= '0' && str[i] <= '7')
+            value += (1 << 3 * (length - i - 1)) * (str[i] - '0');
         else
             return false; // Illformed bin number
     }
@@ -352,10 +353,34 @@ bool Assembler::parseOctNumberOperand(const std::string& token, uint16_t& value)
     return true;
 }
 
+bool Assembler::parseDecNumber(const std::string_view& str, uint16_t& value)
+{
+    size_t length = str.size();
+    if (length == 6 || length == 0)
+        return false;
 
-bool Assembler::isMnemonic(const std::string& token, MnemonicDesc& desc)
+    value = 0;
+    uint16_t base = 1;
+    for (size_t i = length; i > 0; --i) {
+        if (str[i - 1] >= '0' && str[i - 1] <= '9') {
+            value += base * (str[i - 1] - '0');
+            base *= 10;
+        }
+        else
+            return false; // Illformed dec number
+    }
+
+    return true;
+}
+
+
+bool Assembler::isMnemonic(std::string& token, MnemonicDesc& desc)
 {
     if (token.size() > 3) return false;
+
+    for (size_t i = 0; i < token.size(); ++i)
+        if (token[i] >= 'a' && token[i] <= 'z')
+            token[i] -= 'a' - 'A';
 
     auto x = m_mnemonics.find(token);
     if (x != m_mnemonics.end()) {
