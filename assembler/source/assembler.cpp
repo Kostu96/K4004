@@ -1,5 +1,4 @@
 #include "assembler/source/assembler.hpp"
-#include "assembler/source/conversion_functions.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -74,19 +73,13 @@ bool Assembler::assemble(const char* filename, std::uint8_t*& output, size_t& ou
     }
     file.close();
 
-    output = new std::uint8_t[m_address];
+    output = new uint8_t[m_address];
     outputSize = m_address;
 
+    uint16_t outputIndex = 0u;
     while (std::getline(firstPass, line)) {
-        parseLine(line);
-        secondPass << line << ' ';
-    }
-
-    std::uint16_t byte;
-    std::string token;
-    for (size_t i = 0; i < m_address; ++i) {
-        secondPass >> byte;
-        output[i] = byte & 0x00FF;
+        if (!parseLine(line, output, outputIndex))
+            return false;
     }
 
     return true;
@@ -163,51 +156,49 @@ bool Assembler::checkForSymbols(std::string& line)
     return line.empty();
 }
 
-void Assembler::parseLine(std::string& line)
+bool Assembler::parseLine(const std::string& line, uint8_t* output, uint16_t& outputIndex)
 {
+    // TODO: change line into string_view
     if (line[0] == '*') {
         uint16_t diff = std::atoi(line.c_str() + 2);
-        line = "";
-        for (uint16_t i = 0; i < diff - 1; ++i)
-            line += "0 ";
-        line += '0';
-        return;
+        for (uint16_t i = 0; i < diff; ++i)
+            output[outputIndex++] = 0u;
+        return true;
     }
 
-    std::uint8_t byte;
+    std::string token;
+
     if (line[0] == '.') {
-        line = line.substr(1);
-        trimWhiteSpaces(line);
-        byte = parseOperand(line);
-        line = std::to_string(byte);
-        return;
+        token = line.substr(1);
+        trimWhiteSpaces(token);
+        output[outputIndex++] = parseOperand(token);
+        return true;
     }
 
     size_t token2Beg, token2End, token1End = line.find_first_of(" ");
-    std::string token = line.substr(0, token1End); // TODO: change token to string_view
+    token = line.substr(0, token1End); // TODO: change token to string_view
 
     MnemonicDesc desc;
     if (isMnemonic(token, desc)) {
         switch (desc.type) {
         case InsType::Simple:
             if (token1End != line.npos) {
-                // Error: More than one instruction in line
+                return false; // Error: More than one instruction in line
             }
-            line = std::to_string(desc.byte);
+            output[outputIndex++] = desc.byte;
             break;
         case InsType::Complex:
             if (token1End == line.npos) {
-                // Error: Missing instruction operand
+                return false; // Error: Missing instruction operand
             }
             token2Beg = line.find_first_not_of(" ", token1End);
             token2End = line.find_first_of(" ", token2Beg);
             token = line.substr(token2Beg, token2End - token2Beg + 1);
-            byte = parseOperand(token);
-            line = std::to_string(desc.byte | byte);
+            output[outputIndex++] = desc.byte | parseOperand(token);
             break;
         case InsType::TwoByte:
             if (token1End == line.npos) {
-                // Error: Missing instruction operand
+                return false; // Error: Missing instruction operand
             }
             token2Beg = line.find_first_not_of(" ", token1End);
             token2End = line.find_first_of(" ", token2Beg);
@@ -216,92 +207,151 @@ void Assembler::parseLine(std::string& line)
                 // Should be 2 operands
                 token = token.substr(0, token.size() - 1);
                 auto ret = m_symbolTable.find(token);
-                byte = ret != m_symbolTable.end() ? ret->second : parseOperand(token);
-                desc.byte |= byte;
+                output[outputIndex++] = desc.byte | (ret != m_symbolTable.end() ? ret->second : parseOperand(token));
                 token = line.substr(token2End + 1);
                 ret = m_symbolTable.find(token);
-                byte = ret != m_symbolTable.end() ? ret->second : parseOperand(token);
-                line = std::to_string(desc.byte) + " " + std::to_string(byte);
+                output[outputIndex++] = ret != m_symbolTable.end() ? ret->second : parseOperand(token);
             }
             else {
                 // TODO: not sure if this could only be address for here
                 auto ret = m_symbolTable.find(token);
                 std::uint16_t addr = ret != m_symbolTable.end() ? ret->second : parseOperand(token);
-                byte = addr & 0x00FF;
+                output[outputIndex + 1] = addr & 0x00FF;
                 addr &= 0x0F00;
                 addr >>= 8;
-                line = std::to_string(desc.byte | addr) + " " + std::to_string(byte);
+                output[outputIndex] = desc.byte | addr;
+                outputIndex += 2;
             }
             break;
         }
     }
     else {
-        // Error
+        return false; // Error
     }
+
+    return true;
 }
 
 std::uint16_t Assembler::parseOperand(const std::string& token)
 {
+    std::uint16_t word = 0u;
     switch (token[0]) {
-    case 'R': {
-        if (token.size() < 2 || token.size() > 3)
-            return 0u; // Error
-        // TODO: do sth better here
-        if (token[1] >= '0' && token[1] <= '9') {
-            if (token.size() > 2)
-                return (token[1] - '0') * 10 + (token[2] - '0');
-            return token[1] - '0';
-        }
-        if (token[1] >= 'A' && token[1] <= 'F')
-            return token[1] - 'A' + 10;
-        if (token[1] >= 'a' && token[1] <= 'f')
-            return token[1] - 'a' + 10;
-
-        return 0u; // Error: Wrong register number
-    }
-    case 'P': {
-        if (token.size() != 2)
-            return 0u; // Error
-
-        if (token[1] < '0' || token[1] > '8')
-            return 0u; // Error: Wrong registers pair number
-
-        return 2 * (token[1] - '0');
-    }
-    case '$': {
-        std::uint16_t word = 0u;
-        if (hexStrToUint8(token.c_str() + 1, word))
-            return word;
-        else {
-            // Error
-            return 0u;
-        }
-    }
-    case '0': {
+    case 'R':
+        parseRegisterOperand(token, word);
+        return word;
+    case 'P':
+        parseRegisterPairOperand(token, word);
+        return word;
+    case '$':
+        parseHexNumberOperand(token, word);
+        return word;
+    case '0':
         if (token.size() == 1)
             break;
 
-        std::uint16_t word = 0u;
-        if (octStrToUint8(token.c_str() + 1, word))
-            return word;
-        else {
-            // Error
-            return 0u;
-        }
-    }
-    case '%': {
-        std::uint16_t word = 0u;
-        if (binStrToUint8(token.c_str() + 1, word))
-            return word;
-        else {
-            // Error
-            return 0u;
-        }
-    }
+        parseOctNumberOperand(token, word);
+        return word;
+    case '%':
+        parseBinNumberOperand(token, word);
+        return word;
     }
 
     return std::atoi(token.c_str());
 }
+
+bool Assembler::parseRegisterOperand(const std::string& token, uint16_t& value)
+{
+    if (token.size() < 2 || token.size() > 3)
+        return false;
+
+    if (token[1] >= '0' && token[1] <= '9') {
+        if (token.size() > 2)
+            if (token[2] >= '0' && token[2] <= '9')
+                value = (token[1] - '0') * 10 + (token[2] - '0');
+            else
+                return false;
+        else 
+            value = token[1] - '0';
+    }
+
+    if (token[1] >= 'A' && token[1] <= 'F')
+        value = token[1] - 'A' + 10;
+    else if (token[1] >= 'a' && token[1] <= 'f')
+        value = token[1] - 'a' + 10;
+    else
+        return false;
+    
+    return true;
+}
+
+bool Assembler::parseRegisterPairOperand(const std::string& token, uint16_t& value)
+{
+    if (token.size() != 2)
+        return false;
+
+    if (token[1] < '0' || token[1] > '7')
+        return false;
+
+
+    value = 2 * (token[1] - '0');
+    return true;
+}
+
+bool Assembler::parseHexNumberOperand(const std::string& token, uint16_t& value)
+{
+    size_t length = token.size();
+    if (length == 6 || length == 0)
+        return false; // String representation of a to big number or empty
+
+    value = 0;
+    for (size_t i = 1; i < length; ++i) {
+        if (token[i] >= '0' && token[i] <= '9')
+            value += (1 << 4 * (length - i - 1)) * (token[i] - '0');
+        else if (token[i] >= 'a' && token[i] <= 'f')
+            value += (1 << 4 * (length - i - 1)) * (token[i] - 'a' + 10);
+        else if (token[i] >= 'A' && token[i] <= 'F')
+            value += (1 << 4 * (length - i - 1)) * (token[i] - 'A' + 10);
+        else
+            return false; // Illformed bin number
+    }
+
+    return true;
+}
+
+bool Assembler::parseBinNumberOperand(const std::string& token, uint16_t& value)
+{
+    size_t length = token.size();
+    if (length == 18 || length == 0)
+        return false; // String representation of a to big number or empty
+
+    value = 0;
+    for (size_t i = 1; i < length; ++i) {
+        if (token[i] == '1')
+            value += 1 << (length - i - 1);
+        else if (token[i] != '0')
+            return false; // Illformed bin number
+    }
+
+    return true;
+}
+
+bool Assembler::parseOctNumberOperand(const std::string& token, uint16_t& value)
+{
+    size_t length = token.size();
+    if (length == 8 || length == 0)
+        return false; // String representation of a to big number or empty
+
+    value = 0;
+    for (size_t i = 0; i < length; ++i) {
+        if (token[i] >= '0' && token[i] <= '7')
+            value += (1 << 3 * (length - i - 1)) * (token[i] - '0');
+        else
+            return false; // Illformed bin number
+    }
+
+    return true;
+}
+
 
 bool Assembler::isMnemonic(const std::string& token, MnemonicDesc& desc)
 {

@@ -2,8 +2,6 @@
 
 #include <gtest/gtest.h>
 
-#include "assembler/source/conversion_functions.hpp"
-
 template<>
 struct WhiteBox<Assembler> {
     static uint8_t callParseOperand(Assembler& assembler, const std::string& token) {
@@ -51,5 +49,10 @@ TEST_F(AssemblerInternalsTests, givenValidOperandWhenParseOperandThenCorrectValu
     EXPECT_EQ(WhiteBox<Assembler>::callParseOperand(assembler, "RF"), 15u);
 
     // Register Pairs
-    
+    EXPECT_EQ(WhiteBox<Assembler>::callParseOperand(assembler, "P0"), 0u);
+    EXPECT_EQ(WhiteBox<Assembler>::callParseOperand(assembler, "P1"), 2u);
+    EXPECT_EQ(WhiteBox<Assembler>::callParseOperand(assembler, "P2"), 4u);
+    EXPECT_EQ(WhiteBox<Assembler>::callParseOperand(assembler, "P5"), 10u);
+    EXPECT_EQ(WhiteBox<Assembler>::callParseOperand(assembler, "P6"), 12u);
+    EXPECT_EQ(WhiteBox<Assembler>::callParseOperand(assembler, "P7"), 14u);
 }
