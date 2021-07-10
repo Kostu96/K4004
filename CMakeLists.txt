@@ -29,23 +29,4 @@ set(TARGET_EMULATOR_NAME emulator_lib)
 add_subdirectory(emulator)
 
 set(TARGET_APP_NAME K4004_app)
-#set(K4004_APP_SOURCES
-#    ${CMAKE_CURRENT_SOURCE_DIR}/app/app.cpp
-#    ${CMAKE_CURRENT_SOURCE_DIR}/app/app.hpp
-#    ${CMAKE_CURRENT_SOURCE_DIR}/app/main.cpp
-#    ${CMAKE_CURRENT_SOURCE_DIR}/app/olc/olcPixelGameEngine.cpp
- #   ${CMAKE_CURRENT_SOURCE_DIR}/app/olc/olcPixelGameEngine.h
-#)
-
-#add_executable(${TARGET_APP_NAME} ${K4004_APP_SOURCES})
-#source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/app PREFIX source FILES ${K4004_APP_SOURCES})
-
-#target_link_libraries(${TARGET_APP_NAME} PRIVATE
-#    ${TARGET_EMULATOR_NAME}
-#    ${TARGET_ASSEMBLER_NAME}
-#)
-
-#if(MSVC)
-#    set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${TARGET_APP_NAME})
-#    set_target_properties(${TARGET_APP_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-#endif()
+add_subdirectory(app)

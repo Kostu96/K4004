@@ -1,12 +1,13 @@
 #pragma once
-#include "olc/olcPixelGameEngine.h"
-#include "MCS4.hpp"
+#include "app/third_party/olc/olcPixelGameEngine.h"
+#include "emulator/source/MCS4.hpp"
 
 class App :
     public olc::PixelGameEngine
 {
 public:
     App() {
+        // TODO: do sth to cap fps
         sAppName = "Intel4004 Emulator";
     }
 private:
@@ -16,5 +17,5 @@ private:
     void printROM();
     void printStack();
 
-    mcs4::MCS4 emulator;
+    MCS4 emulator;
 };

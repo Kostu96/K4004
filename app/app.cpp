@@ -1,22 +1,22 @@
-#include "app.hpp"
+#include "app/app.hpp"
 
 bool App::OnUserCreate()
 {
-    emulator.loadProgram("programs/4bit_addition.asm");
+    //emulator.loadProgram("programs/4bit_addition.asm");
     return true;
 }
 
 bool App::OnUserUpdate(float fElapsedTime)
 {
     Clear(olc::DARK_CYAN);
-    printROM();
-    printStack();
+    //printROM();
+    //printStack();*/
     return true;
 }
 
 void App::printROM()
 {
-    auto rom = emulator.getROMData();
+    /*auto rom = emulator.getROMData();
     constexpr auto romSize = mcs4::MCS4::getROMSize();
     constexpr Byte numberOfColumns = 16;
     constexpr Byte numberOfRows = romSize / numberOfColumns;
@@ -33,7 +33,7 @@ void App::printROM()
         ptr += std::sprintf(ptr, " %02x", rom[i]);
     }
 
-    DrawStringDecal({ 1, 1 }, buf, olc::BLACK);
+    DrawStringDecal({ 1, 1 }, buf, olc::BLACK);*/
 }
 
 void App::printStack()

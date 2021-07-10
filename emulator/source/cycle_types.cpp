@@ -1,22 +1,18 @@
 #pragma once
-#include "cycle_types.hpp"
+#include "emulator/source/cycle_types.hpp"
 
-namespace mcs4 {
-
-    CycleType& operator++(CycleType& other)
+CycleType& operator++(CycleType& other)
+{
+    switch (other)
     {
-        switch (other)
-        {
-        case CycleType::A1: return other = CycleType::A2;
-        case CycleType::A2: return other = CycleType::A3;
-        case CycleType::A3: return other = CycleType::M1;
-        case CycleType::M1: return other = CycleType::M2;
-        case CycleType::M2: return other = CycleType::X1;
-        case CycleType::X1: return other = CycleType::X2;
-        case CycleType::X2: return other = CycleType::X3;
-        case CycleType::X3: return other = CycleType::A1;
-        }
-        return other = CycleType::Invalid;
+    case CycleType::A1: return other = CycleType::A2;
+    case CycleType::A2: return other = CycleType::A3;
+    case CycleType::A3: return other = CycleType::M1;
+    case CycleType::M1: return other = CycleType::M2;
+    case CycleType::M2: return other = CycleType::X1;
+    case CycleType::X1: return other = CycleType::X2;
+    case CycleType::X2: return other = CycleType::X3;
+    case CycleType::X3: return other = CycleType::A1;
     }
-
-} // namespace mcs4
+    return other = CycleType::Invalid;
+}
