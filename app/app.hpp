@@ -7,7 +7,6 @@ class App :
 {
 public:
     App() {
-        // TODO: do sth to cap fps
         sAppName = "Intel4004 Emulator";
     }
 private:
@@ -15,7 +14,7 @@ private:
     bool OnUserUpdate(float fElapsedTime) override;
 
     void printROM();
-    void printStack();
+    void printCPU();
 
     MCS4 emulator;
 };

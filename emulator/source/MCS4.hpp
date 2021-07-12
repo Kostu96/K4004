@@ -2,7 +2,7 @@
 #include "emulator/source/K4004.hpp"
 #include "emulator/source/rom.hpp"
 
-enum class CycleType : Byte;
+enum class CycleType : uint8_t;
 
 class MCS4
 {
@@ -10,11 +10,12 @@ public:
     MCS4();
     bool loadProgram(const char* filename);
 
-    const Byte* getROMData() const { return m_rom.getRomContents(); }
-    constexpr static Word getROMSize() { return ROM::ROM_SIZE; }
+    const uint8_t* getROMData() const { return m_rom.getRomContents(); }
+    constexpr static uint16_t getROMSize() { return ROM::ROM_SIZE; }
+    const K4004& getCPU() const { return m_cpu; }
 private:
     CycleType m_currentCycle;
-    Byte m_bus = 0x0;
+    uint8_t m_bus = 0x0;
     ROM m_rom{};
     K4004 m_cpu{};
 };
