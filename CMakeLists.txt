@@ -22,6 +22,8 @@ project(K4004 LANGUAGES CXX)
 
 add_subdirectory(third_party)
 
+set(SHARED_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shared)
+
 set(TARGET_ASSEMBLER_NAME assembler_lib)
 add_subdirectory(assembler)
 

@@ -1,5 +1,5 @@
 #pragma once
-#include "assembler/source/global.hpp"
+#include "shared/source/whitebox.hpp"
 
 #include <cinttypes>
 #include <string>
