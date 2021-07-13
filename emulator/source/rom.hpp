@@ -12,7 +12,7 @@ public:
 
     void connect(uint8_t* bus);
     void cycle(CycleType currentCycle);
-    void load(uint8_t startingAddress, uint8_t* objectCode, uint8_t objectCodeLength);
+    void load(uint8_t startingAddress, const uint8_t* objectCode, uint8_t objectCodeLength);
     void reset();
 
     const uint8_t* getRomContents() const { return m_rom; }

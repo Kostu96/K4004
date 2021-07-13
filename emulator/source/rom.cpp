@@ -36,7 +36,7 @@ void ROM::cycle(CycleType currentCycle)
     }
 }
 
-void ROM::load(uint8_t startingAddress, uint8_t* objectCode, uint8_t objectCodeLength)
+void ROM::load(uint8_t startingAddress, const uint8_t* objectCode, uint8_t objectCodeLength)
 {
     for (uint8_t i = 0; i < objectCodeLength; ++i)
         m_rom[startingAddress++] = objectCode[i];

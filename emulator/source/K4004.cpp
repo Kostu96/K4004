@@ -60,18 +60,17 @@ void K4004::connect(uint8_t* bus)
 
 void K4004::cycle(CycleType currentCycle)
 {
-    auto PC = getStack().getPC();
     uint8_t tempByte1, tempByte2;
     switch (currentCycle) {
     case CycleType::A1:
-        *m_bus = PC & 0x00F;
+        *m_bus = m_PC & 0x00F;
         break;
     case CycleType::A2:
-        *m_bus = (PC >> 4) & 0x00F;
+        *m_bus = (m_PC >> 4) & 0x00F;
         break;
     case CycleType::A3:
-        *m_bus = (PC >> 8) & 0x00F;
-        ++PC;
+        *m_bus = (m_PC >> 8) & 0x00F;
+        ++m_PC;
         break;
     case CycleType::M1:
         m_IR = (*m_bus << 4) & 0xF0;
@@ -170,8 +169,8 @@ void K4004::cycle(CycleType currentCycle)
                 }
                 else {
                     m_is2ByteIns = 0x0;
-                    PC = ((opcode & 0x0F) << 8) & 0xF00;
-                    PC |= m_IR;
+                    m_PC = ((opcode & 0x0F) << 8) & 0xF00;
+                    m_PC |= m_IR;
                 }
             }
             else if ((opcode & INS_JMS_MASK) == opcode) {
@@ -237,31 +236,21 @@ void K4004::reset()
     m_is2ByteIns = 0x0;
     m_IRCopyFor2ByteIns = m_IR = 0x00;
     std::memset(m_registers, 0, sizeof m_registers / sizeof m_registers[0]);
-    m_stack.reset();
-}
-
-K4004::Stack::Stack()
-{
-    reset();
-}
-
-void K4004::Stack::reset()
-{
     m_PC = m_stack[0] = m_stack[1] = m_stack[2] = 0x000;
 }
 
-void K4004::Stack::push(uint16_t address)
+void K4004::pushStack(uint16_t address)
 {
-    m_stack[2] = m_stack[1] & ADDRESS_BITMASK;
-    m_stack[1] = m_stack[0] & ADDRESS_BITMASK;
-    m_stack[0] = m_PC & ADDRESS_BITMASK;
-    m_PC = address & ADDRESS_BITMASK;
+    m_stack[2] = m_stack[1] & BITMASK_12BITS;
+    m_stack[1] = m_stack[0] & BITMASK_12BITS;
+    m_stack[0] = m_PC & BITMASK_12BITS;
+    m_PC = address & BITMASK_12BITS;
 }
 
-void K4004::Stack::pull()
+void K4004::pullStack()
 {
-    m_PC = m_stack[0] & ADDRESS_BITMASK;
-    m_stack[0] = m_stack[1] & ADDRESS_BITMASK;
-    m_stack[1] = m_stack[2] & ADDRESS_BITMASK;
-    m_stack[2] = 0x0; // TODO: Could useful to return that
+    m_PC = m_stack[0] & BITMASK_12BITS;
+    m_stack[0] = m_stack[1] & BITMASK_12BITS;
+    m_stack[1] = m_stack[2] & BITMASK_12BITS;
+    m_stack[2] = 0x0; // TODO: Could be useful to return that.
 }
