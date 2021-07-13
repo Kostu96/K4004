@@ -50,9 +50,10 @@ void Emulator::step(size_t times)
             m_cpu.cycle(m_currentCycle);
             break;
         case CycleType::X1:
+            m_cpu.cycle(m_currentCycle);
+            break;
         case CycleType::X2:
         case CycleType::X3:
-            m_cpu.cycle(m_currentCycle);
             break;
         }
         ++m_currentCycle;

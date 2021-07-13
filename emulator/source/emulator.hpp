@@ -12,7 +12,7 @@ public:
     Emulator();
     bool loadProgram(const char* filename);
     void loadProgram(const uint8_t* bytecode, std::size_t codeSize);
-    void step(size_t times);
+    void step(size_t times = 1u);
 
     const uint8_t* getROMData() const { return m_rom.getRomContents(); }
     constexpr static uint16_t getROMSize() { return ROM::ROM_SIZE; }

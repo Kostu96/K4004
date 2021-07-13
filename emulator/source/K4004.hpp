@@ -23,7 +23,7 @@ public:
     uint8_t getAcc() const { return m_Acc; }
     uint8_t getCY() const { return m_CY; }
     uint8_t getIR() const { return m_IR; }
-    const uint16_t* getStackContents() const { return m_stack; }
+    const uint16_t* getStack() const { return m_stack; }
     uint16_t getPC() const { return m_PC; }
     const uint8_t* getRegisters() const { return m_registers; }
 private:

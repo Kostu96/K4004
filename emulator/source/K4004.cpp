@@ -2,6 +2,7 @@
 #include "cycle_types.hpp"
 #include <cstring>
 
+// Make it shared with assembler and tests
 constexpr uint8_t INS_NOP = 0x00;
 constexpr uint8_t INS_WRM = 0xE0;
 constexpr uint8_t INS_WMP = 0xE1;
@@ -130,7 +131,13 @@ void K4004::cycle(CycleType currentCycle)
         case INS_TCS: break;
         case INS_STC: break;
         case INS_DAA: break;
-        case INS_KBP: break;
+        case INS_KBP:
+            if (m_Acc == 0b0000u) break;
+            if (m_Acc == 0b0001u) break;
+            if (m_Acc == 0b0010u) break;
+            if (m_Acc == 0b0100u) { m_Acc = 0b0011u; break; }
+            if (m_Acc == 0b1000u) { m_Acc = 0b0100u; break; }
+            m_Acc = 0b1111u; break;
         case INS_DCL: break;
         default:
             if ((opcode & INS_JCN_MASK) == opcode) {
