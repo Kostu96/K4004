@@ -1,10 +1,10 @@
 set(K4004_EMULATOR_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/cycle_types.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/cycle_types.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/emulator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/emulator.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/K4004.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/K4004.hpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/MCS4.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/MCS4.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rom.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rom.hpp
     ${SHARED_DIR}/source/whitebox.hpp

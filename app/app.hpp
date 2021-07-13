@@ -1,6 +1,7 @@
 #pragma once
 #include "app/third_party/olc/olcPixelGameEngine.h"
-#include "emulator/source/MCS4.hpp"
+
+#include "emulator/source/emulator.hpp"
 
 class App :
     public olc::PixelGameEngine
@@ -16,5 +17,5 @@ private:
     void printROM();
     void printCPU();
 
-    MCS4 emulator;
+    Emulator emulator;
 };

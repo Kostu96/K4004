@@ -4,10 +4,10 @@
 
 enum class CycleType : uint8_t;
 
-class MCS4
+class Emulator
 {
 public:
-    MCS4();
+    Emulator();
     bool loadProgram(const char* filename);
 
     const uint8_t* getROMData() const { return m_rom.getRomContents(); }
