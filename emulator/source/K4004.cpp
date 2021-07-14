@@ -235,7 +235,7 @@ void K4004::CMC()
 
 void K4004::CMA()
 {
-    m_Acc = ~m_Acc;
+    m_Acc = ~m_Acc & 0x0F;
 }
 
 void K4004::RAL()
@@ -336,7 +336,7 @@ void K4004::ISZ()
 void K4004::ADD()
 {
     uint8_t temp = m_IR & 0x0F;
-    temp = getRegisterValue(temp);
+    temp = getRegisterValue(temp) + m_CY;
     temp += m_Acc;
     m_Acc = temp & 0x0F;
     m_CY = temp >> 4;
@@ -344,6 +344,12 @@ void K4004::ADD()
 
 void K4004::SUB()
 {
+    CMC();
+    uint8_t temp = m_IR & 0x0F;
+    temp = (~getRegisterValue(temp) & 0x0F) + m_CY;
+    temp += m_Acc;
+    m_Acc = temp & 0x0F;
+    m_CY = (temp >> 4) & 1u;
 }
 
 void K4004::LD()

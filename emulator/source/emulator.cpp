@@ -34,3 +34,9 @@ void Emulator::step(size_t times)
         m_cpu.step();
     }
 }
+
+void Emulator::reset()
+{
+    m_cpu.reset();
+    m_rom.reset();
+}

@@ -47,6 +47,10 @@ struct EmulatorInstructionsTests : public testing::Test {
         ASSERT_NE(registers, nullptr);
     }
 
+    void TearDown() override {
+        emulator.reset();
+    }
+
     Emulator emulator;
     uint8_t* acc = nullptr;
     uint8_t* CY = nullptr;
@@ -626,10 +630,11 @@ TEST_F(EmulatorInstructionsTests, XCHTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, ADDTest) {
-    const uint8_t prog[] = { 0x82, 0x82 };
+    const uint8_t prog[] = { 0x82, 0x82, 0x82 };
     const size_t size = sizeof(prog) / sizeof(uint8_t);
     emulator.loadProgram(prog, size);
 
+    // Add
     *acc = 0x07u;
     registers[1] = 0x20u;
     emulator.step();
@@ -643,10 +648,54 @@ TEST_F(EmulatorInstructionsTests, ADDTest) {
     EXPECT_EQ(*acc, 0x02u + 0x07u);
     EXPECT_EQ(*CY, 0u);
 
+    // Add with overflow
     registers[1] = 0xF0u;
     emulator.step();
     EXPECT_EQ(*pc, 0x002u);
     EXPECT_EQ(*acc, (0x09u + 0x0Fu) & 0x0F);
+    EXPECT_EQ(*CY, 1u);
+
+    // Add with carry
+    registers[1] = 0x20u;
+    emulator.step();
+    EXPECT_EQ(*pc, 0x003u);
+    EXPECT_EQ(*acc, 0x08u + 0x02u + 1u);
+    EXPECT_EQ(*CY, 0u);
+}
+
+TEST_F(EmulatorInstructionsTests, SUBTest) {
+    const uint8_t prog[] = { 0x92, 0x92, 0x92 };
+    const size_t size = sizeof(prog) / sizeof(uint8_t);
+    emulator.loadProgram(prog, size);
+
+    // Sub
+    *acc = 0x07u;
+    registers[1] = 0x20u;
+    emulator.step();
+
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], i == 1 ? 0x20 : 0x00u);
+
+    EXPECT_EQ(*pc, 0x001u);
+    EXPECT_EQ(*acc, 0x07u - 0x02u);
+    EXPECT_EQ(*CY, 1u);
+
+    // Sub with overflow
+    *CY = 0u;
+    registers[1] = 0xF0u;
+    emulator.step();
+    EXPECT_EQ(*pc, 0x002u);
+    EXPECT_EQ(*acc, (0x05u - 0x0Fu) & 0x0F);
+    EXPECT_EQ(*CY, 0u);
+
+    // Sub with borrow
+    *CY = 1u;
+    registers[1] = 0x30u;
+    emulator.step();
+    EXPECT_EQ(*pc, 0x003u);
+    EXPECT_EQ(*acc, 0x06u - 0x03u - 1u);
     EXPECT_EQ(*CY, 1u);
 }
 
@@ -660,6 +709,5 @@ constexpr uint8_t INS_JUN_MASK = 0x4F;
 constexpr uint8_t INS_JMS_MASK = 0x5F;
 constexpr uint8_t INS_INC_MASK = 0x6F;
 constexpr uint8_t INS_ISZ_MASK = 0x7F;
-constexpr uint8_t INS_SUB_MASK = 0x9F;
 constexpr uint8_t INS_LD_MASK = 0xAF;
 constexpr uint8_t INS_BBL_MASK = 0xCF;*/
