@@ -146,9 +146,9 @@ uint8_t K4004::getRegisterValue(uint8_t reg)
 
 void K4004::setRegisterValue(uint8_t reg, uint8_t value)
 {
-    bool isEven = reg % 2;
-    m_registers[reg / 2] &= (isEven ? 0x0F : 0xF0);
-    m_registers[reg / 2] |= (value << (isEven ? 4 : 0)) & (isEven ? 0xF0 : 0x0F);
+    bool isOdd = reg % 2;
+    m_registers[reg / 2] &= (isOdd ? 0xF0 : 0x0F);
+    m_registers[reg / 2] |= (value << (isOdd ? 0 : 4)) & (isOdd ? 0x0F : 0xF0);
 }
 
 void K4004::WRM()

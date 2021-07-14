@@ -606,6 +606,25 @@ TEST_F(EmulatorInstructionsTests, LDTest) {
     EXPECT_EQ(*acc, 0x02u);
 }
 
+TEST_F(EmulatorInstructionsTests, XCHTest) {
+    const uint8_t prog[] = { 0xB2 };
+    const size_t size = sizeof(prog) / sizeof(uint8_t);
+    emulator.loadProgram(prog, size);
+
+    *acc = 0x07;
+    registers[1] = 0x24;
+    emulator.step();
+
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], i == 1 ? 0x74 : 0x00u);
+    EXPECT_EQ(*CY, 0u);
+
+    EXPECT_EQ(*pc, 0x001u);
+    EXPECT_EQ(*acc, 0x02u);
+}
+
 /* TODO: Make tests for these:
 constexpr uint8_t INS_JCN_MASK = 0x1F;
 constexpr uint8_t INS_FIM_MASK = 0x2E;
