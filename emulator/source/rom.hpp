@@ -1,6 +1,4 @@
 #pragma once
-#include "emulator/source/cycle_types.hpp"
-
 #include <cstring>
 
 class ROM
@@ -11,13 +9,11 @@ public:
     ROM();
 
     void connect(uint8_t* bus);
-    void cycle(CycleType currentCycle);
     void load(uint8_t startingAddress, const uint8_t* objectCode, uint8_t objectCodeLength);
     void reset();
+    uint8_t getByte(uint16_t address) const { return m_rom[address]; }
 
     const uint8_t* getRomContents() const { return m_rom; }
 private:
-    uint16_t m_address : 12;
     uint8_t m_rom[ROM_SIZE]; // TODO: Make it proper size - x16
-    uint8_t* m_bus = nullptr;
 };

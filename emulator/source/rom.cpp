@@ -6,11 +6,6 @@ ROM::ROM()
     reset();
 }
 
-void ROM::connect(uint8_t* bus)
-{
-    m_bus = bus;
-}
-
 void ROM::cycle(CycleType currentCycle)
 {
     switch (currentCycle)

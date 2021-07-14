@@ -19,8 +19,6 @@ struct WhiteBox<K4004> {
     static uint8_t* gerRegisters(K4004& cpu) {
         return cpu.m_registers;
     }
-
-    static constexpr uint8_t getRegistersSize() { return K4004::REGISTERS_SIZE; }
 };
 
 template<>
@@ -62,8 +60,7 @@ TEST_F(EmulatorInstructionsTests, NOPTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);
 }
 
@@ -79,8 +76,7 @@ TEST_F(EmulatorInstructionsTests, WRMTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -96,8 +92,7 @@ TEST_F(EmulatorInstructionsTests, WMPTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -113,8 +108,7 @@ TEST_F(EmulatorInstructionsTests, WRRTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -130,8 +124,7 @@ TEST_F(EmulatorInstructionsTests, WR0Test) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -147,8 +140,7 @@ TEST_F(EmulatorInstructionsTests, WR1Test) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -164,8 +156,7 @@ TEST_F(EmulatorInstructionsTests, WR2Test) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -181,8 +172,7 @@ TEST_F(EmulatorInstructionsTests, WR3Test) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -198,8 +188,7 @@ TEST_F(EmulatorInstructionsTests, SBMTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -215,8 +204,7 @@ TEST_F(EmulatorInstructionsTests, RDMTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -232,8 +220,7 @@ TEST_F(EmulatorInstructionsTests, RDRTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -249,8 +236,7 @@ TEST_F(EmulatorInstructionsTests, ADMTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -266,8 +252,7 @@ TEST_F(EmulatorInstructionsTests, RD0Test) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -283,8 +268,7 @@ TEST_F(EmulatorInstructionsTests, RD1Test) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -300,8 +284,7 @@ TEST_F(EmulatorInstructionsTests, RD2Test) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -317,8 +300,7 @@ TEST_F(EmulatorInstructionsTests, RD3Test) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -334,8 +316,7 @@ TEST_F(EmulatorInstructionsTests, CLBTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -351,8 +332,7 @@ TEST_F(EmulatorInstructionsTests, CLCTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -368,8 +348,7 @@ TEST_F(EmulatorInstructionsTests, IACTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -385,8 +364,7 @@ TEST_F(EmulatorInstructionsTests, CMCTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -402,8 +380,7 @@ TEST_F(EmulatorInstructionsTests, CMATest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -419,8 +396,7 @@ TEST_F(EmulatorInstructionsTests, RALTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -436,8 +412,7 @@ TEST_F(EmulatorInstructionsTests, RARTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -453,8 +428,7 @@ TEST_F(EmulatorInstructionsTests, TCCTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -470,8 +444,7 @@ TEST_F(EmulatorInstructionsTests, DACTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -487,8 +460,7 @@ TEST_F(EmulatorInstructionsTests, TCSTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -504,8 +476,7 @@ TEST_F(EmulatorInstructionsTests, STCTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -521,8 +492,7 @@ TEST_F(EmulatorInstructionsTests, DAATest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 
@@ -533,8 +503,7 @@ TEST_F(EmulatorInstructionsTests, KBPTest) {
 
     emulator.step();
 
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
@@ -585,8 +554,7 @@ TEST_F(EmulatorInstructionsTests, DCLTest) {
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*acc, 0x00u);
-    constexpr uint8_t regSize = WhiteBox<K4004>::getRegistersSize();
-    for (uint8_t i = 0; i < regSize; ++i)
+    for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);*/
 }
 

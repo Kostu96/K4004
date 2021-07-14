@@ -4,8 +4,6 @@
 
 #include "shared/source/whitebox.hpp"
 
-enum class CycleType : uint8_t;
-
 class Emulator
 {
 public:
@@ -18,8 +16,6 @@ public:
     constexpr static uint16_t getROMSize() { return ROM::ROM_SIZE; }
     const K4004& getCPU() const { return m_cpu; }
 private:
-    CycleType m_currentCycle;
-    uint8_t m_bus = 0x0;
     ROM m_rom;
     K4004 m_cpu;
 

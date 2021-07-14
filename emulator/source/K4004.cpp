@@ -1,5 +1,6 @@
-#include "K4004.hpp"
-#include "cycle_types.hpp"
+#include "emulator/source/K4004.hpp"
+#include "emulator/source/rom.hpp"
+
 #include <cstring>
 
 // Make it shared with assembler and tests
@@ -49,19 +50,15 @@ constexpr uint8_t INS_XCH_MASK = 0xBF;
 constexpr uint8_t INS_BBL_MASK = 0xCF;
 constexpr uint8_t INS_LDM_MASK = 0xDF;
 
-K4004::K4004()
+K4004::K4004(ROM& rom) :
+    m_rom(rom)
 {
     reset();
 }
 
-void K4004::connect(uint8_t* bus)
+void K4004::step()
 {
-    m_bus = bus;
-}
-
-void K4004::cycle(CycleType currentCycle)
-{
-    uint8_t tempByte1, tempByte2;
+    /*uint8_t tempByte1, tempByte2;
     switch (currentCycle) {
     case CycleType::A1:
         *m_bus = m_PC & 0x00F;
@@ -230,20 +227,17 @@ void K4004::cycle(CycleType currentCycle)
             }
         }
         break;
-    }
-    case CycleType::X2: break;
-    case CycleType::X3: break;
-    }
+    }*/
 }
 
 void K4004::reset()
 {
-    m_Acc = 0x0;
-    m_CY = 0x0;
-    m_is2ByteIns = 0x0;
-    m_IRCopyFor2ByteIns = m_IR = 0x00;
-    std::memset(m_registers, 0, sizeof m_registers / sizeof m_registers[0]);
-    m_PC = m_stack[0] = m_stack[1] = m_stack[2] = 0x000;
+    m_Acc = 0u;
+    m_CY = 0u;
+    m_is2ByteIns = 0u;
+    m_IRCopyFor2ByteIns = m_IR = 0u;
+    std::memset(m_registers, 0, sizeof(m_registers) / sizeof(m_registers[0]));
+    m_PC = m_stack[0] = m_stack[1] = m_stack[2] = 0u;
 }
 
 void K4004::pushStack(uint16_t address)
@@ -259,5 +253,10 @@ void K4004::pullStack()
     m_PC = m_stack[0] & BITMASK_12BITS;
     m_stack[0] = m_stack[1] & BITMASK_12BITS;
     m_stack[1] = m_stack[2] & BITMASK_12BITS;
-    m_stack[2] = 0x0; // TODO: Could be useful to return that.
+    m_stack[2] = 0u; // TODO: Could be useful to return that.
+}
+
+void K4004::WRM()
+{
+
 }
