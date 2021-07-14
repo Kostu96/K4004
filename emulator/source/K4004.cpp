@@ -45,7 +45,7 @@ constexpr uint8_t INS_INC_MASK = 0x6F;
 constexpr uint8_t INS_ISZ_MASK = 0x7F;
 constexpr uint8_t INS_ADD_MASK = 0x8F;
 constexpr uint8_t INS_SUB_MASK = 0x9F;
-constexpr uint8_t INS_LD_MASK = 0xAF;
+constexpr uint8_t INS_LD_MASK  = 0xAF;
 constexpr uint8_t INS_XCH_MASK = 0xBF;
 constexpr uint8_t INS_BBL_MASK = 0xCF;
 constexpr uint8_t INS_LDM_MASK = 0xDF;
@@ -60,8 +60,11 @@ void K4004::step()
 {
     m_IR = m_rom.getByte(m_PC++);
     uint8_t opcode;
-    if (m_IR == 0x00u || m_IR > 0xDF)
+    uint8_t irHP = (m_IR >> 4) & 0x0F;
+    if (irHP == 0u || irHP > 0xd)
         opcode = m_IR;
+    else if (irHP == 2 || irHP == 3)
+        opcode = m_IR | 0x0E;
     else
         opcode = m_IR | 0x0F;
 
@@ -225,7 +228,9 @@ void K4004::CLC()
 
 void K4004::IAC()
 {
-    m_CY = ++m_Acc == 0u ? 1u : 0u;
+    ++m_Acc;
+    m_Acc &= 0x0Fu;
+    m_CY = m_Acc == 0u ? 1u : 0u;
 }
 
 void K4004::CMC()
@@ -241,8 +246,8 @@ void K4004::CMA()
 void K4004::RAL()
 {
     uint8_t tempByte1 = m_CY;
-    m_CY = (m_Acc & 0x8) >> 4;
-    m_Acc = m_Acc << 1;
+    m_CY = (m_Acc & 0x8) >> 3;
+    m_Acc = (m_Acc << 1) & 0x0Fu;
     m_Acc |= tempByte1;
 }
 
@@ -250,16 +255,21 @@ void K4004::RAR()
 {
     uint8_t tempByte1 = m_CY;
     m_CY = m_Acc & 0x1;
-    m_Acc = m_Acc >> 1;
-    m_Acc |= tempByte1 << 4;
+    m_Acc = (m_Acc >> 1) & 0x0Fu;
+    m_Acc |= tempByte1 << 3;
 }
 
 void K4004::TCC()
 {
+    m_Acc = m_CY;
+    m_CY = 0u;
 }
 
 void K4004::DAC()
 {
+    --m_Acc;
+    m_Acc &= 0x0Fu;
+    m_CY = m_Acc == 0x0F ? 0u : 1u;
 }
 
 void K4004::TCS()
@@ -268,6 +278,7 @@ void K4004::TCS()
 
 void K4004::STC()
 {
+    m_CY = 1u;
 }
 
 void K4004::DAA()

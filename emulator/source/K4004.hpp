@@ -73,7 +73,7 @@ private:
     void BBL();
     void LDM();
 
-    ROM& m_rom;
+    const ROM& m_rom;
     uint8_t m_registers[8];
     uint16_t m_stack[3];
     uint16_t m_PC;

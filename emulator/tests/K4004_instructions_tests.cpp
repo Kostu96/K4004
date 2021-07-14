@@ -83,13 +83,7 @@ TEST_F(EmulatorInstructionsTests, WRMTest) {
 
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+    // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, WMPTest) {
@@ -99,13 +93,7 @@ TEST_F(EmulatorInstructionsTests, WMPTest) {
 
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+    // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, WRRTest) {
@@ -115,13 +103,7 @@ TEST_F(EmulatorInstructionsTests, WRRTest) {
 
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+    // TODO: Add ROM I/Os and more ROM first
 }
 
 TEST_F(EmulatorInstructionsTests, WR0Test) {
@@ -131,13 +113,7 @@ TEST_F(EmulatorInstructionsTests, WR0Test) {
 
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+    // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, WR1Test) {
@@ -147,13 +123,7 @@ TEST_F(EmulatorInstructionsTests, WR1Test) {
 
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+    // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, WR2Test) {
@@ -163,13 +133,7 @@ TEST_F(EmulatorInstructionsTests, WR2Test) {
 
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+    // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, WR3Test) {
@@ -179,13 +143,7 @@ TEST_F(EmulatorInstructionsTests, WR3Test) {
 
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+    // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, SBMTest) {
@@ -195,13 +153,7 @@ TEST_F(EmulatorInstructionsTests, SBMTest) {
 
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+    // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, RDMTest) {
@@ -211,13 +163,7 @@ TEST_F(EmulatorInstructionsTests, RDMTest) {
 
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+    // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, RDRTest) {
@@ -227,13 +173,7 @@ TEST_F(EmulatorInstructionsTests, RDRTest) {
 
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+    // TODO: Add ROM I/Os and more ROM first
 }
 
 TEST_F(EmulatorInstructionsTests, ADMTest) {
@@ -243,13 +183,7 @@ TEST_F(EmulatorInstructionsTests, ADMTest) {
 
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+    // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, RD0Test) {
@@ -259,13 +193,7 @@ TEST_F(EmulatorInstructionsTests, RD0Test) {
 
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+    // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, RD1Test) {
@@ -275,13 +203,7 @@ TEST_F(EmulatorInstructionsTests, RD1Test) {
 
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+    // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, RD2Test) {
@@ -291,13 +213,7 @@ TEST_F(EmulatorInstructionsTests, RD2Test) {
 
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+    // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, RD3Test) {
@@ -307,13 +223,7 @@ TEST_F(EmulatorInstructionsTests, RD3Test) {
 
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+    // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, CLBTest) {
@@ -321,15 +231,17 @@ TEST_F(EmulatorInstructionsTests, CLBTest) {
     const size_t size = sizeof(prog) / sizeof(uint8_t);
     emulator.loadProgram(prog, size);
 
+    *acc = 0x07u;
+    *CY = 1u;
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
     for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x00u);
+    EXPECT_EQ(*CY, 0x00u);
 }
 
 TEST_F(EmulatorInstructionsTests, CLCTest) {
@@ -337,47 +249,61 @@ TEST_F(EmulatorInstructionsTests, CLCTest) {
     const size_t size = sizeof(prog) / sizeof(uint8_t);
     emulator.loadProgram(prog, size);
 
+    *CY = 1u;
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
     for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x00u);
+    EXPECT_EQ(*CY, 0x00u);
 }
 
 TEST_F(EmulatorInstructionsTests, IACTest) {
-    const uint8_t prog[] = { 0xF2 };
+    const uint8_t prog[] = { 0xF2, 0xF2 };
     const size_t size = sizeof(prog) / sizeof(uint8_t);
     emulator.loadProgram(prog, size);
 
+    *acc = 0x07u;
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
     for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x08u);
+    EXPECT_EQ(*CY, 0u);
+
+    *acc = 0x0Fu;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x002u);
+    EXPECT_EQ(*acc, 0x0u);
+    EXPECT_EQ(*CY, 1u);
 }
 
 TEST_F(EmulatorInstructionsTests, CMCTest) {
-    const uint8_t prog[] = { 0xF3 };
+    const uint8_t prog[] = { 0xF3, 0xF3 };
     const size_t size = sizeof(prog) / sizeof(uint8_t);
     emulator.loadProgram(prog, size);
 
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
     for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x00u);
+    EXPECT_EQ(*CY, 1u);
+
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x002u);
+    EXPECT_EQ(*CY, 0u);
 }
 
 TEST_F(EmulatorInstructionsTests, CMATest) {
@@ -385,79 +311,123 @@ TEST_F(EmulatorInstructionsTests, CMATest) {
     const size_t size = sizeof(prog) / sizeof(uint8_t);
     emulator.loadProgram(prog, size);
 
+    *acc = 0x04u;
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
     for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, ~0x04u & 0x0F);
+    EXPECT_EQ(*CY, 0u);
 }
 
 TEST_F(EmulatorInstructionsTests, RALTest) {
-    const uint8_t prog[] = { 0xF5 };
+    const uint8_t prog[] = { 0xF5, 0xF5, 0xF5 };
     const size_t size = sizeof(prog) / sizeof(uint8_t);
     emulator.loadProgram(prog, size);
 
+    *acc = 0x04u;
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
     for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x08u);
+    EXPECT_EQ(*CY, 0u);
+
+    *acc = 0x0Au;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x002u);
+    EXPECT_EQ(*acc, 0x04u);
+    EXPECT_EQ(*CY, 1u);
+
+    emulator.step();
+    EXPECT_EQ(*pc, 0x003u);
+    EXPECT_EQ(*acc, 0x09u);
+    EXPECT_EQ(*CY, 0u);
 }
 
 TEST_F(EmulatorInstructionsTests, RARTest) {
-    const uint8_t prog[] = { 0xF6 };
+    const uint8_t prog[] = { 0xF6, 0xF6, 0xF6 };
     const size_t size = sizeof(prog) / sizeof(uint8_t);
     emulator.loadProgram(prog, size);
 
+    *acc = 0x04u;
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
     for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x02u);
+    EXPECT_EQ(*CY, 0u);
+
+    *acc = 0x05u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x002u);
+    EXPECT_EQ(*acc, 0x02u);
+    EXPECT_EQ(*CY, 1u);
+
+    emulator.step();
+    EXPECT_EQ(*pc, 0x003u);
+    EXPECT_EQ(*acc, 0x09u);
+    EXPECT_EQ(*CY, 0u);
 }
 
 TEST_F(EmulatorInstructionsTests, TCCTest) {
-    const uint8_t prog[] = { 0xF7 };
+    const uint8_t prog[] = { 0xF7, 0xF7 };
     const size_t size = sizeof(prog) / sizeof(uint8_t);
     emulator.loadProgram(prog, size);
 
+    *acc = 0x07u;
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
     for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x00u);
+    EXPECT_EQ(*CY, 0u);
+
+    *acc = 0x07u;
+    *CY = 1u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x002u);
+    EXPECT_EQ(*acc, 0x01u);
+    EXPECT_EQ(*CY, 0u);
 }
 
 TEST_F(EmulatorInstructionsTests, DACTest) {
-    const uint8_t prog[] = { 0xF8 };
+    const uint8_t prog[] = { 0xF8, 0xF8 };
     const size_t size = sizeof(prog) / sizeof(uint8_t);
     emulator.loadProgram(prog, size);
 
+    *acc = 0x07u;
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
     for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x06u);
+    EXPECT_EQ(*CY, 1u);
+
+    *acc = 0x00u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x002u);
+    EXPECT_EQ(*acc, 0x0Fu);
+    EXPECT_EQ(*CY, 0u);
 }
 
 TEST_F(EmulatorInstructionsTests, TCSTest) {
@@ -483,13 +453,13 @@ TEST_F(EmulatorInstructionsTests, STCTest) {
 
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
     for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x00u);
+    EXPECT_EQ(*CY, 1u);
 }
 
 TEST_F(EmulatorInstructionsTests, DAATest) {
@@ -616,7 +586,7 @@ TEST_F(EmulatorInstructionsTests, XCHTest) {
     const size_t size = sizeof(prog) / sizeof(uint8_t);
     emulator.loadProgram(prog, size);
 
-    *acc = 0x07;
+    *acc = 0x07u;
     registers[1] = 0x24;
     emulator.step();
 
@@ -773,11 +743,25 @@ TEST_F(EmulatorInstructionsTests, JMSTest) {
     EXPECT_EQ(*CY, 0u);
 }
 
+TEST_F(EmulatorInstructionsTests, FIMTest) {
+    const uint8_t prog[] = { 0x24, 0x42 };
+    const size_t size = sizeof(prog) / sizeof(uint8_t);
+    emulator.loadProgram(prog, size);
+
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x002u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], i == 2u ? 0x42u : 0x00u);
+    EXPECT_EQ(*acc, 0u);
+    EXPECT_EQ(*CY, 0u);
+}
+
 // TODO: Make tests for these:
-// constexpr uint8_t INS_JCN_MASK = 0x1F;
-// constexpr uint8_t INS_FIM_MASK = 0x2E;
-// constexpr uint8_t INS_SRC_MASK = 0x2F; // Skip until ram and more roms are added
-// constexpr uint8_t INS_FIN_MASK = 0x3E;
-// constexpr uint8_t INS_JIN_MASK = 0x3F; // Skip until more roms are added
-// constexpr uint8_t INS_JMS_MASK = 0x5F;
-// constexpr uint8_t INS_ISZ_MASK = 0x7F;
+// constexpr uint8_t INS_JCN_MASK = 0x1F; - Skip until test pin and more rom
+// constexpr uint8_t INS_SRC_MASK = 0x2F; - Skip until ram and more rom
+// constexpr uint8_t INS_FIN_MASK = 0x3E; - Skip until more rom
+// constexpr uint8_t INS_JIN_MASK = 0x3F; - Skip until more rom
+// constexpr uint8_t INS_ISZ_MASK = 0x7F; - Skip until more rom
