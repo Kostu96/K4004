@@ -327,6 +327,9 @@ void K4004::JMS()
 
 void K4004::INC()
 {
+    uint8_t reg = m_IR & 0x0F;
+    uint8_t temp = getRegisterValue(reg);
+    setRegisterValue(reg, temp + 1);
 }
 
 void K4004::ISZ()
@@ -344,7 +347,7 @@ void K4004::ADD()
 
 void K4004::SUB()
 {
-    CMC();
+    m_CY = m_CY == 0u ? 1u : 0u;
     uint8_t temp = m_IR & 0x0F;
     temp = (~getRegisterValue(temp) & 0x0F) + m_CY;
     temp += m_Acc;

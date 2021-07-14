@@ -32,6 +32,7 @@ struct WhiteBox<Emulator> {
     }
 };
 
+// TODO: Make these tests unaffected by rom loading
 struct EmulatorInstructionsTests : public testing::Test {
     void SetUp() override {
         auto& cpu = WhiteBox<Emulator>::getCPU(emulator);
@@ -699,6 +700,29 @@ TEST_F(EmulatorInstructionsTests, SUBTest) {
     EXPECT_EQ(*CY, 1u);
 }
 
+TEST_F(EmulatorInstructionsTests, INCTest) {
+    const uint8_t prog[] = { 0x62, 0x62 };
+    const size_t size = sizeof(prog) / sizeof(uint8_t);
+    emulator.loadProgram(prog, size);
+
+    // Inc
+    registers[1] = 0xE0u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x001u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], i == 1 ? 0xF0 : 0x00u);
+    EXPECT_EQ(*acc, 0u);
+    EXPECT_EQ(*CY, 0u);
+
+    // Inc with overflow
+    emulator.step();
+    EXPECT_EQ(*pc, 0x002u);
+    EXPECT_EQ(registers[1], 0x00u);
+}
+
 /* TODO: Make tests for these:
 constexpr uint8_t INS_JCN_MASK = 0x1F;
 constexpr uint8_t INS_FIM_MASK = 0x2E;
@@ -707,7 +731,6 @@ constexpr uint8_t INS_FIN_MASK = 0x3E;
 constexpr uint8_t INS_JIN_MASK = 0x3F;
 constexpr uint8_t INS_JUN_MASK = 0x4F;
 constexpr uint8_t INS_JMS_MASK = 0x5F;
-constexpr uint8_t INS_INC_MASK = 0x6F;
 constexpr uint8_t INS_ISZ_MASK = 0x7F;
 constexpr uint8_t INS_LD_MASK = 0xAF;
 constexpr uint8_t INS_BBL_MASK = 0xCF;*/
