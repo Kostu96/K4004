@@ -140,7 +140,8 @@ void K4004::pullStack()
 
 uint8_t K4004::getRegisterValue(uint8_t reg)
 {
-    return m_registers[reg / 2] >> (reg % 2 ? 4 : 0);
+    uint8_t regPairValue = m_registers[reg / 2];
+    return regPairValue >> (reg % 2 ? 0u : 4u);
 }
 
 void K4004::setRegisterValue(uint8_t reg, uint8_t value)
