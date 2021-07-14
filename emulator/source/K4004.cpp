@@ -60,7 +60,7 @@ void K4004::step()
 {
     m_IR = m_rom.getByte(m_PC++);
     uint8_t opcode;
-    if (m_IR & 0x0F || m_IR & 0xEF || m_IR & 0xFF)
+    if (m_IR == 0x00u || m_IR > 0xDF)
         opcode = m_IR;
     else
         opcode = m_IR | 0x0F;
@@ -365,4 +365,5 @@ void K4004::BBL()
 
 void K4004::LDM()
 {
+    m_Acc = m_IR & 0x0F;
 }
