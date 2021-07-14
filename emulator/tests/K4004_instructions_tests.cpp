@@ -741,14 +741,28 @@ TEST_F(EmulatorInstructionsTests, BBLTest) {
     EXPECT_EQ(*CY, 0u);
 }
 
-/* TODO: Make tests for these:
-constexpr uint8_t INS_JCN_MASK = 0x1F;
-constexpr uint8_t INS_FIM_MASK = 0x2E;
-constexpr uint8_t INS_SRC_MASK = 0x2F;
-constexpr uint8_t INS_FIN_MASK = 0x3E;
-constexpr uint8_t INS_JIN_MASK = 0x3F;
-constexpr uint8_t INS_JUN_MASK = 0x4F;
-constexpr uint8_t INS_JMS_MASK = 0x5F;
-constexpr uint8_t INS_ISZ_MASK = 0x7F;
-constexpr uint8_t INS_LD_MASK = 0xAF;
-constexpr uint8_t INS_BBL_MASK = 0xCF;*/
+TEST_F(EmulatorInstructionsTests, JUNTest) {
+    const uint8_t prog[] = { 0x41, 0x42 };
+    const size_t size = sizeof(prog) / sizeof(uint8_t);
+    emulator.loadProgram(prog, size);
+
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x142u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0u);
+    EXPECT_EQ(*CY, 0u);
+}
+
+// TODO: Make tests for these:
+// constexpr uint8_t INS_JCN_MASK = 0x1F;
+// constexpr uint8_t INS_FIM_MASK = 0x2E;
+// constexpr uint8_t INS_SRC_MASK = 0x2F; // Skip until ram and more roms are added
+// constexpr uint8_t INS_FIN_MASK = 0x3E;
+// constexpr uint8_t INS_JIN_MASK = 0x3F; // Skip until more roms are added
+// constexpr uint8_t INS_JUN_MASK = 0x4F;
+// constexpr uint8_t INS_JMS_MASK = 0x5F;
+// constexpr uint8_t INS_ISZ_MASK = 0x7F;

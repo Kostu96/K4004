@@ -314,8 +314,8 @@ void K4004::JIN()
 
 void K4004::JUN()
 {
-    m_PC = ((m_IR & 0x0F) << 8) & 0xF00;
-    m_PC |= m_rom.getByte(m_PC++);
+    uint16_t address = ((m_IR & 0x0F) << 8) & 0xF00;
+    m_PC = address | m_rom.getByte(m_PC++);
 }
 
 void K4004::JMS()
