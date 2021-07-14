@@ -8,7 +8,6 @@ public:
 
     ROM();
 
-    void connect(uint8_t* bus);
     void load(uint8_t startingAddress, const uint8_t* objectCode, uint8_t objectCodeLength);
     void reset();
     uint8_t getByte(uint16_t address) const { return m_rom[address]; }

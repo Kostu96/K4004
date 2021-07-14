@@ -3,7 +3,7 @@
 
 #include <cstring>
 
-// Make it shared with assembler and tests
+// TODO: Make it shared with assembler and tests
 constexpr uint8_t INS_NOP = 0x00;
 constexpr uint8_t INS_WRM = 0xE0;
 constexpr uint8_t INS_WMP = 0xE1;
@@ -58,184 +58,66 @@ K4004::K4004(ROM& rom) :
 
 void K4004::step()
 {
-    /*uint8_t tempByte1, tempByte2;
-    switch (currentCycle) {
-    case CycleType::A1:
-        *m_bus = m_PC & 0x00F;
-        break;
-    case CycleType::A2:
-        *m_bus = (m_PC >> 4) & 0x00F;
-        break;
-    case CycleType::A3:
-        *m_bus = (m_PC >> 8) & 0x00F;
-        ++m_PC;
-        break;
-    case CycleType::M1:
-        m_IR = (*m_bus << 4) & 0xF0;
-        break;
-    case CycleType::M2:
-        m_IR |= *m_bus & 0x0F;
-        break;
-    case CycleType::X1:
-    {
-        uint8_t opcode = m_is2ByteIns == 0x1 ? m_IRCopyFor2ByteIns : m_IR;
-        switch (opcode) {
-        case INS_NOP: break;
-        case INS_WRM: break;
-        case INS_WMP: break;
-        case INS_WRR: break;
-        case INS_WR0: break;
-        case INS_WR1: break;
-        case INS_WR2: break;
-        case INS_WR3: break;
-        case INS_SBM: break;
-        case INS_RDM: break;
-        case INS_RDR: break;
-        case INS_ADM: break;
-        case INS_RD0: break;
-        case INS_RD1: break;
-        case INS_RD2: break;
-        case INS_RD3: break;
-        case INS_CLB:
-            m_Acc = 0x0; m_CY = 0x0;
-            break;
-        case INS_CLC:
-            m_CY = 0x0;
-            break;
-        case INS_IAC:
-            m_CY = ++m_Acc == 0x0 ? 0x1 : 0x0;
-            break;
-        case INS_CMC:
-            ++m_CY;
-            break;
-        case INS_CMA:
-            m_Acc = ~m_Acc;
-            break;
-        case INS_RAL:
-            tempByte1 = m_CY;
-            m_CY = (m_Acc & 0x8) >> 4;
-            m_Acc = m_Acc << 1;
-            m_Acc |= tempByte1;
-            break;
-        case INS_RAR:
-            tempByte1 = m_CY;
-            m_CY = m_Acc & 0x1;
-            m_Acc = m_Acc >> 1;
-            m_Acc |= tempByte1 << 4;
-            break;
-        case INS_TCC: break;
-        case INS_DAC: break;
-        case INS_TCS: break;
-        case INS_STC: break;
-        case INS_DAA: break;
-        case INS_KBP:
-            if (m_Acc == 0b0000u) break;
-            if (m_Acc == 0b0001u) break;
-            if (m_Acc == 0b0010u) break;
-            if (m_Acc == 0b0100u) { m_Acc = 0b0011u; break; }
-            if (m_Acc == 0b1000u) { m_Acc = 0b0100u; break; }
-            m_Acc = 0b1111u; break;
-        case INS_DCL: break;
-        default:
-            if ((opcode & INS_JCN_MASK) == opcode) {
-                if (m_is2ByteIns == 0x0) {
-                    m_is2ByteIns = 0x1;
-                    m_IRCopyFor2ByteIns = m_IR;
-                }
-                else {
-                    m_is2ByteIns = 0x0;
-                }
-            }
-            else if ((opcode & INS_FIM_MASK) == opcode) {
-                if (m_is2ByteIns == 0x0) {
-                    m_is2ByteIns = 0x1;
-                    m_IRCopyFor2ByteIns = m_IR;
-                }
-                else {
-                    m_is2ByteIns = 0x0;
-                    tempByte1 = (opcode & 0x0F) >> 1;
-                    m_registers[tempByte1] = m_IR;
-                }
-            }
-            else if ((opcode & INS_SRC_MASK) == opcode) {
+    m_IR = m_rom.getByte(m_PC++);
+    uint8_t opcode;
+    if (m_IR & 0x0F || m_IR & 0xEF || m_IR & 0xFF)
+        opcode = m_IR;
+    else
+        opcode = m_IR | 0x0F;
 
-            }
-            else if ((opcode & INS_FIN_MASK) == opcode) {
-
-            }
-            else if ((opcode & INS_JIN_MASK) == opcode) {
-
-            }
-            else if ((opcode & INS_JUN_MASK) == opcode) {
-                if (m_is2ByteIns == 0x0) {
-                    m_is2ByteIns = 0x1;
-                    m_IRCopyFor2ByteIns = m_IR;
-                }
-                else {
-                    m_is2ByteIns = 0x0;
-                    m_PC = ((opcode & 0x0F) << 8) & 0xF00;
-                    m_PC |= m_IR;
-                }
-            }
-            else if ((opcode & INS_JMS_MASK) == opcode) {
-                if (m_is2ByteIns == 0x0) {
-                    m_is2ByteIns = 0x1;
-                    m_IRCopyFor2ByteIns = m_IR;
-                }
-                else {
-                    m_is2ByteIns = 0x0;
-                }
-            }
-            else if ((opcode & INS_INC_MASK) == opcode) {
-
-            }
-            else if ((opcode & INS_ISZ_MASK) == opcode) {
-                if (m_is2ByteIns == 0x0) {
-                    m_is2ByteIns = 0x1;
-                    m_IRCopyFor2ByteIns = m_IR;
-                }
-                else {
-                    m_is2ByteIns = 0x0;
-                }
-            }
-            else if ((opcode & INS_ADD_MASK) == opcode) {
-                tempByte1 = opcode & 0x0F;
-                tempByte1 = m_registers[tempByte1 / 2] >> (tempByte1 % 2 ? 4 : 0);
-                tempByte1 += m_Acc;
-                m_Acc = tempByte1 & 0x0F;
-                m_CY = tempByte1 >> 4;
-            }
-            else if ((opcode & INS_SUB_MASK) == opcode) {
-
-            }
-            else if ((opcode & INS_LD_MASK) == opcode) {
-                tempByte1 = opcode & 0x0F;
-                m_Acc = m_registers[tempByte1 / 2] >> (tempByte1 % 2 ? 4 : 0);
-            }
-            else if ((opcode & INS_XCH_MASK) == opcode) {
-                tempByte1 = opcode & 0x0F;
-                tempByte2 = m_Acc;
-                m_Acc = m_registers[tempByte1 / 2] >> (tempByte1 % 2 ? 4 : 0);
-                m_registers[tempByte1 / 2] &= (tempByte1 % 2 ? 0x0F : 0xF0);
-                m_registers[tempByte1 / 2] |= (tempByte2 << (tempByte1 % 2 ? 4 : 0)) & (tempByte1 % 2 ? 0xF0 : 0x0F);
-            }
-            else if ((opcode & INS_BBL_MASK) == opcode) {
-
-            }
-            else if ((opcode & INS_LDM_MASK) == opcode) {
-
-            }
-        }
-        break;
-    }*/
+    switch (opcode) {
+    case INS_NOP: break;
+    case INS_WRM: WRM(); break;
+    case INS_WMP: WMP(); break;
+    case INS_WRR: WRR(); break;
+    case INS_WR0: WR0(); break;
+    case INS_WR1: WR1(); break;
+    case INS_WR2: WR2(); break;
+    case INS_WR3: WR3(); break;
+    case INS_SBM: SBM(); break;
+    case INS_RDM: RDM(); break;
+    case INS_RDR: RDR(); break;
+    case INS_ADM: ADM(); break;
+    case INS_RD0: RD0(); break;
+    case INS_RD1: RD1(); break;
+    case INS_RD2: RD2(); break;
+    case INS_RD3: RD3(); break;
+    case INS_CLB: CLB(); break;
+    case INS_CLC: CLC(); break;
+    case INS_IAC: IAC(); break;
+    case INS_CMC: CMC(); break;
+    case INS_CMA: CMA(); break;
+    case INS_RAL: RAL(); break;
+    case INS_RAR: RAR(); break;
+    case INS_TCC: TCC(); break;
+    case INS_DAC: DAC(); break;
+    case INS_TCS: TCS(); break;
+    case INS_STC: STC(); break;
+    case INS_DAA: DAA(); break;
+    case INS_KBP: KBP(); break;
+    case INS_DCL: DCL(); break;
+    case INS_JCN_MASK: JCN(); break;
+    case INS_FIM_MASK: FIM(); break;
+    case INS_SRC_MASK: SRC(); break;
+    case INS_FIN_MASK: FIN(); break;
+    case INS_JIN_MASK: JIN(); break;
+    case INS_JUN_MASK: JUN(); break;
+    case INS_JMS_MASK: JMS(); break;
+    case INS_INC_MASK: INC(); break;
+    case INS_ISZ_MASK: ISZ(); break;
+    case INS_ADD_MASK: ADD(); break;
+    case INS_SUB_MASK: SUB(); break;
+    case INS_LD_MASK:  LD();  break;
+    case INS_XCH_MASK: XCH(); break;
+    case INS_BBL_MASK: BBL(); break;
+    case INS_LDM_MASK: LDM(); break;
+    }
 }
 
 void K4004::reset()
 {
     m_Acc = 0u;
     m_CY = 0u;
-    m_is2ByteIns = 0u;
-    m_IRCopyFor2ByteIns = m_IR = 0u;
     std::memset(m_registers, 0, sizeof(m_registers) / sizeof(m_registers[0]));
     m_PC = m_stack[0] = m_stack[1] = m_stack[2] = 0u;
 }
@@ -256,7 +138,231 @@ void K4004::pullStack()
     m_stack[2] = 0u; // TODO: Could be useful to return that.
 }
 
+uint8_t K4004::getRegisterValue(uint8_t reg)
+{
+    return m_registers[reg / 2] >> (reg % 2 ? 4 : 0);
+}
+
+void K4004::setRegisterValue(uint8_t reg, uint8_t value)
+{
+    bool isEven = reg % 2;
+    m_registers[reg / 2] &= (isEven ? 0x0F : 0xF0);
+    m_registers[reg / 2] |= (value << (isEven ? 4 : 0)) & (isEven ? 0xF0 : 0x0F);
+}
+
 void K4004::WRM()
 {
 
+}
+
+void K4004::WMP()
+{
+}
+
+void K4004::WRR()
+{
+}
+
+void K4004::WR0()
+{
+}
+
+void K4004::WR1()
+{
+}
+
+void K4004::WR2()
+{
+}
+
+void K4004::WR3()
+{
+}
+
+void K4004::SBM()
+{
+}
+
+void K4004::RDM()
+{
+}
+
+void K4004::RDR()
+{
+}
+
+void K4004::ADM()
+{
+}
+
+void K4004::RD0()
+{
+}
+
+void K4004::RD1()
+{
+}
+
+void K4004::RD2()
+{
+}
+
+void K4004::RD3()
+{
+}
+
+void K4004::CLB()
+{
+    m_Acc = 0u;
+    m_CY = 0u;
+}
+
+void K4004::CLC()
+{
+    m_CY = 0u;
+}
+
+void K4004::IAC()
+{
+    m_CY = ++m_Acc == 0u ? 1u : 0u;
+}
+
+void K4004::CMC()
+{
+    m_CY = m_CY == 0u ? 1u : 0u;
+}
+
+void K4004::CMA()
+{
+    m_Acc = ~m_Acc;
+}
+
+void K4004::RAL()
+{
+    uint8_t tempByte1 = m_CY;
+    m_CY = (m_Acc & 0x8) >> 4;
+    m_Acc = m_Acc << 1;
+    m_Acc |= tempByte1;
+}
+
+void K4004::RAR()
+{
+    uint8_t tempByte1 = m_CY;
+    m_CY = m_Acc & 0x1;
+    m_Acc = m_Acc >> 1;
+    m_Acc |= tempByte1 << 4;
+}
+
+void K4004::TCC()
+{
+}
+
+void K4004::DAC()
+{
+}
+
+void K4004::TCS()
+{
+}
+
+void K4004::STC()
+{
+}
+
+void K4004::DAA()
+{
+}
+
+void K4004::KBP()
+{
+    if (m_Acc == 0b0000u) return;
+    if (m_Acc == 0b0001u) return;
+    if (m_Acc == 0b0010u) return;
+    if (m_Acc == 0b0100u) { m_Acc = 0b0011u; return; }
+    if (m_Acc == 0b1000u) { m_Acc = 0b0100u; return; }
+    m_Acc = 0b1111u;
+}
+
+void K4004::DCL()
+{
+}
+
+void K4004::JCN()
+{
+    // TODO: unfinished
+    uint8_t address = m_rom.getByte(m_PC++);
+}
+
+void K4004::FIM()
+{
+    uint8_t reg = (m_IR & 0x0F) >> 1;
+    m_registers[reg] = m_rom.getByte(m_PC++);
+}
+
+void K4004::SRC()
+{
+}
+
+void K4004::FIN()
+{
+}
+
+void K4004::JIN()
+{
+}
+
+void K4004::JUN()
+{
+    m_PC = ((m_IR & 0x0F) << 8) & 0xF00;
+    m_PC |= m_rom.getByte(m_PC++);
+}
+
+void K4004::JMS()
+{
+    uint16_t address = ((m_IR & 0x0F) << 8) & 0xF00;
+    address |= m_rom.getByte(m_PC++);
+    pushStack(address);
+}
+
+void K4004::INC()
+{
+}
+
+void K4004::ISZ()
+{
+}
+
+void K4004::ADD()
+{
+    uint8_t temp = m_IR & 0x0F;
+    temp = getRegisterValue(temp);
+    temp += m_Acc;
+    m_Acc = temp & 0x0F;
+    m_CY = temp >> 4;
+}
+
+void K4004::SUB()
+{
+}
+
+void K4004::LD()
+{
+    uint8_t reg = m_IR & 0x0F;
+    m_Acc = getRegisterValue(reg);
+}
+
+void K4004::XCH()
+{
+    uint8_t reg = m_IR & 0x0F;
+    uint8_t temp = m_Acc;
+    m_Acc = getRegisterValue(reg);
+    setRegisterValue(reg, temp);
+}
+
+void K4004::BBL()
+{
+}
+
+void K4004::LDM()
+{
 }
