@@ -625,6 +625,31 @@ TEST_F(EmulatorInstructionsTests, XCHTest) {
     EXPECT_EQ(*acc, 0x02u);
 }
 
+TEST_F(EmulatorInstructionsTests, ADDTest) {
+    const uint8_t prog[] = { 0x82, 0x82 };
+    const size_t size = sizeof(prog) / sizeof(uint8_t);
+    emulator.loadProgram(prog, size);
+
+    *acc = 0x07u;
+    registers[1] = 0x20u;
+    emulator.step();
+
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], i == 1 ? 0x20 : 0x00u);
+
+    EXPECT_EQ(*pc, 0x001u);
+    EXPECT_EQ(*acc, 0x02u + 0x07u);
+    EXPECT_EQ(*CY, 0u);
+
+    registers[1] = 0xF0u;
+    emulator.step();
+    EXPECT_EQ(*pc, 0x002u);
+    EXPECT_EQ(*acc, (0x09u + 0x0Fu) & 0x0F);
+    EXPECT_EQ(*CY, 1u);
+}
+
 /* TODO: Make tests for these:
 constexpr uint8_t INS_JCN_MASK = 0x1F;
 constexpr uint8_t INS_FIM_MASK = 0x2E;
@@ -635,8 +660,6 @@ constexpr uint8_t INS_JUN_MASK = 0x4F;
 constexpr uint8_t INS_JMS_MASK = 0x5F;
 constexpr uint8_t INS_INC_MASK = 0x6F;
 constexpr uint8_t INS_ISZ_MASK = 0x7F;
-constexpr uint8_t INS_ADD_MASK = 0x8F;
 constexpr uint8_t INS_SUB_MASK = 0x9F;
 constexpr uint8_t INS_LD_MASK = 0xAF;
-constexpr uint8_t INS_XCH_MASK = 0xBF;
 constexpr uint8_t INS_BBL_MASK = 0xCF;*/
