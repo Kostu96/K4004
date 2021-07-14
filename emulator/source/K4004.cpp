@@ -371,6 +371,9 @@ void K4004::XCH()
 
 void K4004::BBL()
 {
+    pullStack();
+    uint8_t reg = m_IR & 0x0F;
+    m_Acc = getRegisterValue(reg);
 }
 
 void K4004::LDM()
