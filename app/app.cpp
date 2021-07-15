@@ -18,7 +18,7 @@ bool App::OnUserUpdate(float fElapsedTime)
 
 void App::printROM()
 {
-    auto rom = emulator.getROMData();
+    auto rom = emulator.getROM().getRomContents();
     constexpr uint8_t numberOfColumns = 8;
     std::stringstream ss;
     

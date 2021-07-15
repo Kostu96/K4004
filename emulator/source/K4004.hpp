@@ -8,11 +8,12 @@ static constexpr uint8_t BITMASK_4BITS = 0x0F;
 static constexpr uint8_t BITMASK_1BIT = 0x01;
 
 class ROM;
+class RAM;
 
 class K4004
 {
 public:
-    K4004(ROM& rom);
+    K4004(ROM& rom, RAM& ram);
 
     void step();
     void reset();
@@ -25,6 +26,8 @@ public:
     const uint16_t* getStack() const { return m_stack; }
     uint16_t getPC() const { return m_PC; }
     const uint8_t* getRegisters() const { return m_registers; }
+    void setTest(uint8_t test) { m_test = test & 1u; }
+    uint8_t getTest() const { return m_test; }
 private:
     uint8_t getRegisterValue(uint8_t reg);
     void setRegisterValue(uint8_t reg, uint8_t value);
@@ -73,7 +76,8 @@ private:
     void BBL();
     void LDM();
 
-    const ROM& m_rom;
+    ROM& m_rom;
+    RAM& m_ram;
     uint8_t m_registers[8];
     uint16_t m_stack[3];
     uint16_t m_PC;
@@ -81,6 +85,7 @@ private:
     uint8_t m_Acc;
     uint8_t m_CY;
     uint8_t m_CM_RAM;
+    uint8_t m_test;
 
     ALLOW_WHITEBOX(K4004);
 };

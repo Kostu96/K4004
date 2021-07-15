@@ -1,4 +1,5 @@
 #include "emulator/source/K4004.hpp"
+#include "emulator/source/ram.hpp"
 #include "emulator/source/rom.hpp"
 
 #include <cstring>
@@ -50,8 +51,9 @@ constexpr uint8_t INS_XCH_MASK = 0xBF;
 constexpr uint8_t INS_BBL_MASK = 0xCF;
 constexpr uint8_t INS_LDM_MASK = 0xDF;
 
-K4004::K4004(ROM& rom) :
-    m_rom(rom)
+K4004::K4004(ROM& rom, RAM& ram) :
+    m_rom(rom),
+    m_ram(ram)
 {
     reset();
 }
@@ -124,6 +126,7 @@ void K4004::reset()
     std::memset(m_registers, 0, sizeof(m_registers) / sizeof(m_registers[0]));
     m_PC = m_stack[0] = m_stack[1] = m_stack[2] = 0u;
     m_CM_RAM = 0u;
+    m_test = 0u;
 }
 
 void K4004::pushStack(uint16_t address)
@@ -322,6 +325,10 @@ void K4004::FIM()
 
 void K4004::SRC()
 {
+    uint8_t reg = (m_IR & 0x0F) >> 1;
+    uint8_t addr = m_registers[reg];
+    m_rom.setSrcAddress(addr);
+    m_ram.setSrcAddress(addr);
 }
 
 void K4004::FIN()

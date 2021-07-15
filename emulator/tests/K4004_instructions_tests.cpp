@@ -3,9 +3,20 @@
 #include <gtest/gtest.h>
 
 template<>
+struct WhiteBox<RAM> {
+    static uint8_t* getSrcAddress(RAM& ram) {
+        return &ram.m_srcAddress;
+    }
+};
+
+template<>
 struct WhiteBox<ROM> {
     static uint8_t* getROMData(ROM& rom) {
         return rom.m_rom;
+    }
+
+    static uint8_t* getSrcAddress(ROM& rom) {
+        return &rom.m_srcAddress;
     }
 };
 
@@ -34,6 +45,10 @@ struct WhiteBox<K4004> {
 
 template<>
 struct WhiteBox<Emulator> {
+    static RAM& getRAM(Emulator& emulator) {
+        return emulator.m_ram;
+    }
+
     static ROM& getROM(Emulator& emulator) {
         return emulator.m_rom;
     }
@@ -45,8 +60,15 @@ struct WhiteBox<Emulator> {
 
 struct EmulatorInstructionsTests : public testing::Test {
     void SetUp() override {
-        rom = WhiteBox<ROM>::getROMData(WhiteBox<Emulator>::getROM(emulator));
+        auto& ramObj = WhiteBox<Emulator>::getRAM(emulator);
+        ramSrcAddr = WhiteBox<RAM>::getSrcAddress(ramObj);
+        ASSERT_NE(ramSrcAddr, nullptr);
+
+        auto& romObj = WhiteBox<Emulator>::getROM(emulator);
+        rom = WhiteBox<ROM>::getROMData(romObj);
+        romSrcAddr = WhiteBox<ROM>::getSrcAddress(romObj);
         ASSERT_NE(rom, nullptr);
+        ASSERT_NE(romSrcAddr, nullptr);
 
         auto& cpu = WhiteBox<Emulator>::getCPU(emulator);
         acc = WhiteBox<K4004>::getAcc(cpu);
@@ -66,6 +88,8 @@ struct EmulatorInstructionsTests : public testing::Test {
 
     Emulator emulator;
     uint8_t* rom = nullptr;
+    uint8_t* romSrcAddr = nullptr;
+    uint8_t* ramSrcAddr = nullptr;
     uint8_t* acc = nullptr;
     uint8_t* CY = nullptr;
     uint16_t* pc = nullptr;
@@ -104,7 +128,7 @@ TEST_F(EmulatorInstructionsTests, WRRTest) {
     rom[0] = 0xE2;
     emulator.step();
 
-    // TODO: Add ROM I/Os and more ROM first
+    // TODO: Decide how to handle I/O metal config
 }
 
 TEST_F(EmulatorInstructionsTests, WR0Test) {
@@ -153,7 +177,7 @@ TEST_F(EmulatorInstructionsTests, RDRTest) {
     rom[0] = 0xEA;
     emulator.step();
 
-    // TODO: Add ROM I/Os and more ROM first
+    // TODO: Decide how to handle I/O metal config
 }
 
 TEST_F(EmulatorInstructionsTests, ADMTest) {
@@ -671,9 +695,40 @@ TEST_F(EmulatorInstructionsTests, FIMTest) {
     EXPECT_EQ(*CY, 0u);
 }
 
+TEST_F(EmulatorInstructionsTests, SRCTest) {
+    rom[0] = 0x25;
+    registers[2] = 0x42u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x001u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], i == 2u ? 0x42u : 0x00u);
+    EXPECT_EQ(*acc, 0u);
+    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(*romSrcAddr, 0x42u);
+    EXPECT_EQ(*ramSrcAddr, 0x42u);
+}
+
+TEST_F(EmulatorInstructionsTests, JCNTest) {
+    rom[0] = 0x25;
+    registers[2] = 0x42u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x001u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], i == 2u ? 0x42u : 0x00u);
+    EXPECT_EQ(*acc, 0u);
+    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(*romSrcAddr, 0x42u);
+    EXPECT_EQ(*ramSrcAddr, 0x42u);
+}
+
 // TODO: Make tests for these:
 // constexpr uint8_t INS_JCN_MASK = 0x1F; - Skip until test pin and more rom
-// constexpr uint8_t INS_SRC_MASK = 0x2F; - Skip until ram and more rom
 // constexpr uint8_t INS_FIN_MASK = 0x3E; - Skip until more rom
 // constexpr uint8_t INS_JIN_MASK = 0x3F; - Skip until more rom
 // constexpr uint8_t INS_ISZ_MASK = 0x7F; - Skip until more rom

@@ -1,7 +1,7 @@
 #pragma once
 #include "shared/source/whitebox.hpp"
 
-#include <cstring>
+#include <cstdint>
 
 class ROM
 {
@@ -12,12 +12,15 @@ public:
 
     ROM();
 
-    void load(uint8_t startingAddress, const uint8_t* objectCode, uint8_t objectCodeLength);
+    void load(size_t startingAddress, const uint8_t* objectCode, size_t objectCodeLength);
     void reset();
     uint8_t getByte(uint16_t address) const { return m_rom[address]; }
 
+    void setSrcAddress(uint8_t address) { m_srcAddress = address; }
+    uint8_t getSrcAddress() const { return m_srcAddress; }
     const uint8_t* getRomContents() const { return m_rom; }
 private:
+    uint8_t m_srcAddress;
     uint8_t m_rom[ROM_SIZE];
     uint8_t m_ioPorts[NUM_ROM_CHIPS];
 

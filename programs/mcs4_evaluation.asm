@@ -5,8 +5,8 @@
        FIM P5, $41    ; 002
        JMS LD_MK      ; 004
        JMS CK_IDX     ; 006
-       FIN P0         ; 008
-.BYTE  $FE            ; 009
+       FIN P0         ; 008 ; There is possible bug here
+.BYTE  $FE            ; 009 ; value for FIN should be loaded before into P0
        JMS CK_FIN     ; 010
        JMS CK_IDX     ; 012
        JMS CK_FIN     ; 014
