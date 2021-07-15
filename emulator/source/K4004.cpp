@@ -123,6 +123,7 @@ void K4004::reset()
     m_CY = 0u;
     std::memset(m_registers, 0, sizeof(m_registers) / sizeof(m_registers[0]));
     m_PC = m_stack[0] = m_stack[1] = m_stack[2] = 0u;
+    m_CM_RAM = 0u;
 }
 
 void K4004::pushStack(uint16_t address)
@@ -274,6 +275,8 @@ void K4004::DAC()
 
 void K4004::TCS()
 {
+    m_Acc = m_CY == 0 ? 9u : 10u;
+    m_CY = 0u;
 }
 
 void K4004::STC()
@@ -283,6 +286,12 @@ void K4004::STC()
 
 void K4004::DAA()
 {
+    if (m_CY == 1u || m_Acc > 9u) {
+        uint8_t temp = m_Acc + 6u;
+        m_Acc = temp & 0x0Fu;
+        if ((temp >> 4) & 1u)
+            m_CY = 1u;
+    }
 }
 
 void K4004::KBP()

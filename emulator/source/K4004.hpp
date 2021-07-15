@@ -80,6 +80,7 @@ private:
     uint8_t m_IR;
     uint8_t m_Acc;
     uint8_t m_CY;
+    uint8_t m_CM_RAM;
 
     ALLOW_WHITEBOX(K4004);
 };

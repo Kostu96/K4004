@@ -3,6 +3,13 @@
 #include <gtest/gtest.h>
 
 template<>
+struct WhiteBox<ROM> {
+    static uint8_t* getROMData(ROM& rom) {
+        return rom.m_rom;
+    }
+};
+
+template<>
 struct WhiteBox<K4004> {
     static uint8_t* getAcc(K4004& cpu) {
         return &cpu.m_Acc;
@@ -27,21 +34,26 @@ struct WhiteBox<K4004> {
 
 template<>
 struct WhiteBox<Emulator> {
+    static ROM& getROM(Emulator& emulator) {
+        return emulator.m_rom;
+    }
+
     static K4004& getCPU(Emulator& emulator) {
         return emulator.m_cpu;
     }
 };
 
-// TODO: Make these tests unaffected by rom loading
 struct EmulatorInstructionsTests : public testing::Test {
     void SetUp() override {
+        rom = WhiteBox<ROM>::getROMData(WhiteBox<Emulator>::getROM(emulator));
+        ASSERT_NE(rom, nullptr);
+
         auto& cpu = WhiteBox<Emulator>::getCPU(emulator);
         acc = WhiteBox<K4004>::getAcc(cpu);
         CY = WhiteBox<K4004>::getCY(cpu);
         pc = WhiteBox<K4004>::getPC(cpu);
         stack = WhiteBox<K4004>::getStack(cpu);
         registers = WhiteBox<K4004>::gerRegisters(cpu);
-
         ASSERT_NE(acc, nullptr);
         ASSERT_NE(pc, nullptr);
         ASSERT_NE(stack, nullptr);
@@ -53,6 +65,7 @@ struct EmulatorInstructionsTests : public testing::Test {
     }
 
     Emulator emulator;
+    uint8_t* rom = nullptr;
     uint8_t* acc = nullptr;
     uint8_t* CY = nullptr;
     uint16_t* pc = nullptr;
@@ -61,10 +74,7 @@ struct EmulatorInstructionsTests : public testing::Test {
 };
 
 TEST_F(EmulatorInstructionsTests, NOPTest) {
-    const uint8_t prog[] = { 0x00 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0x00;
     emulator.step();
 
     EXPECT_EQ(*pc, 0x001u);
@@ -77,160 +87,112 @@ TEST_F(EmulatorInstructionsTests, NOPTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, WRMTest) {
-    const uint8_t prog[] = { 0xE0 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xE0;
     emulator.step();
 
     // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, WMPTest) {
-    const uint8_t prog[] = { 0xE1 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xE1;
     emulator.step();
 
     // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, WRRTest) {
-    const uint8_t prog[] = { 0xE2 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xE2;
     emulator.step();
 
     // TODO: Add ROM I/Os and more ROM first
 }
 
 TEST_F(EmulatorInstructionsTests, WR0Test) {
-    const uint8_t prog[] = { 0xE4 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xE4;
     emulator.step();
 
     // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, WR1Test) {
-    const uint8_t prog[] = { 0xE5 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xE5;
     emulator.step();
 
     // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, WR2Test) {
-    const uint8_t prog[] = { 0xE6 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xE6;
     emulator.step();
 
     // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, WR3Test) {
-    const uint8_t prog[] = { 0xE7 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xE7;
     emulator.step();
 
     // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, SBMTest) {
-    const uint8_t prog[] = { 0xE8 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xE8;
     emulator.step();
 
     // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, RDMTest) {
-    const uint8_t prog[] = { 0xE9 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xE9;
     emulator.step();
 
     // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, RDRTest) {
-    const uint8_t prog[] = { 0xEA };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xEA;
     emulator.step();
 
     // TODO: Add ROM I/Os and more ROM first
 }
 
 TEST_F(EmulatorInstructionsTests, ADMTest) {
-    const uint8_t prog[] = { 0xEB };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xEB;
     emulator.step();
 
     // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, RD0Test) {
-    const uint8_t prog[] = { 0xEC };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xEC;
     emulator.step();
 
     // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, RD1Test) {
-    const uint8_t prog[] = { 0xED };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xED;
     emulator.step();
 
     // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, RD2Test) {
-    const uint8_t prog[] = { 0xEE };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xEE;
     emulator.step();
 
     // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, RD3Test) {
-    const uint8_t prog[] = { 0xEF };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xEF;
     emulator.step();
 
     // TODO: Add RAM first
 }
 
 TEST_F(EmulatorInstructionsTests, CLBTest) {
-    const uint8_t prog[] = { 0xF0 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xF0;
     *acc = 0x07u;
     *CY = 1u;
     emulator.step();
@@ -245,10 +207,7 @@ TEST_F(EmulatorInstructionsTests, CLBTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, CLCTest) {
-    const uint8_t prog[] = { 0xF1 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xF1;
     *CY = 1u;
     emulator.step();
 
@@ -262,10 +221,7 @@ TEST_F(EmulatorInstructionsTests, CLCTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, IACTest) {
-    const uint8_t prog[] = { 0xF2, 0xF2 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xF2;
     *acc = 0x07u;
     emulator.step();
 
@@ -277,19 +233,16 @@ TEST_F(EmulatorInstructionsTests, IACTest) {
     EXPECT_EQ(*acc, 0x08u);
     EXPECT_EQ(*CY, 0u);
 
+    *pc = 0u;
     *acc = 0x0Fu;
     emulator.step();
 
-    EXPECT_EQ(*pc, 0x002u);
     EXPECT_EQ(*acc, 0x0u);
     EXPECT_EQ(*CY, 1u);
 }
 
 TEST_F(EmulatorInstructionsTests, CMCTest) {
-    const uint8_t prog[] = { 0xF3, 0xF3 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xF3;
     emulator.step();
 
     EXPECT_EQ(*pc, 0x001u);
@@ -300,17 +253,14 @@ TEST_F(EmulatorInstructionsTests, CMCTest) {
     EXPECT_EQ(*acc, 0x00u);
     EXPECT_EQ(*CY, 1u);
 
+    *pc = 0u;
     emulator.step();
 
-    EXPECT_EQ(*pc, 0x002u);
     EXPECT_EQ(*CY, 0u);
 }
 
 TEST_F(EmulatorInstructionsTests, CMATest) {
-    const uint8_t prog[] = { 0xF4 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xF4;
     *acc = 0x04u;
     emulator.step();
 
@@ -324,10 +274,7 @@ TEST_F(EmulatorInstructionsTests, CMATest) {
 }
 
 TEST_F(EmulatorInstructionsTests, RALTest) {
-    const uint8_t prog[] = { 0xF5, 0xF5, 0xF5 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xF5;
     *acc = 0x04u;
     emulator.step();
 
@@ -339,24 +286,22 @@ TEST_F(EmulatorInstructionsTests, RALTest) {
     EXPECT_EQ(*acc, 0x08u);
     EXPECT_EQ(*CY, 0u);
 
+    *pc = 0u;
     *acc = 0x0Au;
     emulator.step();
 
-    EXPECT_EQ(*pc, 0x002u);
     EXPECT_EQ(*acc, 0x04u);
     EXPECT_EQ(*CY, 1u);
 
+    *pc = 0u;
     emulator.step();
-    EXPECT_EQ(*pc, 0x003u);
+
     EXPECT_EQ(*acc, 0x09u);
     EXPECT_EQ(*CY, 0u);
 }
 
 TEST_F(EmulatorInstructionsTests, RARTest) {
-    const uint8_t prog[] = { 0xF6, 0xF6, 0xF6 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xF6;
     *acc = 0x04u;
     emulator.step();
 
@@ -368,24 +313,22 @@ TEST_F(EmulatorInstructionsTests, RARTest) {
     EXPECT_EQ(*acc, 0x02u);
     EXPECT_EQ(*CY, 0u);
 
+    *pc = 0u;
     *acc = 0x05u;
     emulator.step();
 
-    EXPECT_EQ(*pc, 0x002u);
     EXPECT_EQ(*acc, 0x02u);
     EXPECT_EQ(*CY, 1u);
 
+    *pc = 0u;
     emulator.step();
-    EXPECT_EQ(*pc, 0x003u);
+
     EXPECT_EQ(*acc, 0x09u);
     EXPECT_EQ(*CY, 0u);
 }
 
 TEST_F(EmulatorInstructionsTests, TCCTest) {
-    const uint8_t prog[] = { 0xF7, 0xF7 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xF7;
     *acc = 0x07u;
     emulator.step();
 
@@ -397,20 +340,17 @@ TEST_F(EmulatorInstructionsTests, TCCTest) {
     EXPECT_EQ(*acc, 0x00u);
     EXPECT_EQ(*CY, 0u);
 
+    *pc = 0u;
     *acc = 0x07u;
     *CY = 1u;
     emulator.step();
 
-    EXPECT_EQ(*pc, 0x002u);
     EXPECT_EQ(*acc, 0x01u);
     EXPECT_EQ(*CY, 0u);
 }
 
 TEST_F(EmulatorInstructionsTests, DACTest) {
-    const uint8_t prog[] = { 0xF8, 0xF8 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xF8;
     *acc = 0x07u;
     emulator.step();
 
@@ -422,35 +362,36 @@ TEST_F(EmulatorInstructionsTests, DACTest) {
     EXPECT_EQ(*acc, 0x06u);
     EXPECT_EQ(*CY, 1u);
 
+    *pc = 0u;
     *acc = 0x00u;
     emulator.step();
 
-    EXPECT_EQ(*pc, 0x002u);
     EXPECT_EQ(*acc, 0x0Fu);
     EXPECT_EQ(*CY, 0u);
 }
 
 TEST_F(EmulatorInstructionsTests, TCSTest) {
-    const uint8_t prog[] = { 0xF9 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xF9;
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
     for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 9u);
+    EXPECT_EQ(*CY, 0u);
+
+    *pc = 0u;
+    *CY = 1u;
+    emulator.step();
+
+    EXPECT_EQ(*acc, 10u);
+    EXPECT_EQ(*CY, 0u);
 }
 
 TEST_F(EmulatorInstructionsTests, STCTest) {
-    const uint8_t prog[] = { 0xFA };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xFA;
     emulator.step();
 
     EXPECT_EQ(*pc, 0x001u);
@@ -463,99 +404,101 @@ TEST_F(EmulatorInstructionsTests, STCTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, DAATest) {
-    const uint8_t prog[] = { 0xFB };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xFB;
+    *acc = 5u;
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
     for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 5u);
+    EXPECT_EQ(*CY, 0u);
+
+    *pc = 0u;
+    *acc = 10u;
+    emulator.step();
+
+    EXPECT_EQ(*acc, 0x00u);
+    EXPECT_EQ(*CY, 1u);
+
+    *pc = 0u;
+    *acc = 2u;
+    emulator.step();
+
+    EXPECT_EQ(*acc, 8u);
+    EXPECT_EQ(*CY, 1u);
 }
 
 TEST_F(EmulatorInstructionsTests, KBPTest) {
-    const uint8_t prog[] = { 0xFC, 0xFC, 0xFC, 0xFC, 0xFC, 0xFC, 0xFC };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xFC;
     emulator.step();
 
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     EXPECT_EQ(*CY, 0u);
-
-    EXPECT_EQ(*pc, 0x001u);
     EXPECT_EQ(*acc, 0b0000u);
 
+    *pc = 0u;
     *acc = 0b0001u;
     emulator.step();
-    EXPECT_EQ(*pc, 0x002u);
+
     EXPECT_EQ(*acc, 0b0001u);
 
+    *pc = 0u;
     *acc = 0b0010u;
     emulator.step();
-    EXPECT_EQ(*pc, 0x003u);
+
     EXPECT_EQ(*acc, 0b0010u);
 
+    *pc = 0u;
     *acc = 0b0100u;
     emulator.step();
-    EXPECT_EQ(*pc, 0x004u);
+
     EXPECT_EQ(*acc, 0b0011u);
 
+    *pc = 0u;
     *acc = 0b1000u;
     emulator.step();
-    EXPECT_EQ(*pc, 0x005u);
+
     EXPECT_EQ(*acc, 0b0100u);
 
+    *pc = 0u;
     *acc = 0b0011u;
     emulator.step();
-    EXPECT_EQ(*pc, 0x006u);
+
     EXPECT_EQ(*acc, 0b1111u);
 
+    *pc = 0u;
     *acc = 0b1111u;
     emulator.step();
-    EXPECT_EQ(*pc, 0x007u);
+
     EXPECT_EQ(*acc, 0b1111u);
 }
 
 TEST_F(EmulatorInstructionsTests, DCLTest) {
-    const uint8_t prog[] = { 0xFD };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xFD;
     emulator.step();
 
-    ASSERT_TRUE(false);
-    /*EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*acc, 0x00u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);*/
+    // TODO: Add ram first
 }
 
 TEST_F(EmulatorInstructionsTests, LDMTest) {
-    const uint8_t prog[] = { 0xDF, 0xD2 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xDF;
+    rom[1] = 0xD2;
     emulator.step();
 
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*CY, 0u);
-    
-    EXPECT_EQ(*pc, 0x001u);
     EXPECT_EQ(*acc, 0x0Fu);
+    EXPECT_EQ(*CY, 0u);
 
     emulator.step();
 
@@ -564,118 +507,96 @@ TEST_F(EmulatorInstructionsTests, LDMTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, LDTest) {
-    const uint8_t prog[] = { 0xA2 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xA2;
     registers[1] = 0x20;
     emulator.step();
 
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], i == 1 ? 0x20 : 0x00u);
-    EXPECT_EQ(*CY, 0u);
-
-    EXPECT_EQ(*pc, 0x001u);
     EXPECT_EQ(*acc, 0x02u);
+    EXPECT_EQ(*CY, 0u);
 }
 
 TEST_F(EmulatorInstructionsTests, XCHTest) {
-    const uint8_t prog[] = { 0xB2 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xB2;
     *acc = 0x07u;
     registers[1] = 0x24;
     emulator.step();
 
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], i == 1 ? 0x74 : 0x00u);
-    EXPECT_EQ(*CY, 0u);
-
-    EXPECT_EQ(*pc, 0x001u);
     EXPECT_EQ(*acc, 0x02u);
+    EXPECT_EQ(*CY, 0u);
 }
 
 TEST_F(EmulatorInstructionsTests, ADDTest) {
-    const uint8_t prog[] = { 0x82, 0x82, 0x82 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
-    // Add
+    rom[0] = 0x82;
     *acc = 0x07u;
     registers[1] = 0x20u;
     emulator.step();
 
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], i == 1 ? 0x20 : 0x00u);
-
-    EXPECT_EQ(*pc, 0x001u);
     EXPECT_EQ(*acc, 0x02u + 0x07u);
     EXPECT_EQ(*CY, 0u);
 
-    // Add with overflow
+    *pc = 0u;
     registers[1] = 0xF0u;
     emulator.step();
-    EXPECT_EQ(*pc, 0x002u);
+
     EXPECT_EQ(*acc, (0x09u + 0x0Fu) & 0x0F);
     EXPECT_EQ(*CY, 1u);
 
-    // Add with carry
+    *pc = 0u;
     registers[1] = 0x20u;
     emulator.step();
-    EXPECT_EQ(*pc, 0x003u);
+
     EXPECT_EQ(*acc, 0x08u + 0x02u + 1u);
     EXPECT_EQ(*CY, 0u);
 }
 
 TEST_F(EmulatorInstructionsTests, SUBTest) {
-    const uint8_t prog[] = { 0x92, 0x92, 0x92 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
-    // Sub
+    rom[0] = 0x92;
     *acc = 0x07u;
     registers[1] = 0x20u;
     emulator.step();
 
+    EXPECT_EQ(*pc, 0x001u);
     for (uint8_t i = 0; i < 3u; ++i)
         EXPECT_EQ(stack[i], 0x000u);
     for (uint8_t i = 0; i < 8u; ++i)
         EXPECT_EQ(registers[i], i == 1 ? 0x20 : 0x00u);
-
-    EXPECT_EQ(*pc, 0x001u);
     EXPECT_EQ(*acc, 0x07u - 0x02u);
     EXPECT_EQ(*CY, 1u);
 
-    // Sub with overflow
+    *pc = 0u;
     *CY = 0u;
     registers[1] = 0xF0u;
     emulator.step();
-    EXPECT_EQ(*pc, 0x002u);
+
     EXPECT_EQ(*acc, (0x05u - 0x0Fu) & 0x0F);
     EXPECT_EQ(*CY, 0u);
 
-    // Sub with borrow
+    *pc = 0u;
     *CY = 1u;
     registers[1] = 0x30u;
     emulator.step();
-    EXPECT_EQ(*pc, 0x003u);
+
     EXPECT_EQ(*acc, 0x06u - 0x03u - 1u);
     EXPECT_EQ(*CY, 1u);
 }
 
 TEST_F(EmulatorInstructionsTests, INCTest) {
-    const uint8_t prog[] = { 0x62, 0x62 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
-    // Inc
+    rom[0] = 0x62;
     registers[1] = 0xE0u;
     emulator.step();
 
@@ -687,17 +608,14 @@ TEST_F(EmulatorInstructionsTests, INCTest) {
     EXPECT_EQ(*acc, 0u);
     EXPECT_EQ(*CY, 0u);
 
-    // Inc with overflow
+    *pc = 0u;
     emulator.step();
-    EXPECT_EQ(*pc, 0x002u);
+
     EXPECT_EQ(registers[1], 0x00u);
 }
 
 TEST_F(EmulatorInstructionsTests, BBLTest) {
-    const uint8_t prog[] = { 0xC2 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0xC2;
     registers[1] = 0x10u;
     stack[0] = 0x010u;
     emulator.step();
@@ -712,10 +630,8 @@ TEST_F(EmulatorInstructionsTests, BBLTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, JUNTest) {
-    const uint8_t prog[] = { 0x41, 0x42 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0x41;
+    rom[1] = 0x42;
     emulator.step();
 
     EXPECT_EQ(*pc, 0x142u);
@@ -728,10 +644,8 @@ TEST_F(EmulatorInstructionsTests, JUNTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, JMSTest) {
-    const uint8_t prog[] = { 0x51, 0x42 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0x51;
+    rom[1] = 0x42;
     emulator.step();
 
     EXPECT_EQ(*pc, 0x142u);
@@ -744,10 +658,8 @@ TEST_F(EmulatorInstructionsTests, JMSTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, FIMTest) {
-    const uint8_t prog[] = { 0x24, 0x42 };
-    const size_t size = sizeof(prog) / sizeof(uint8_t);
-    emulator.loadProgram(prog, size);
-
+    rom[0] = 0x24;
+    rom[1] = 0x42;
     emulator.step();
 
     EXPECT_EQ(*pc, 0x002u);

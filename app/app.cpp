@@ -25,7 +25,7 @@ void App::printROM()
     ss << "-ROM-\n";
     uint16_t addr = 0x000;
     ss << std::setfill('0') << std::hex;
-    for (uint16_t i = 0; i < ROM::ROM_SIZE; ++i) {
+    for (uint16_t i = 0; i < ROM::PAGE_SIZE; ++i) {
         if (i % numberOfColumns == 0) {
             ss << '\n' << std::setw(3) << addr << ':';
             addr += static_cast<uint16_t>(numberOfColumns);

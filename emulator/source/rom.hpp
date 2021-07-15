@@ -1,10 +1,14 @@
 #pragma once
+#include "shared/source/whitebox.hpp"
+
 #include <cstring>
 
 class ROM
 {
 public:
-    static constexpr uint16_t ROM_SIZE = 256;
+    static constexpr uint16_t PAGE_SIZE = 256u;
+    static constexpr uint16_t NUM_ROM_CHIPS = 16u;
+    static constexpr uint16_t ROM_SIZE = PAGE_SIZE * NUM_ROM_CHIPS;
 
     ROM();
 
@@ -14,5 +18,8 @@ public:
 
     const uint8_t* getRomContents() const { return m_rom; }
 private:
-    uint8_t m_rom[ROM_SIZE]; // TODO: Make it proper size - x16
+    uint8_t m_rom[ROM_SIZE];
+    uint8_t m_ioPorts[NUM_ROM_CHIPS];
+
+    ALLOW_WHITEBOX(ROM);
 };
