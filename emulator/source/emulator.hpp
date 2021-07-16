@@ -9,6 +9,7 @@ class Emulator
 {
 public:
     Emulator();
+    // TODO: add load from binary and change names accordingly
     bool loadProgram(const char* filename);
     void loadProgram(const uint8_t* bytecode, size_t codeSize);
     void step(size_t times = 1u);

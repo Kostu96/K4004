@@ -4,7 +4,19 @@
 
 template<>
 struct WhiteBox<RAM> {
-    static uint8_t* getSrcAddress(RAM& ram) {
+    static uint8_t* getRAMOutputPorts(RAM& ram) {
+        return ram.m_oPorts;
+    }
+
+    static uint8_t* getRAMStatus(RAM& ram) {
+        return ram.m_status;
+    }
+
+    static uint8_t* getRAMData(RAM& ram) {
+        return ram.m_ram;
+    }
+
+    static uint16_t* getSrcAddress(RAM& ram) {
         return &ram.m_srcAddress;
     }
 };
@@ -61,7 +73,13 @@ struct WhiteBox<Emulator> {
 struct EmulatorInstructionsTests : public testing::Test {
     void SetUp() override {
         auto& ramObj = WhiteBox<Emulator>::getRAM(emulator);
+        ram = WhiteBox<RAM>::getRAMData(ramObj);
+        ramStatus = WhiteBox<RAM>::getRAMStatus(ramObj);
+        ramOutput = WhiteBox<RAM>::getRAMOutputPorts(ramObj);
         ramSrcAddr = WhiteBox<RAM>::getSrcAddress(ramObj);
+        ASSERT_NE(ram, nullptr);
+        ASSERT_NE(ramStatus, nullptr);
+        ASSERT_NE(ramOutput, nullptr);
         ASSERT_NE(ramSrcAddr, nullptr);
 
         auto& romObj = WhiteBox<Emulator>::getROM(emulator);
@@ -89,7 +107,10 @@ struct EmulatorInstructionsTests : public testing::Test {
     Emulator emulator;
     uint8_t* rom = nullptr;
     uint8_t* romSrcAddr = nullptr;
-    uint8_t* ramSrcAddr = nullptr;
+    uint8_t* ram = nullptr;
+    uint8_t* ramStatus = nullptr;
+    uint8_t* ramOutput = nullptr;
+    uint16_t* ramSrcAddr = nullptr;
     uint8_t* acc = nullptr;
     uint8_t* CY = nullptr;
     uint16_t* pc = nullptr;
@@ -112,16 +133,34 @@ TEST_F(EmulatorInstructionsTests, NOPTest) {
 
 TEST_F(EmulatorInstructionsTests, WRMTest) {
     rom[0] = 0xE0;
+    *acc = 0x07u;
+    *ramSrcAddr = 0b00100111u; // chip 0 | reg 2 | char 7
     emulator.step();
 
-    // TODO: Add RAM first
+    EXPECT_EQ(*pc, 0x001u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x07u);
+    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(ram[*ramSrcAddr], *acc);
 }
 
 TEST_F(EmulatorInstructionsTests, WMPTest) {
     rom[0] = 0xE1;
+    *acc = 0x07u;
+    *ramSrcAddr = 0b10000000u; // chip 2
     emulator.step();
 
-    // TODO: Add RAM first
+    EXPECT_EQ(*pc, 0x001u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x07u);
+    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(ramOutput[2], *acc);
 }
 
 TEST_F(EmulatorInstructionsTests, WRRTest) {
@@ -133,44 +172,114 @@ TEST_F(EmulatorInstructionsTests, WRRTest) {
 
 TEST_F(EmulatorInstructionsTests, WR0Test) {
     rom[0] = 0xE4;
+    *acc = 0x07u;
+    *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
     emulator.step();
 
-    // TODO: Add RAM first
+    EXPECT_EQ(*pc, 0x001u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x07u);
+    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(ramStatus[40], *acc);
 }
 
 TEST_F(EmulatorInstructionsTests, WR1Test) {
     rom[0] = 0xE5;
+    *acc = 0x07u;
+    *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
     emulator.step();
 
-    // TODO: Add RAM first
+    EXPECT_EQ(*pc, 0x001u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x07u);
+    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(ramStatus[41], *acc);
 }
 
 TEST_F(EmulatorInstructionsTests, WR2Test) {
     rom[0] = 0xE6;
+    *acc = 0x07u;
+    *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
     emulator.step();
 
-    // TODO: Add RAM first
+    EXPECT_EQ(*pc, 0x001u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x07u);
+    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(ramStatus[42], *acc);
 }
 
 TEST_F(EmulatorInstructionsTests, WR3Test) {
     rom[0] = 0xE7;
+    *acc = 0x07u;
+    *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
     emulator.step();
 
-    // TODO: Add RAM first
+    EXPECT_EQ(*pc, 0x001u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x07u);
+    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(ramStatus[43], *acc);
 }
 
 TEST_F(EmulatorInstructionsTests, SBMTest) {
     rom[0] = 0xE8;
+    *acc = 0x07u;
+    *ramSrcAddr = 0b00100111u; // chip 0 | reg 2 | char 7
+    ram[*ramSrcAddr] = 0x02u;
     emulator.step();
 
-    // TODO: Add RAM first
+    EXPECT_EQ(*pc, 0x001u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x07u - 0x02u);
+    EXPECT_EQ(*CY, 1u);
+
+    *pc = 0u;
+    *CY = 0u;
+    ram[*ramSrcAddr] = 0x0Fu;
+    emulator.step();
+
+    EXPECT_EQ(*acc, (0x05u - 0x0Fu) & 0x0F);
+    EXPECT_EQ(*CY, 0u);
+
+    *pc = 0u;
+    *CY = 1u;
+    ram[*ramSrcAddr] = 0x03u;
+    emulator.step();
+
+    EXPECT_EQ(*acc, 0x06u - 0x03u - 1u);
+    EXPECT_EQ(*CY, 1u);
 }
 
 TEST_F(EmulatorInstructionsTests, RDMTest) {
     rom[0] = 0xE9;
+    *ramSrcAddr = 0b00100111u; // chip 0 | reg 2 | char 7
+    ram[*ramSrcAddr] = 0x07u;
     emulator.step();
 
-    // TODO: Add RAM first
+    EXPECT_EQ(*pc, 0x001u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x07u);
+    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(ram[*ramSrcAddr], *acc);
 }
 
 TEST_F(EmulatorInstructionsTests, RDRTest) {
@@ -182,37 +291,96 @@ TEST_F(EmulatorInstructionsTests, RDRTest) {
 
 TEST_F(EmulatorInstructionsTests, ADMTest) {
     rom[0] = 0xEB;
+    *acc = 0x07u;
+    *ramSrcAddr = 0b00100111u; // chip 0 | reg 2 | char 7
+    ram[*ramSrcAddr] = 0x02u;
     emulator.step();
 
-    // TODO: Add RAM first
+    EXPECT_EQ(*pc, 0x001u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x02u + 0x07u);
+    EXPECT_EQ(*CY, 0u);
+
+    *pc = 0u;
+    ram[*ramSrcAddr] = 0x0Fu;
+    emulator.step();
+
+    EXPECT_EQ(*acc, (0x09u + 0x0Fu) & 0x0F);
+    EXPECT_EQ(*CY, 1u);
+
+    *pc = 0u;
+    ram[*ramSrcAddr] = 0x02u;
+    emulator.step();
+
+    EXPECT_EQ(*acc, 0x08u + 0x02u + 1u);
+    EXPECT_EQ(*CY, 0u);
 }
 
 TEST_F(EmulatorInstructionsTests, RD0Test) {
     rom[0] = 0xEC;
+    *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
+    ramStatus[40] = 0x07u;
     emulator.step();
 
-    // TODO: Add RAM first
+    EXPECT_EQ(*pc, 0x001u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x07u);
+    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(ramStatus[40], *acc);
 }
 
 TEST_F(EmulatorInstructionsTests, RD1Test) {
     rom[0] = 0xED;
+    *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
+    ramStatus[41] = 0x07u;
     emulator.step();
 
-    // TODO: Add RAM first
+    EXPECT_EQ(*pc, 0x001u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x07u);
+    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(ramStatus[41], *acc);
 }
 
 TEST_F(EmulatorInstructionsTests, RD2Test) {
     rom[0] = 0xEE;
+    *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
+    ramStatus[42] = 0x07u;
     emulator.step();
 
-    // TODO: Add RAM first
+    EXPECT_EQ(*pc, 0x001u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x07u);
+    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(ramStatus[42], *acc);
 }
 
 TEST_F(EmulatorInstructionsTests, RD3Test) {
     rom[0] = 0xEF;
+    *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
+    ramStatus[43] = 0x07u;
     emulator.step();
 
-    // TODO: Add RAM first
+    EXPECT_EQ(*pc, 0x001u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], 0x00u);
+    EXPECT_EQ(*acc, 0x07u);
+    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(ramStatus[43], *acc);
 }
 
 TEST_F(EmulatorInstructionsTests, CLBTest) {
@@ -506,9 +674,18 @@ TEST_F(EmulatorInstructionsTests, KBPTest) {
 
 TEST_F(EmulatorInstructionsTests, DCLTest) {
     rom[0] = 0xFD;
+    *acc = 0x02u;
+    *ramSrcAddr = 0b01010101u;
     emulator.step();
 
-    // TODO: Add ram first
+    EXPECT_EQ(*pc, 0x001u);
+    for (uint8_t i = 0; i < 8u; ++i)
+        EXPECT_EQ(registers[i], 0x00u);
+    for (uint8_t i = 0; i < 3u; ++i)
+        EXPECT_EQ(stack[i], 0x000u);
+    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(*acc, 0x02u);
+    EXPECT_EQ(*ramSrcAddr, 0b1001010101u);
 }
 
 TEST_F(EmulatorInstructionsTests, LDMTest) {
@@ -712,19 +889,7 @@ TEST_F(EmulatorInstructionsTests, SRCTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, JCNTest) {
-    rom[0] = 0x25;
-    registers[2] = 0x42u;
-    emulator.step();
-
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], i == 2u ? 0x42u : 0x00u);
-    EXPECT_EQ(*acc, 0u);
-    EXPECT_EQ(*CY, 0u);
-    EXPECT_EQ(*romSrcAddr, 0x42u);
-    EXPECT_EQ(*ramSrcAddr, 0x42u);
+    
 }
 
 // TODO: Make tests for these:

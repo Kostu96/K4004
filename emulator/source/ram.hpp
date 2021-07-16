@@ -9,17 +9,30 @@ public:
     static constexpr uint16_t NUM_RAM_CHIPS = 16u;
     static constexpr uint16_t NUM_RAM_REGS = 4u;
     static constexpr uint16_t NUM_REG_CHARS = 16u;
+    static constexpr uint16_t NUM_STAUS_CHARS = 4u;
     static constexpr uint16_t RAM_SIZE = NUM_RAM_CHIPS * NUM_RAM_REGS * NUM_REG_CHARS;
+    static constexpr uint16_t STATUS_SIZE = NUM_RAM_CHIPS * NUM_RAM_REGS * NUM_STAUS_CHARS;
 
     RAM();
 
     void reset();
+    void writeRAM(uint8_t character);
+    uint8_t readRAM() const { return m_ram[m_srcAddress] & 0x0F; }
+    void writeStatus(uint8_t character, uint8_t index);
+    uint8_t readStatus(uint8_t index) const;
+    void writeOutputPort(uint8_t character);
 
-    void setSrcAddress(uint8_t address) { m_srcAddress = address; }
-    uint8_t getSrcAddress() const { return m_srcAddress; }
+    void setRAMBank(uint8_t index);
+    void setSrcAddress(uint8_t address);
+    uint16_t getSrcAddress() const { return m_srcAddress & 0x3FFu; }
+    
+    RAM(const RAM&) = delete;
+    RAM& operator=(const RAM&) = delete;
 private:
-    uint8_t m_srcAddress;
+    uint16_t m_srcAddress;
     uint8_t m_ram[RAM_SIZE];
+    uint8_t m_status[STATUS_SIZE];
+    uint8_t m_oPorts[NUM_RAM_CHIPS];
 
     ALLOW_WHITEBOX(RAM);
 };

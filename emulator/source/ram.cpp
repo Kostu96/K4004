@@ -1,3 +1,4 @@
+#include "ram.hpp"
 #include "emulator/source/ram.hpp"
 
 #include <cstring>
@@ -11,4 +12,41 @@ void RAM::reset()
 {
     m_srcAddress = 0u;
     std::memset(m_ram, 0, RAM_SIZE);
+    std::memset(m_status, 0, STATUS_SIZE);
+    std::memset(m_oPorts, 0, NUM_RAM_CHIPS);
+}
+
+void RAM::writeRAM(uint8_t character)
+{
+    m_ram[m_srcAddress] = character & 0x0Fu;
+}
+
+void RAM::writeStatus(uint8_t character, uint8_t index)
+{
+    uint8_t addr = ((m_srcAddress >> 2) & 0x3Cu) | (index & 0x03u);
+    m_status[addr] = character & 0x0Fu;
+}
+
+uint8_t RAM::readStatus(uint8_t index) const
+{
+    uint8_t addr = ((m_srcAddress >> 2) & 0x3Cu) | (index & 0x03u);
+    return m_status[addr] & 0x0F;
+}
+
+void RAM::writeOutputPort(uint8_t character)
+{
+    uint8_t addr = (m_srcAddress >> 6) & 0x03u;
+    m_oPorts[addr] = character & 0x0Fu;
+}
+
+void RAM::setRAMBank(uint8_t index)
+{
+    m_srcAddress &= 0x00FFu;
+    m_srcAddress |= static_cast<uint16_t>(index) << 8;
+}
+
+void RAM::setSrcAddress(uint8_t address)
+{
+    m_srcAddress &= 0x0300u;
+    m_srcAddress |= address;
 }
