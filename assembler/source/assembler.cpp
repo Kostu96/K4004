@@ -63,13 +63,13 @@ bool Assembler::assemble(const char* filename, std::uint8_t*& output, size_t& ou
     m_symbolTable.clear();
     m_address = 0u;
 
-    std::stringstream firstPass, secondPass;
+    std::stringstream ss;
     std::string line;
     while (std::getline(file, line)) {
         if (trimComments(line)) continue;
         if (trimWhiteSpaces(line)) continue;
         if (checkForSymbols(line)) continue;
-        firstPass << line << '\n';
+        ss << line << '\n';
     }
     file.close();
 
@@ -77,7 +77,7 @@ bool Assembler::assemble(const char* filename, std::uint8_t*& output, size_t& ou
     outputSize = m_address;
 
     uint16_t outputIndex = 0u;
-    while (std::getline(firstPass, line)) {
+    while (std::getline(ss, line)) {
         if (!parseLine(line, output, outputIndex))
             return false;
     }
@@ -123,10 +123,11 @@ bool Assembler::checkForSymbols(std::string& line)
             ++m_address;
             return false;
         }
-        else {
-            // Error
+
+        if (token == ".END")
             return true;
-        }
+
+        return true; // Error
     }
 
     MnemonicDesc desc;
@@ -139,21 +140,18 @@ bool Assembler::checkForSymbols(std::string& line)
                 line = line.substr(token2Start);
                 return checkForSymbols(line);
             }
-            else
-                line = "";
+            
+            return true;
         }
-        else {
-            uint16_t value = std::atoi(token.c_str() + hasEqualSign + 1);
-            token = token.substr(0, hasEqualSign);
-            m_symbolTable.insert(std::make_pair<>(token, value));
-            line = "";
-        }
-    }
-    else {
-        m_address += desc.type == InsType::TwoByte ? 2 : 1;
+
+        uint16_t value = std::atoi(token.c_str() + hasEqualSign + 1);
+        token = token.substr(0, hasEqualSign);
+        m_symbolTable.insert(std::make_pair<>(token, value));
+        return true;
     }
 
-    return line.empty();
+    m_address += desc.type == InsType::TwoByte ? 2 : 1;
+    return false;
 }
 
 bool Assembler::parseLine(const std::string& line, uint8_t* output, uint16_t& outputIndex)
