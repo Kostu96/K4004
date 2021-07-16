@@ -15,7 +15,7 @@ struct AssemblerTests : public testing::TestWithParam<AssemblerTestParam> {
     Assembler assembler;
 };
 
-TEST_P(AssemblerTests, given4bitAdditionAssemblerCodeWhenAssemblingThenCorrectByteCodeIsReturned) {
+TEST_P(AssemblerTests, givenProgramAssemblyCodeWhenAssemblingThenCorrectByteCodeIsReturned) {
     auto& testParam = GetParam();
     
     std::uint8_t* byteCode;
