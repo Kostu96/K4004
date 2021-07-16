@@ -160,11 +160,12 @@ void K4004::setRegisterValue(uint8_t reg, uint8_t value)
 
 void K4004::WRM()
 {
-
+    m_ram.writeRAM(m_Acc);
 }
 
 void K4004::WMP()
 {
+    m_ram.writeOutputPort(m_Acc);
 }
 
 void K4004::WRR()
@@ -173,26 +174,36 @@ void K4004::WRR()
 
 void K4004::WR0()
 {
+    m_ram.writeStatus(m_Acc, 0u);
 }
 
 void K4004::WR1()
 {
+    m_ram.writeStatus(m_Acc, 1u);
 }
 
 void K4004::WR2()
 {
+    m_ram.writeStatus(m_Acc, 2u);
 }
 
 void K4004::WR3()
 {
+    m_ram.writeStatus(m_Acc, 3u);
 }
 
 void K4004::SBM()
 {
+    m_CY = m_CY == 0u ? 1u : 0u;
+    uint8_t temp = (~m_ram.readRAM() & 0x0Fu) + m_CY;
+    temp += m_Acc;
+    m_Acc = temp & 0x0Fu;
+    m_CY = (temp >> 4) & 1u;
 }
 
 void K4004::RDM()
 {
+    m_Acc = m_ram.readRAM() & 0x0Fu;
 }
 
 void K4004::RDR()
@@ -201,22 +212,30 @@ void K4004::RDR()
 
 void K4004::ADM()
 {
+    uint8_t temp = (m_ram.readRAM() & 0x0Fu) + m_CY;
+    temp += m_Acc;
+    m_Acc = temp & 0x0Fu;
+    m_CY = (temp >> 4) & 1u;
 }
 
 void K4004::RD0()
 {
+    m_Acc = m_ram.readStatus(0u) & 0x0Fu;
 }
 
 void K4004::RD1()
 {
+    m_Acc = m_ram.readStatus(1u) & 0x0Fu;
 }
 
 void K4004::RD2()
 {
+    m_Acc = m_ram.readStatus(2u) & 0x0Fu;
 }
 
 void K4004::RD3()
 {
+    m_Acc = m_ram.readStatus(3u) & 0x0Fu;
 }
 
 void K4004::CLB()
@@ -309,6 +328,21 @@ void K4004::KBP()
 
 void K4004::DCL()
 {
+    uint8_t temp = m_Acc & 0x07u;
+    switch (temp) {
+    case 0b000:
+        m_ram.setRAMBank(0u);
+        break;
+    case 0b001:
+        m_ram.setRAMBank(1u);
+        break;
+    case 0b010:
+        m_ram.setRAMBank(2u);
+        break;
+    case 0b100:
+        m_ram.setRAMBank(3u);
+        break;
+    }
 }
 
 void K4004::JCN()
@@ -365,20 +399,20 @@ void K4004::ISZ()
 
 void K4004::ADD()
 {
-    uint8_t temp = m_IR & 0x0F;
+    uint8_t temp = m_IR & 0x0Fu;
     temp = getRegisterValue(temp) + m_CY;
     temp += m_Acc;
-    m_Acc = temp & 0x0F;
+    m_Acc = temp & 0x0Fu;
     m_CY = temp >> 4;
 }
 
 void K4004::SUB()
 {
     m_CY = m_CY == 0u ? 1u : 0u;
-    uint8_t temp = m_IR & 0x0F;
-    temp = (~getRegisterValue(temp) & 0x0F) + m_CY;
+    uint8_t temp = m_IR & 0x0Fu;
+    temp = (~getRegisterValue(temp) & 0x0Fu) + m_CY;
     temp += m_Acc;
-    m_Acc = temp & 0x0F;
+    m_Acc = temp & 0x0Fu;
     m_CY = (temp >> 4) & 1u;
 }
 
