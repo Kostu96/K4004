@@ -3,7 +3,7 @@
 int main()
 {
     App app;
-    if (app.Construct(640, 360, 2, 2, false, true))
+    if (app.Construct(800, 450, 2, 2, false, true))
         app.Start();
     else
         return -1;

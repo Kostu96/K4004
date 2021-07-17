@@ -16,6 +16,7 @@ private:
 
     void printROM();
     void printCPU();
+    void printRAM();
 
     Emulator emulator;
 };

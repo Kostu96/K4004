@@ -13,7 +13,7 @@ void RAM::reset()
     m_srcAddress = 0u;
     std::memset(m_ram, 0, RAM_SIZE);
     std::memset(m_status, 0, STATUS_SIZE);
-    std::memset(m_oPorts, 0, NUM_RAM_CHIPS);
+    std::memset(m_oPorts, 0, OUTPUT_SIZE);
 }
 
 void RAM::writeRAM(uint8_t character)

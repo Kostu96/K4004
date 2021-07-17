@@ -15,6 +15,7 @@ public:
     void step(size_t times = 1u);
     void reset();
 
+    const RAM& getRAM() const { return m_ram; }
     const ROM& getROM() const { return m_rom; }
     const K4004& getCPU() const { return m_cpu; }
 private:
