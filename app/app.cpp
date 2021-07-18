@@ -14,6 +14,9 @@ bool App::OnUserUpdate(float fElapsedTime)
     if (GetKey(olc::SPACE).bPressed)
         emulator.step();
 
+    if (GetKey(olc::R).bPressed)
+        emulator.reset();
+
     Clear(olc::DARK_CYAN);
     printROM();
     printCPU();

@@ -1,11 +1,8 @@
 #pragma once
+#include "shared/source/assembly.hpp"
 #include "shared/source/whitebox.hpp"
 
 #include <cstdint>
-
-static constexpr uint16_t BITMASK_12BITS = 0x0FFF;
-static constexpr uint8_t BITMASK_4BITS = 0x0F;
-static constexpr uint8_t BITMASK_1BIT = 0x01;
 
 class ROM;
 class RAM;
@@ -26,7 +23,7 @@ public:
     const uint16_t* getStack() const { return m_stack; }
     uint16_t getPC() const { return m_PC; }
     const uint8_t* getRegisters() const { return m_registers; }
-    void setTest(uint8_t test) { m_test = test & 1u; }
+    void setTest(uint8_t test) { m_test = test & BITMASK_1BIT; }
     uint8_t getTest() const { return m_test; }
 private:
     uint8_t getRegisterValue(uint8_t reg);
@@ -80,6 +77,7 @@ private:
     RAM& m_ram;
     uint8_t m_registers[8];
     uint16_t m_stack[3];
+    uint8_t m_stackDepth;
     uint16_t m_PC;
     uint8_t m_IR;
     uint8_t m_Acc;

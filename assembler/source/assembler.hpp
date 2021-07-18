@@ -1,7 +1,7 @@
 #pragma once
 #include "shared/source/whitebox.hpp"
 
-#include <cinttypes>
+#include <cstdint>
 #include <string>
 #include <unordered_map>
 
@@ -20,8 +20,8 @@ private:
     };
 
     struct MnemonicDesc {
-        InsType type = InsType::Invalid;
         uint8_t byte = 0;
+        InsType type = InsType::Invalid;
     };
 
     bool trimComments(std::string& line);
