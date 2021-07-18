@@ -13,7 +13,7 @@ public:
     bool loadProgram(const char* filename);
     void loadProgram(const uint8_t* bytecode, size_t codeSize);
     void step(size_t times = 1u);
-    void reset();
+    void reset(bool resetROM = false);
 
     const RAM& getRAM() const { return m_ram; }
     const ROM& getROM() const { return m_rom; }

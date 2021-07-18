@@ -36,8 +36,11 @@ void Emulator::step(size_t times)
     }
 }
 
-void Emulator::reset()
+void Emulator::reset(bool resetROM)
 {
     m_cpu.reset();
-    m_rom.reset();
+    m_ram.reset();
+
+    if (resetROM)
+        m_rom.reset();
 }
