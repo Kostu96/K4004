@@ -92,7 +92,49 @@ INSTANTIATE_TEST_SUITE_P(Parametrized, DisassemblerTests,
             "CLC",
             "JUN $023",
             ""
-        }
-        )
+        }),
+        DisassemblerTestParam({
+            0x20, 0x00, 0x22, 0x00, 0xDC, 0xB2, 0x21, 0xE0,
+            0xF2, 0x71, 0x06, 0x60, 0x72, 0x06, 0x20, 0x00,
+            0x22, 0x00, 0xDC, 0xB2, 0x21, 0xE4, 0xF2, 0xE5,
+            0xF2, 0xE6, 0xF2, 0xE7, 0xF2, 0x60, 0x72, 0x14,
+            0x40, 0x20
+        },
+        {
+            "FIM P0, $00",
+            "",
+            "FIM P1, $00",
+            "",
+            "LDM $C",
+            "XCH R2",
+            "SRC P0",
+            "WRM",
+            "IAC",
+            "ISZ R1, $06",
+            "",
+            "INC R0",
+            "ISZ R2, $06",
+            "",
+            "FIM P0, $00",
+            "",
+            "FIM P1, $00",
+            "",
+            "LDM $C",
+            "XCH R2",
+            "SRC P0",
+            "WR0",
+            "IAC",
+            "WR1",
+            "IAC",
+            "WR2",
+            "IAC",
+            "WR3",
+            "IAC",
+            "INC R0",
+            "ISZ R2, $14",
+            "",
+            "JUN $020",
+            ""
+        })
     )
 );
