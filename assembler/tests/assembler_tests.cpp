@@ -18,18 +18,15 @@ struct AssemblerTests : public testing::TestWithParam<AssemblerTestParam> {
 TEST_P(AssemblerTests, givenProgramAssemblyCodeWhenAssemblingThenCorrectByteCodeIsReturned) {
     auto& testParam = GetParam();
     
-    std::uint8_t* byteCode;
-    std::size_t byteCodeSize;
-    bool ret = assembler.assemble(testParam.sourceFilename, byteCode, byteCodeSize);
+    std::vector<uint8_t> byteCode;
+    bool ret = assembler.assemble(testParam.sourceFilename, byteCode);
     ASSERT_TRUE(ret);
 
-    EXPECT_EQ(byteCodeSize, testParam.refByteCode.size());
-    ASSERT_LE(byteCodeSize, testParam.refByteCode.size());
+    EXPECT_EQ(byteCode.size(), testParam.refByteCode.size());
+    ASSERT_LE(byteCode.size(), testParam.refByteCode.size());
 
-    for (size_t i = 0u; i < byteCodeSize; ++i)
+    for (size_t i = 0u; i < byteCode.size(); ++i)
         EXPECT_EQ(byteCode[i], testParam.refByteCode[i]) << "At byte " << i;
-
-    assembler.freeOutput(byteCode);
 }
 
 INSTANTIATE_TEST_SUITE_P(Parametrized, AssemblerTests,

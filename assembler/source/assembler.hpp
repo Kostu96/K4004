@@ -9,8 +9,8 @@ class Assembler
 {
 public:
     Assembler();
-    bool assemble(const char* filename, std::uint8_t*& output, size_t& outputSize);
-    void freeOutput(uint8_t* output) { delete[] output; }
+    bool assemble(const char* filename, std::vector<uint8_t>& output);
+    void disassemble(std::vector<uint8_t>& bytecode, std::string& output);
 private:
     enum class InsType {
         Invalid,
@@ -27,7 +27,7 @@ private:
     bool trimComments(std::string& line);
     bool trimWhiteSpaces(std::string& line);
     bool checkForSymbols(std::string& line);
-    bool parseLine(const std::string& line, uint8_t* output, uint16_t& outputIndex);
+    bool parseLine(const std::string& line, std::vector<uint8_t>& output);
     uint16_t parseOperand(const std::string& token);
     bool parseRegister(const std::string_view& str, uint16_t& value);
     bool parseRegisterPair(const std::string_view& str, uint16_t& value);

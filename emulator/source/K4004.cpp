@@ -16,15 +16,7 @@ K4004::K4004(ROM& rom, RAM& ram) :
 void K4004::step()
 {
     m_IR = m_rom.getByte(m_PC++);
-    uint8_t opcode;
-    uint8_t irHP = (m_IR >> 4) & BITMASK_4BITS;
-    if (irHP == 0u || irHP > 0xD)
-        opcode = m_IR;
-    else if (irHP == 2 || irHP == 3)
-        opcode = m_IR | 0x0E;
-    else
-        opcode = m_IR | BITMASK_4BITS;
-
+    uint8_t opcode = getOpcodeFromByte(m_IR);
     switch (opcode) {
     case ASM_NOP: break;
     case ASM_WRM: WRM(); break;

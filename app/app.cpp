@@ -1,11 +1,19 @@
 #include "app/app.hpp"
 
+#include "assembler/source/assembler.hpp"
+
 #include <sstream>
 #include <bitset>
 
 bool App::OnUserCreate()
 {
-    emulator.loadProgram("programs/mcs4_evaluation.asm");
+    Assembler assembler;
+    std::vector<uint8_t> bytecode;
+    assembler.assemble("programs/4bit_addition.asm", bytecode);
+    emulator.loadProgram(bytecode.data(), bytecode.size());
+    std::string output;
+    assembler.disassemble(bytecode, output);
+    disassembly.str(output);
     return true;
 }
 
@@ -62,6 +70,8 @@ void App::printCPU()
     ss << '\n';
     ss << "Acc: " << std::setw(2) << +cpu.getAcc() << '\n';
     ss << "CY: " << +cpu.getCY();
+    ss << "\n\n";
+    ss << "Current Instruction:\n";
 
     DrawStringDecal({ 250, 2 }, ss.str(), olc::BLACK);
 }

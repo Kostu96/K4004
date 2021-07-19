@@ -7,6 +7,7 @@ set(K4004_EMULATOR_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/ram.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rom.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/rom.hpp
+    ${SHARED_DIR}/source/assembly.cpp
     ${SHARED_DIR}/source/assembly.hpp
     ${SHARED_DIR}/source/whitebox.hpp
 )

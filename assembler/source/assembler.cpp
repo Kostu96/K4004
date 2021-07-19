@@ -56,7 +56,7 @@ Assembler::Assembler() :
         { "FIM", { ASM_FIM, InsType::TwoByte } }
     }) {}
 
-bool Assembler::assemble(const char* filename, std::uint8_t*& output, size_t& outputSize)
+bool Assembler::assemble(const char* filename, std::vector<uint8_t>& output)
 {
     std::fstream file(filename);
     if (!file.is_open())
@@ -75,16 +75,53 @@ bool Assembler::assemble(const char* filename, std::uint8_t*& output, size_t& ou
     }
     file.close();
 
-    output = new uint8_t[m_address];
-    outputSize = m_address;
-
-    uint16_t outputIndex = 0u;
+    output.reserve(m_address);
     while (std::getline(ss, line)) {
-        if (!parseLine(line, output, outputIndex))
+        if (!parseLine(line, output))
             return false;
     }
 
     return true;
+}
+
+void Assembler::disassemble(std::vector<uint8_t>& bytecode, std::string& output)
+{
+    std::stringstream ss;
+    for (size_t i = 0; i < bytecode.size(); ++i) {
+        uint8_t opcode = getOpcodeFromByte(bytecode[i]);
+        switch (opcode) {
+        case ASM_FIM_MASK: {
+            ss << "FIM P";
+            uint8_t regPair = (bytecode[i] & 0x0Fu) >> 1;
+            ss << +regPair << ", ";
+            ++i;
+            ss << '$' << std::uppercase << std::hex << +bytecode[i];
+        } break;
+        case ASM_LD_MASK: {
+            ss << "LD R";
+            uint8_t reg = bytecode[i] & 0x0Fu;
+            ss << +reg;
+        } break;
+        case ASM_ADD_MASK: {
+            ss << "ADD R";
+            uint8_t reg = bytecode[i] & 0x0Fu;
+            ss << +reg;
+        } break;
+        case ASM_XCH_MASK: {
+            ss << "XCH R";
+            uint8_t reg = bytecode[i] & 0x0Fu;
+            ss << +reg;
+        } break;
+        case ASM_JUN_MASK: {
+            ss << "JUN $" << std::uppercase << std::hex;
+            uint8_t addrHP = bytecode[i] & 0x0Fu;
+            ss << +addrHP << +bytecode[++i];
+        } break;
+        }
+        ss << '\n';
+    }
+
+    output = std::move(ss.str());
 }
 
 bool Assembler::trimComments(std::string& line)
@@ -156,13 +193,13 @@ bool Assembler::checkForSymbols(std::string& line)
     return false;
 }
 
-bool Assembler::parseLine(const std::string& line, uint8_t* output, uint16_t& outputIndex)
+bool Assembler::parseLine(const std::string& line, std::vector<uint8_t>& output)
 {
     // TODO: change line into string_view
     if (line[0] == '*') {
         uint16_t diff = std::atoi(line.c_str() + 2);
         for (uint16_t i = 0; i < diff; ++i)
-            output[outputIndex++] = 0u;
+            output.push_back(0u);
         return true;
     }
 
@@ -171,7 +208,7 @@ bool Assembler::parseLine(const std::string& line, uint8_t* output, uint16_t& ou
     if (line[0] == '.') {
         token = line.substr(1);
         trimWhiteSpaces(token);
-        output[outputIndex++] = parseOperand(token);
+        output.push_back(parseOperand(token));
         return true;
     }
 
@@ -185,7 +222,7 @@ bool Assembler::parseLine(const std::string& line, uint8_t* output, uint16_t& ou
             if (token1End != line.npos) {
                 return false; // Error: More than one instruction in line
             }
-            output[outputIndex++] = desc.byte;
+            output.push_back(desc.byte);
             break;
         case InsType::Complex:
             if (token1End == line.npos) {
@@ -194,7 +231,7 @@ bool Assembler::parseLine(const std::string& line, uint8_t* output, uint16_t& ou
             token2Beg = line.find_first_not_of(" ", token1End);
             token2End = line.find_first_of(" ", token2Beg);
             token = line.substr(token2Beg, token2End - token2Beg + 1);
-            output[outputIndex++] = desc.byte | parseOperand(token);
+            output.push_back(desc.byte | parseOperand(token));
             break;
         case InsType::TwoByte:
             if (token1End == line.npos) {
@@ -207,20 +244,19 @@ bool Assembler::parseLine(const std::string& line, uint8_t* output, uint16_t& ou
                 // Should be 2 operands
                 token = token.substr(0, token.size() - 1);
                 auto ret = m_symbolTable.find(token);
-                output[outputIndex++] = desc.byte | (ret != m_symbolTable.end() ? ret->second : parseOperand(token));
+                output.push_back(desc.byte | (ret != m_symbolTable.end() ? ret->second : parseOperand(token)));
                 token = line.substr(token2End + 1);
                 ret = m_symbolTable.find(token);
-                output[outputIndex++] = ret != m_symbolTable.end() ? ret->second : parseOperand(token);
+                output.push_back(ret != m_symbolTable.end() ? ret->second : parseOperand(token));
             }
             else {
                 // TODO: not sure if this could only be address for here
                 auto ret = m_symbolTable.find(token);
                 std::uint16_t addr = ret != m_symbolTable.end() ? ret->second : parseOperand(token);
-                output[outputIndex + 1] = addr & 0x00FF;
-                addr &= 0x0F00;
-                addr >>= 8;
-                output[outputIndex] = desc.byte | addr;
-                outputIndex += 2;
+                uint16_t addrHP = addr & 0x0F00u;
+                addrHP >>= 8;
+                output.push_back(desc.byte | addrHP);
+                output.push_back(addr & 0x00FFu);
             }
             break;
         }
