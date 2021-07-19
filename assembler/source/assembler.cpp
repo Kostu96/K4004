@@ -84,13 +84,16 @@ bool Assembler::assemble(const char* filename, std::vector<uint8_t>& output)
     return true;
 }
 
-void Assembler::disassemble(std::vector<uint8_t>& bytecode, std::string& output)
+void Assembler::disassemble(std::vector<uint8_t>& bytecode, std::vector<std::string>& output)
 {
+    output.reserve(bytecode.size());
     std::stringstream ss;
+    bool twoByte = false;
     for (size_t i = 0; i < bytecode.size(); ++i) {
         uint8_t opcode = getOpcodeFromByte(bytecode[i]);
         switch (opcode) {
         case ASM_FIM_MASK: {
+            twoByte = true;
             ss << "FIM P";
             uint8_t regPair = (bytecode[i] & 0x0Fu) >> 1;
             ss << +regPair << ", ";
@@ -113,15 +116,19 @@ void Assembler::disassemble(std::vector<uint8_t>& bytecode, std::string& output)
             ss << +reg;
         } break;
         case ASM_JUN_MASK: {
+            twoByte = true;
             ss << "JUN $" << std::uppercase << std::hex;
             uint8_t addrHP = bytecode[i] & 0x0Fu;
             ss << +addrHP << +bytecode[++i];
         } break;
         }
-        ss << '\n';
+        output.push_back(ss.str());
+        ss.str(std::string());
+        if (twoByte) {
+            output.push_back(std::string());
+            twoByte = false;
+        }
     }
-
-    output = std::move(ss.str());
 }
 
 bool Assembler::trimComments(std::string& line)
