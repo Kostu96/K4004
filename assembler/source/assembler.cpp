@@ -3,8 +3,9 @@
 #include "shared/source/assembly.hpp"
 
 #include <fstream>
-#include <iostream>
 #include <sstream>
+#include <iomanip>
+#include <bitset>
 
 Assembler::Assembler() :
     m_address(0u),
@@ -88,25 +89,90 @@ void Assembler::disassemble(const std::vector<uint8_t>& bytecode, std::vector<st
 {
     output.reserve(bytecode.size());
     std::stringstream ss;
+    ss << std::setfill('0') << std::hex << std::uppercase;
     bool twoByte = false;
     for (size_t i = 0; i < bytecode.size(); ++i) {
         uint8_t opcode = getOpcodeFromByte(bytecode[i]);
+        // TODO: Refactor
         switch (opcode) {
+        case ASM_NOP: ss << "NOP"; break;
+        case ASM_WRM: ss << "WRM"; break;
+        case ASM_WMP: ss << "WMP"; break;
+        case ASM_WRR: ss << "WRR"; break;
+        case ASM_WR0: ss << "WR0"; break;
+        case ASM_WR1: ss << "WR1"; break;
+        case ASM_WR2: ss << "WR2"; break;
+        case ASM_WR3: ss << "WR3"; break;
+        case ASM_SBM: ss << "SBM"; break;
+        case ASM_RDM: ss << "RDM"; break;
+        case ASM_RDR: ss << "RDR"; break;
+        case ASM_ADM: ss << "ADM"; break;
+        case ASM_RD0: ss << "RD0"; break;
+        case ASM_RD1: ss << "RD1"; break;
+        case ASM_RD2: ss << "RD2"; break;
+        case ASM_RD3: ss << "RD3"; break;
+        case ASM_CLB: ss << "CLB"; break;
+        case ASM_CLC: ss << "CLC"; break;
+        case ASM_IAC: ss << "IAC"; break;
+        case ASM_CMC: ss << "CMC"; break;
+        case ASM_CMA: ss << "CMA"; break;
+        case ASM_RAL: ss << "RAL"; break;
+        case ASM_RAR: ss << "RAR"; break;
+        case ASM_TCC: ss << "TCC"; break;
+        case ASM_DAC: ss << "DAC"; break;
+        case ASM_TCS: ss << "TCS"; break;
+        case ASM_STC: ss << "STC"; break;
+        case ASM_DAA: ss << "DAA"; break;
+        case ASM_KBP: ss << "KBP"; break;
+        case ASM_DCL: ss << "DCL"; break;
+        case ASM_JCN_MASK: {
+            twoByte = true;
+            ss << "JCN %";
+            uint8_t reg = bytecode[i] & 0x0Fu;
+            ss << std::bitset<4>(reg) << ", $";
+            ss << std::setw(2) << +bytecode[++i];
+        } break;
         case ASM_FIM_MASK: {
             twoByte = true;
             ss << "FIM P";
             uint8_t regPair = (bytecode[i] & 0x0Fu) >> 1;
             ss << +regPair << ", ";
             ++i;
-            ss << '$' << std::uppercase << std::hex << +bytecode[i];
+            ss << '$' << std::setw(2) << +bytecode[i];
         } break;
-        case ASM_LD_MASK: {
-            ss << "LD R";
+        case ASM_SRC_MASK: {
+            ss << "SRC P";
+            uint8_t regPair = (bytecode[i] & 0x0Fu) >> 1;
+            ss << +regPair;
+        } break;
+        case ASM_FIN_MASK: break;
+        case ASM_JIN_MASK: break;
+        case ASM_JUN_MASK: {
+            twoByte = true;
+            ss << "JUN $";
+            uint8_t addrHP = bytecode[i] & 0x0Fu;
+            ss << +addrHP << std::setw(2) << +bytecode[++i];
+        } break;
+        case ASM_JMS_MASK: {
+            twoByte = true;
+            ss << "JMS $";
+            uint8_t addrHP = bytecode[i] & 0x0Fu;
+            ss << +addrHP << std::setw(2) << +bytecode[++i];
+        } break;
+        case ASM_INC_MASK: {
+            ss << "INC R";
             uint8_t reg = bytecode[i] & 0x0Fu;
             ss << +reg;
         } break;
+        case ASM_ISZ_MASK: break;
         case ASM_ADD_MASK: {
             ss << "ADD R";
+            uint8_t reg = bytecode[i] & 0x0Fu;
+            ss << +reg;
+        } break;
+        case ASM_SUB_MASK: break;
+        case ASM_LD_MASK: {
+            ss << "LD R";
             uint8_t reg = bytecode[i] & 0x0Fu;
             ss << +reg;
         } break;
@@ -115,11 +181,18 @@ void Assembler::disassemble(const std::vector<uint8_t>& bytecode, std::vector<st
             uint8_t reg = bytecode[i] & 0x0Fu;
             ss << +reg;
         } break;
-        case ASM_JUN_MASK: {
-            twoByte = true;
-            ss << "JUN $" << std::uppercase << std::hex;
-            uint8_t addrHP = bytecode[i] & 0x0Fu;
-            ss << +addrHP << +bytecode[++i];
+        case ASM_BBL_MASK: {
+            ss << "BBL $";
+            uint8_t ch = bytecode[i] & 0x0Fu;
+            ss << +ch;
+        } break;
+        case ASM_LDM_MASK: {
+            ss << "LDM $";
+            uint8_t ch = bytecode[i] & 0x0Fu;
+            ss << +ch;
+        } break;
+        default: {
+            ss << "???";
         } break;
         }
         output.push_back(ss.str());
