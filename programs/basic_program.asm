@@ -15,7 +15,7 @@ START FIM P4, 0  ; LOAD ROM PORT 0 ADDRESS
       NOP
 
 ; "AND" subroutine
-*=32
+*=24
 AND    CLB            ; CLEAR ACCUMULATOR AND CARRY
        XCH 2          ; CLEAR REGISTER 2
        LDM 4          ; LOAD LOOP COUNT (LC)
