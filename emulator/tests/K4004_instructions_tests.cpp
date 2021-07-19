@@ -871,7 +871,7 @@ TEST_F(EmulatorInstructionsTests, JMSTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, FIMTest) {
-    rom[0] = ASM_FIM | (ASM_P1 << 1u);
+    rom[0] = ASM_FIM | ASM_P1;
     rom[1] = 0x42;
     emulator.step();
 
@@ -885,7 +885,7 @@ TEST_F(EmulatorInstructionsTests, FIMTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, SRCTest) {
-    rom[0] = ASM_SRC | (ASM_P2 << 1u);
+    rom[0] = ASM_SRC | ASM_P2;
     registers[2] = 0x42u;
     emulator.step();
 

@@ -314,7 +314,7 @@ void K4004::FIM()
 void K4004::SRC()
 {
     uint8_t reg = (m_IR & BITMASK_4BITS) >> 1;
-    uint8_t addr = m_registers[reg / 2];
+    uint8_t addr = m_registers[reg];
     m_rom.setSrcAddress(addr);
     m_ram.setSrcAddress(addr);
 }
