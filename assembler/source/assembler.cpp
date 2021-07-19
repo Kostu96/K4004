@@ -84,7 +84,7 @@ bool Assembler::assemble(const char* filename, std::vector<uint8_t>& output)
     return true;
 }
 
-void Assembler::disassemble(std::vector<uint8_t>& bytecode, std::vector<std::string>& output)
+void Assembler::disassemble(const std::vector<uint8_t>& bytecode, std::vector<std::string>& output)
 {
     output.reserve(bytecode.size());
     std::stringstream ss;

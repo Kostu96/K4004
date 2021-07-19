@@ -10,7 +10,7 @@ class Assembler
 public:
     Assembler();
     bool assemble(const char* filename, std::vector<uint8_t>& output);
-    void disassemble(std::vector<uint8_t>& bytecode, std::vector<std::string>& output);
+    void disassemble(const std::vector<uint8_t>& bytecode, std::vector<std::string>& output);
 private:
     enum class InsType {
         Invalid,
