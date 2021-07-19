@@ -101,7 +101,7 @@ uint8_t K4004::getRegisterValue(uint8_t reg)
 {
     bool isOdd = reg % 2;
     uint8_t regPairValue = m_registers[reg / 2];
-    return (regPairValue >> (isOdd ? 0u : 4u)) & (isOdd ? BITMASK_4BITS_Q1 : BITMASK_4BITS);
+    return (regPairValue >> (isOdd ? 0u : 4u)) & BITMASK_4BITS;
 }
 
 void K4004::setRegisterValue(uint8_t reg, uint8_t value)
