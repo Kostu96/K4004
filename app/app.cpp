@@ -11,9 +11,7 @@ bool App::OnUserCreate()
     std::vector<uint8_t> bytecode;
     assembler.assemble("programs/4bit_addition.asm", bytecode);
     emulator.loadProgram(bytecode.data(), bytecode.size());
-    std::string output;
-    assembler.disassemble(bytecode, output);
-    disassembly.str(output);
+    assembler.disassemble(bytecode, disassembly);
     return true;
 }
 
@@ -61,19 +59,20 @@ void App::printCPU()
 
     ss << "-CPU-\n";
     ss << '\n';
-    ss << "Stack:    Registers:\n";
+    ss << "Stack:   Registers:\n";
     ss << std::setfill('0') << std::hex;
-    ss << "SP " << std::setw(3) << cpu.getPC() << "    R0R1 " << std::setw(2) << +registers[0] << " R8R9 " << std::setw(2) << +registers[4] << '\n';
-    ss << "L1 " << std::setw(3) << stack[0]    << "    R2R3 " << std::setw(2) << +registers[1] << " RARB " << std::setw(2) << +registers[5] << '\n';
-    ss << "L2 " << std::setw(3) << stack[1]    << "    R4R5 " << std::setw(2) << +registers[2] << " RCRD " << std::setw(2) << +registers[6] << '\n';
-    ss << "L3 " << std::setw(3) << stack[2]    << "    R6R7 " << std::setw(2) << +registers[3] << " RERF " << std::setw(2) << +registers[7] << '\n';
+    ss << "SP " << std::setw(3) << cpu.getPC() << "   R0R1 " << std::setw(2) << +registers[0] << " R8R9 " << std::setw(2) << +registers[4] << '\n';
+    ss << "L1 " << std::setw(3) << stack[0]    << "   R2R3 " << std::setw(2) << +registers[1] << " RARB " << std::setw(2) << +registers[5] << '\n';
+    ss << "L2 " << std::setw(3) << stack[1]    << "   R4R5 " << std::setw(2) << +registers[2] << " RCRD " << std::setw(2) << +registers[6] << '\n';
+    ss << "L3 " << std::setw(3) << stack[2]    << "   R6R7 " << std::setw(2) << +registers[3] << " RERF " << std::setw(2) << +registers[7] << '\n';
     ss << '\n';
     ss << "Acc: " << std::setw(2) << +cpu.getAcc() << '\n';
     ss << "CY: " << +cpu.getCY();
     ss << "\n\n";
-    ss << "Current Instruction:\n";
+    ss << "Curr. Ins.:\n";
+    ss << disassembly[cpu.getPC()];
 
-    DrawStringDecal({ 250, 2 }, ss.str(), olc::BLACK);
+    DrawStringDecal({ 240, 2 }, ss.str(), olc::BLACK);
 }
 
 void App::printRAM()
@@ -111,5 +110,5 @@ void App::printRAM()
         addr &= 0x0300u;
     }
 
-    DrawStringDecal({ 470, 2 }, ss.str(), olc::BLACK);
+    DrawStringDecal({ 440, 2 }, ss.str(), olc::BLACK);
 }
