@@ -94,3 +94,5 @@ constexpr uint8_t  BITMASK_4BITS     = 0x0Fu;
 constexpr uint8_t  BITMASK_4BITS_Q1  = 0xF0u;
 constexpr uint16_t BITMASK_12BITS    = 0x0FFFu;
 constexpr uint16_t BITMASK_12BITS_Q2 = 0x0F00u;
+
+uint8_t getOpcodeFromByte(uint8_t byte);

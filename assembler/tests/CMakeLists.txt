@@ -4,6 +4,7 @@ set(K4004_ASSEMBLER_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt
     ${CMAKE_CURRENT_SOURCE_DIR}/assembler_internals_tests.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/assembler_tests.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/disassembler_tests.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 )
 

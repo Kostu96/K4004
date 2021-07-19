@@ -19,4 +19,5 @@ private:
     void printRAM();
 
     Emulator emulator;
+    std::stringstream disassembly;
 };

@@ -12,13 +12,11 @@ Emulator::Emulator() :
 bool Emulator::loadProgram(const char* filename)
 {
     Assembler assembler;
-    std::uint8_t* bytecode;
-    std::size_t codeSize;
-    bool ret = assembler.assemble(filename, bytecode, codeSize);
+    std::vector<uint8_t> bytecode;
+    bool ret = assembler.assemble(filename, bytecode);
 
     if (ret) {
-        m_rom.load(0x00, bytecode, codeSize);
-        assembler.freeOutput(bytecode);
+        m_rom.load(0x00, bytecode.data(), bytecode.size());
     }
 
     return ret;
