@@ -9,7 +9,7 @@ bool App::OnUserCreate()
 {
     Assembler assembler;
     std::vector<uint8_t> bytecode;
-    assembler.assemble("programs/4bit_addition.asm", bytecode);
+    assembler.assemble("programs/mcs4_evaluation.asm", bytecode);
     emulator.loadProgram(bytecode.data(), bytecode.size());
     assembler.disassemble(bytecode, disassembly);
     return true;
@@ -24,8 +24,8 @@ bool App::OnUserUpdate(float fElapsedTime)
         emulator.reset();
 
     Clear(olc::DARK_CYAN);
-    printROM();
     printCPU();
+    printROM();
     printRAM();
     return true;
 }
@@ -38,7 +38,7 @@ void App::printROM()
     
     ss << "-ROM- PAGE: 0\n";
     uint16_t addr = 0x000;
-    ss << std::setfill('0') << std::hex;
+    ss << std::setfill('0') << std::hex << std::uppercase;
     for (uint16_t i = 0; i < ROM::PAGE_SIZE; ++i) {
         if (i % numberOfColumns == 0) {
             ss << '\n' << std::setw(3) << addr << ':';
@@ -53,6 +53,8 @@ void App::printROM()
 void App::printCPU()
 {
     auto& cpu = emulator.getCPU();
+    auto rom = emulator.getROM().getRomContents();
+    auto PC = cpu.getPC();
     auto stack = cpu.getStack();
     auto registers = cpu.getRegisters();
     std::stringstream ss;
@@ -60,18 +62,34 @@ void App::printCPU()
     ss << "-CPU-\n";
     ss << '\n';
     ss << "Stack:   Registers:\n";
-    ss << std::setfill('0') << std::hex;
-    ss << "SP " << std::setw(3) << cpu.getPC() << "   R0R1 " << std::setw(2) << +registers[0] << " R8R9 " << std::setw(2) << +registers[4] << '\n';
-    ss << "L1 " << std::setw(3) << stack[0]    << "   R2R3 " << std::setw(2) << +registers[1] << " RARB " << std::setw(2) << +registers[5] << '\n';
-    ss << "L2 " << std::setw(3) << stack[1]    << "   R4R5 " << std::setw(2) << +registers[2] << " RCRD " << std::setw(2) << +registers[6] << '\n';
-    ss << "L3 " << std::setw(3) << stack[2]    << "   R6R7 " << std::setw(2) << +registers[3] << " RERF " << std::setw(2) << +registers[7] << '\n';
+    ss << std::setfill('0') << std::hex << std::uppercase;
+    ss << "SP " << std::setw(3) << PC       << "   R0R1 " << std::setw(2) << +registers[0] << " R8R9 " << std::setw(2) << +registers[4] << '\n';
+    ss << "L1 " << std::setw(3) << stack[0] << "   R2R3 " << std::setw(2) << +registers[1] << " RARB " << std::setw(2) << +registers[5] << '\n';
+    ss << "L2 " << std::setw(3) << stack[1] << "   R4R5 " << std::setw(2) << +registers[2] << " RCRD " << std::setw(2) << +registers[6] << '\n';
+    ss << "L3 " << std::setw(3) << stack[2] << "   R6R7 " << std::setw(2) << +registers[3] << " RERF " << std::setw(2) << +registers[7] << '\n';
     ss << '\n';
     ss << "Acc: " << std::setw(2) << +cpu.getAcc() << '\n';
     ss << "CY: " << +cpu.getCY();
+    
     ss << "\n\n";
     ss << "Curr. Ins.:\n";
-    ss << disassembly[cpu.getPC()];
+    size_t PCnext = PC + 1ull;
+    bool isTwoByte = false;
+    if (PCnext < disassembly.size()) {
+        isTwoByte = disassembly[PCnext].empty();
+        ss << +rom[PC];
+        if (isTwoByte)
+            ss << ' ' << +rom[PCnext];
+        ss << " -> " << disassembly[PC];
+    }
+    else {
+        ss << "ERROR!";
+    }
 
+    int xpos = 41 + (PC % 8 * 24);
+    int ypos = 17 + (PC / 8 * 8);
+    int width = isTwoByte ? 41 : 17;
+    FillRect({ xpos, ypos }, { width, 9 });
     DrawStringDecal({ 240, 2 }, ss.str(), olc::BLACK);
 }
 

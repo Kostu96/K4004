@@ -2,7 +2,7 @@
 ; test the Intel 4002
 init
     FIM P0, 0     ; initialize R0=R1=0
-    FIM P2, 0     ; initialize R2=R3=0
+    FIM P1, 0     ; initialize R2=R3=0
     LDM 12        ; load 12 to accumulator
     XCH R2        ; initialize R2=12
 loop1
@@ -14,7 +14,7 @@ loop1
     ISZ R2, loop1 ; loop 4 times
 
     FIM P0, 0     ; initialize R0=R1=0
-    FIM P2, 0     ; initialize R2=R3=0
+    FIM P1, 0     ; initialize R2=R3=0
     LDM 12        ; load 12 to accumulator
     XCH R2        ; initialize R2=12
 loop2

@@ -137,8 +137,7 @@ void Assembler::disassemble(const std::vector<uint8_t>& bytecode, std::vector<st
             ss << "FIM P";
             uint8_t regPair = (bytecode[i] & 0x0Fu) >> 1;
             ss << +regPair << ", ";
-            ++i;
-            ss << '$' << std::setw(2) << +bytecode[i];
+            ss << '$' << std::setw(2) << +bytecode[++i];
         } break;
         case ASM_SRC_MASK: {
             ss << "SRC P";
@@ -164,7 +163,13 @@ void Assembler::disassemble(const std::vector<uint8_t>& bytecode, std::vector<st
             uint8_t reg = bytecode[i] & 0x0Fu;
             ss << +reg;
         } break;
-        case ASM_ISZ_MASK: break;
+        case ASM_ISZ_MASK: {
+            twoByte = true;
+            ss << "ISZ R";
+            uint8_t reg = bytecode[i] & 0x0Fu;
+            ss << +reg << ", $";
+            ss << std::setw(2) << +bytecode[++i];
+        } break;
         case ASM_ADD_MASK: {
             ss << "ADD R";
             uint8_t reg = bytecode[i] & 0x0Fu;

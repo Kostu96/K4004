@@ -89,7 +89,8 @@ void K4004::pushStack(uint16_t address)
 
 void K4004::pullStack()
 {
-    if (m_stackDepth-- > 0) {
+    if (m_stackDepth > 0) {
+        --m_stackDepth;
         m_PC = m_stack[0] & BITMASK_12BITS;
         m_stack[0] = m_stack[1] & BITMASK_12BITS;
         m_stack[1] = m_stack[2] & BITMASK_12BITS;
@@ -307,7 +308,7 @@ void K4004::JCN()
 void K4004::FIM()
 {
     uint8_t reg = (m_IR & BITMASK_4BITS) >> 1;
-    m_registers[reg / 2] = m_rom.getByte(m_PC++);
+    m_registers[reg] = m_rom.getByte(m_PC++);
 }
 
 void K4004::SRC()
