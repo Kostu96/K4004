@@ -377,6 +377,14 @@ void K4004::INC()
 
 void K4004::ISZ()
 {
+    uint8_t reg = (m_IR & BITMASK8_4BITS) >> 1;
+    uint8_t addr = m_rom.getByte(m_PC++);
+    ++m_registers[reg];
+    if (m_registers[reg] != 0u) {
+        if ((m_PC & BITMASK16_8BITS) == 0xFE) m_PC += 2u;
+        m_PC &= BITMASK16_4BITS_Q2;
+        m_PC |= addr;
+    }
 }
 
 void K4004::ADD()
