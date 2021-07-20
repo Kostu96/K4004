@@ -1,4 +1,3 @@
-// TODO: Move to shared location
 #pragma once
 
 template <typename T>
