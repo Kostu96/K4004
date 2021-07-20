@@ -1001,12 +1001,18 @@ TEST_F(EmulatorInstructionsTests, JINTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, ISZTest) {
+    rom[0] = ASM_ISZ | ASM_P1;
+    rom[1] = 0x42u;
+    registers[1] = 0xFEu;
+    emulator.step();
 
+    EXPECT_EQ(*pc, 0x042u);
+    EXPECT_EQ(registers[1], 0xFFu);
+
+    *pc = 0u;
+    emulator.step();
+    EXPECT_EQ(*pc, 0x002u);
+    EXPECT_EQ(registers[1], 0x00u);
 }
 
 // TODO: Make tests for instructions that operates on page boundary
-
-// TODO: Make tests for these:
-// constexpr uint8_t INS_FIN_MASK = 0x3E; - Skip until more rom
-// constexpr uint8_t INS_JIN_MASK = 0x3F; - Skip until more rom
-// constexpr uint8_t INS_ISZ_MASK = 0x7F; - Skip until more rom
