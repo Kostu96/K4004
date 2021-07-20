@@ -340,6 +340,10 @@ void K4004::SRC()
 
 void K4004::FIN()
 {
+    uint8_t reg = (m_IR & BITMASK8_4BITS) >> 1;
+    uint8_t addr = m_registers[0];
+    if ((m_PC & BITMASK16_8BITS) == 0xFF) addr += ROM::PAGE_SIZE;
+    m_registers[reg] = m_rom.getByte(addr);
 }
 
 void K4004::JIN()

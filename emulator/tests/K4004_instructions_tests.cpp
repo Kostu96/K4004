@@ -982,8 +982,27 @@ TEST_F(EmulatorInstructionsTests, JCNTest) {
     EXPECT_EQ(*pc, 0x002u);
 }
 
+TEST_F(EmulatorInstructionsTests, FINTest) {
+    rom[0] = ASM_FIN | ASM_P2;
+    rom[0x42] = 0x21u;
+    registers[0] = 0x42u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x001u);
+    EXPECT_EQ(registers[2], 0x21u);
+}
+
+TEST_F(EmulatorInstructionsTests, JINTest) {
+
+}
+
+TEST_F(EmulatorInstructionsTests, ISZTest) {
+
+}
+
+// TODO: Make tests for instructions that operates on page boundary
+
 // TODO: Make tests for these:
-// constexpr uint8_t INS_JCN_MASK = 0x1F; - Skip until test pin and more rom
 // constexpr uint8_t INS_FIN_MASK = 0x3E; - Skip until more rom
 // constexpr uint8_t INS_JIN_MASK = 0x3F; - Skip until more rom
 // constexpr uint8_t INS_ISZ_MASK = 0x7F; - Skip until more rom
