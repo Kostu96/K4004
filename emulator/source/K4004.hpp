@@ -23,7 +23,7 @@ public:
     const uint16_t* getStack() const { return m_stack; }
     uint16_t getPC() const { return m_PC; }
     const uint8_t* getRegisters() const { return m_registers; }
-    void setTest(uint8_t test) { m_test = test & BITMASK_1BIT; }
+    void setTest(uint8_t test) { m_test = test & BITMASK8_1BIT; }
     uint8_t getTest() const { return m_test; }
 private:
     uint8_t getRegisterValue(uint8_t reg);
