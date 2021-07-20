@@ -993,7 +993,11 @@ TEST_F(EmulatorInstructionsTests, FINTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, JINTest) {
+    rom[0] = ASM_JIN | ASM_P1;
+    registers[1] = 0x42u;
+    emulator.step();
 
+    EXPECT_EQ(*pc, 0x042u);
 }
 
 TEST_F(EmulatorInstructionsTests, ISZTest) {

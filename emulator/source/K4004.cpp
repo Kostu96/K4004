@@ -348,6 +348,11 @@ void K4004::FIN()
 
 void K4004::JIN()
 {
+    uint8_t reg = (m_IR & BITMASK8_4BITS) >> 1;
+    uint8_t addr = m_registers[reg];
+    if ((m_PC & BITMASK16_8BITS) == 0xFF) ++m_PC;
+    m_PC &= BITMASK16_4BITS_Q2;
+    m_PC |= addr;
 }
 
 void K4004::JUN()
