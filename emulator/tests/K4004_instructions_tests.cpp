@@ -44,6 +44,10 @@ struct WhiteBox<K4004> {
         return &cpu.m_CY;
     }
 
+    static uint8_t* getTest(K4004& cpu) {
+        return &cpu.m_test;
+    }
+
     static uint16_t* getPC(K4004& cpu) {
         return &cpu.m_PC;
     }
@@ -97,11 +101,14 @@ struct EmulatorInstructionsTests : public testing::Test {
         auto& cpu = WhiteBox<Emulator>::getCPU(emulator);
         acc = WhiteBox<K4004>::getAcc(cpu);
         CY = WhiteBox<K4004>::getCY(cpu);
+        test = WhiteBox<K4004>::getTest(cpu);
         pc = WhiteBox<K4004>::getPC(cpu);
         stack = WhiteBox<K4004>::getStack(cpu);
         stackDepth = WhiteBox<K4004>::getStackDepth(cpu);
         registers = WhiteBox<K4004>::gerRegisters(cpu);
         ASSERT_NE(acc, nullptr);
+        ASSERT_NE(CY, nullptr);
+        ASSERT_NE(test, nullptr);
         ASSERT_NE(pc, nullptr);
         ASSERT_NE(stack, nullptr);
         ASSERT_NE(stackDepth, nullptr);
@@ -121,6 +128,7 @@ struct EmulatorInstructionsTests : public testing::Test {
     uint16_t* ramSrcAddr = nullptr;
     uint8_t* acc = nullptr;
     uint8_t* CY = nullptr;
+    uint8_t* test = nullptr;
     uint16_t* pc = nullptr;
     uint16_t* stack = nullptr;
     uint8_t* stackDepth = nullptr;
@@ -901,7 +909,77 @@ TEST_F(EmulatorInstructionsTests, SRCTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, JCNTest) {
-    
+    rom[0] = ASM_JCN | ASM_CON_AEZ;
+    rom[1] = 0x42u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x042u);
+
+    *pc = 0u;
+    *acc = 0x01u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x002u);
+
+    rom[0] = ASM_JCN | ASM_CON_ANZ;
+    *pc = 0u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x042u);
+
+    *pc = 0u;
+    *acc = 0x00u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x002u);
+
+    rom[0] = ASM_JCN | ASM_CON_CEZ;
+    *pc = 0u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x042u);
+
+    *pc = 0u;
+    *CY = 1u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x002u);
+
+    rom[0] = ASM_JCN | ASM_CON_CNZ;
+    *pc = 0u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x042u);
+
+    *pc = 0u;
+    *CY = 0u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x002u);
+
+    rom[0] = ASM_JCN | ASM_CON_TEZ;
+    *pc = 0u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x042u);
+
+    *pc = 0u;
+    *test = 1u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x002u);
+
+    rom[0] = ASM_JCN | ASM_CON_TNZ;
+    *pc = 0u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x042u);
+
+    *pc = 0u;
+    *test = 0u;
+    emulator.step();
+
+    EXPECT_EQ(*pc, 0x002u);
 }
 
 // TODO: Make tests for these:

@@ -72,6 +72,13 @@ constexpr uint8_t ASM_P5 = 0x0Au;
 constexpr uint8_t ASM_P6 = 0x0Cu;
 constexpr uint8_t ASM_P7 = 0x0Eu;
 
+constexpr uint8_t ASM_CON_AEZ = 0b0100u;
+constexpr uint8_t ASM_CON_ANZ = 0b1100u;
+constexpr uint8_t ASM_CON_CEZ = 0b1010u;
+constexpr uint8_t ASM_CON_CNZ = 0b0010u;
+constexpr uint8_t ASM_CON_TEZ = 0b0001u;
+constexpr uint8_t ASM_CON_TNZ = 0b1001u;
+
 constexpr uint8_t ASM_JCN_MASK = 0x1F;
 constexpr uint8_t ASM_FIM_MASK = 0x2E;
 constexpr uint8_t ASM_SRC_MASK = 0x2F;
@@ -88,11 +95,12 @@ constexpr uint8_t ASM_XCH_MASK = 0xBF;
 constexpr uint8_t ASM_BBL_MASK = 0xCF;
 constexpr uint8_t ASM_LDM_MASK = 0xDF;
 
-constexpr uint8_t  BITMASK_1BIT      = 0x01u;
-constexpr uint8_t  BITMASK_3BIT      = 0x07u;
-constexpr uint8_t  BITMASK_4BITS     = 0x0Fu;
-constexpr uint8_t  BITMASK_4BITS_Q1  = 0xF0u;
-constexpr uint16_t BITMASK_12BITS    = 0x0FFFu;
-constexpr uint16_t BITMASK_12BITS_Q2 = 0x0F00u;
+constexpr uint8_t  BITMASK8_1BIT       = 0x01u;
+constexpr uint8_t  BITMASK8_3BIT       = 0x07u;
+constexpr uint8_t  BITMASK8_4BITS      = 0x0Fu;
+constexpr uint8_t  BITMASK8_4BITS_Q1   = 0xF0u;
+constexpr uint16_t BITMASK16_4BITS_Q2  = 0x0F00u;
+constexpr uint16_t BITMASK16_8BITS     = 0x00FFu;
+constexpr uint16_t BITMASK16_12BITS    = 0x0FFFu;
 
 uint8_t getOpcodeFromByte(uint8_t byte);
