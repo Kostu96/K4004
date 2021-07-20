@@ -64,6 +64,9 @@ void K4004::step()
     case ASM_BBL_MASK: BBL(); break;
     case ASM_LDM_MASK: LDM(); break;
     }
+
+    if (m_PC > BITMASK_12BITS)
+        m_PC = 0u;
 }
 
 void K4004::reset()
