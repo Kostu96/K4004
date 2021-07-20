@@ -144,8 +144,16 @@ void Assembler::disassemble(const std::vector<uint8_t>& bytecode, std::vector<st
             uint8_t regPair = (bytecode[i] & 0x0Fu) >> 1;
             ss << +regPair;
         } break;
-        case ASM_FIN_MASK: break;
-        case ASM_JIN_MASK: break;
+        case ASM_FIN_MASK: {
+            ss << "FIN P";
+            uint8_t regPair = (bytecode[i] & 0x0Fu) >> 1;
+            ss << +regPair;
+        } break;
+        case ASM_JIN_MASK: {
+            ss << "JIN P";
+            uint8_t regPair = (bytecode[i] & 0x0Fu) >> 1;
+            ss << +regPair;
+        } break;
         case ASM_JUN_MASK: {
             twoByte = true;
             ss << "JUN $";
@@ -175,7 +183,11 @@ void Assembler::disassemble(const std::vector<uint8_t>& bytecode, std::vector<st
             uint8_t reg = bytecode[i] & 0x0Fu;
             ss << +reg;
         } break;
-        case ASM_SUB_MASK: break;
+        case ASM_SUB_MASK: {
+            ss << "SUB R";
+            uint8_t reg = bytecode[i] & 0x0Fu;
+            ss << +reg;
+        } break;
         case ASM_LD_MASK: {
             ss << "LD R";
             uint8_t reg = bytecode[i] & 0x0Fu;

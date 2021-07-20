@@ -11,14 +11,14 @@
        JMS CK_FIN     ; 014
        JMS CK_IDX     ; 016
        FIM P5, $42    ; 018
-       JMS $FFF       ; 020
-       JMS $71A       ; 022
-       JUN $824       ; 024
-       JMS $FFF       ; 026
-       JMS $320       ; 028
-       JUN $C18       ; 030
-       JMS $FFF       ; 032
-       JUN $FFF       ; 034
+       JMS $FFF       ; 020 ; -
+       JMS $01A       ; 022 ;  |
+       JUN $024       ; 024 ;  |
+       JMS $FFF       ; 026 ;  | This part had to be changed
+       JMS $020       ; 028 ;  | due to different hardware connections
+       JUN $018       ; 030 ;  |
+       JMS $FFF       ; 032 ;  |
+       JUN $FFF       ; 034 ; -
        FIM P1, $CB    ; 036
        CLB            ; 038
        SRC P5         ; 039
