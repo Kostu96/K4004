@@ -136,7 +136,7 @@ struct EmulatorInstructionsTests : public testing::Test {
 };
 
 TEST_F(EmulatorInstructionsTests, NOPTest) {
-    rom[0] = ASM_NOP;
+    rom[0] = +AsmIns::NOP;
     emulator.step();
 
     EXPECT_EQ(*pc, 0x001u);
@@ -149,7 +149,7 @@ TEST_F(EmulatorInstructionsTests, NOPTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, WRMTest) {
-    rom[0] = ASM_WRM;
+    rom[0] = +AsmIns::WRM;
     *acc = 0x07u;
     *ramSrcAddr = 0b00100111u; // chip 0 | reg 2 | char 7
     emulator.step();
@@ -165,7 +165,7 @@ TEST_F(EmulatorInstructionsTests, WRMTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, WMPTest) {
-    rom[0] = ASM_WMP;
+    rom[0] = +AsmIns::WMP;
     *acc = 0x07u;
     *ramSrcAddr = 0b10000000u; // chip 2
     emulator.step();
@@ -181,14 +181,14 @@ TEST_F(EmulatorInstructionsTests, WMPTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, WRRTest) {
-    rom[0] = ASM_WRR;
+    rom[0] = +AsmIns::WRR;
     emulator.step();
 
     // TODO: Decide how to handle I/O metal config
 }
 
 TEST_F(EmulatorInstructionsTests, WR0Test) {
-    rom[0] = ASM_WR0;
+    rom[0] = +AsmIns::WR0;
     *acc = 0x07u;
     *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
     emulator.step();
@@ -204,7 +204,7 @@ TEST_F(EmulatorInstructionsTests, WR0Test) {
 }
 
 TEST_F(EmulatorInstructionsTests, WR1Test) {
-    rom[0] = ASM_WR1;
+    rom[0] = +AsmIns::WR1;
     *acc = 0x07u;
     *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
     emulator.step();
@@ -220,7 +220,7 @@ TEST_F(EmulatorInstructionsTests, WR1Test) {
 }
 
 TEST_F(EmulatorInstructionsTests, WR2Test) {
-    rom[0] = ASM_WR2;
+    rom[0] = +AsmIns::WR2;
     *acc = 0x07u;
     *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
     emulator.step();
@@ -236,7 +236,7 @@ TEST_F(EmulatorInstructionsTests, WR2Test) {
 }
 
 TEST_F(EmulatorInstructionsTests, WR3Test) {
-    rom[0] = ASM_WR3;
+    rom[0] = +AsmIns::WR3;
     *acc = 0x07u;
     *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
     emulator.step();
@@ -252,7 +252,7 @@ TEST_F(EmulatorInstructionsTests, WR3Test) {
 }
 
 TEST_F(EmulatorInstructionsTests, SBMTest) {
-    rom[0] = ASM_SBM;
+    rom[0] = +AsmIns::SBM;
     *acc = 0x07u;
     *ramSrcAddr = 0b00100111u; // chip 0 | reg 2 | char 7
     ram[*ramSrcAddr] = 0x02u;
@@ -284,7 +284,7 @@ TEST_F(EmulatorInstructionsTests, SBMTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, RDMTest) {
-    rom[0] = ASM_RDM;
+    rom[0] = +AsmIns::RDM;
     *ramSrcAddr = 0b00100111u; // chip 0 | reg 2 | char 7
     ram[*ramSrcAddr] = 0x07u;
     emulator.step();
@@ -300,14 +300,14 @@ TEST_F(EmulatorInstructionsTests, RDMTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, RDRTest) {
-    rom[0] = ASM_RDR;
+    rom[0] = +AsmIns::RDR;
     emulator.step();
 
     // TODO: Decide how to handle I/O metal config
 }
 
 TEST_F(EmulatorInstructionsTests, ADMTest) {
-    rom[0] = ASM_ADM;
+    rom[0] = +AsmIns::ADM;
     *acc = 0x07u;
     *ramSrcAddr = 0b00100111u; // chip 0 | reg 2 | char 7
     ram[*ramSrcAddr] = 0x02u;
@@ -337,7 +337,7 @@ TEST_F(EmulatorInstructionsTests, ADMTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, RD0Test) {
-    rom[0] = ASM_RD0;
+    rom[0] = +AsmIns::RD0;
     *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
     ramStatus[40] = 0x07u;
     emulator.step();
@@ -353,7 +353,7 @@ TEST_F(EmulatorInstructionsTests, RD0Test) {
 }
 
 TEST_F(EmulatorInstructionsTests, RD1Test) {
-    rom[0] = ASM_RD1;
+    rom[0] = +AsmIns::RD1;
     *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
     ramStatus[41] = 0x07u;
     emulator.step();
@@ -369,7 +369,7 @@ TEST_F(EmulatorInstructionsTests, RD1Test) {
 }
 
 TEST_F(EmulatorInstructionsTests, RD2Test) {
-    rom[0] = ASM_RD2;
+    rom[0] = +AsmIns::RD2;
     *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
     ramStatus[42] = 0x07u;
     emulator.step();
@@ -385,7 +385,7 @@ TEST_F(EmulatorInstructionsTests, RD2Test) {
 }
 
 TEST_F(EmulatorInstructionsTests, RD3Test) {
-    rom[0] = ASM_RD3;
+    rom[0] = +AsmIns::RD3;
     *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
     ramStatus[43] = 0x07u;
     emulator.step();
@@ -401,7 +401,7 @@ TEST_F(EmulatorInstructionsTests, RD3Test) {
 }
 
 TEST_F(EmulatorInstructionsTests, CLBTest) {
-    rom[0] = ASM_CLB;
+    rom[0] = +AsmIns::CLB;
     *acc = 0x07u;
     *CY = 1u;
     emulator.step();
@@ -416,7 +416,7 @@ TEST_F(EmulatorInstructionsTests, CLBTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, CLCTest) {
-    rom[0] = ASM_CLC;
+    rom[0] = +AsmIns::CLC;
     *CY = 1u;
     emulator.step();
 
@@ -430,7 +430,7 @@ TEST_F(EmulatorInstructionsTests, CLCTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, IACTest) {
-    rom[0] = ASM_IAC;
+    rom[0] = +AsmIns::IAC;
     *acc = 0x07u;
     emulator.step();
 
@@ -451,7 +451,7 @@ TEST_F(EmulatorInstructionsTests, IACTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, CMCTest) {
-    rom[0] = ASM_CMC;
+    rom[0] = +AsmIns::CMC;
     emulator.step();
 
     EXPECT_EQ(*pc, 0x001u);
@@ -469,7 +469,7 @@ TEST_F(EmulatorInstructionsTests, CMCTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, CMATest) {
-    rom[0] = ASM_CMA;
+    rom[0] = +AsmIns::CMA;
     *acc = 0x04u;
     emulator.step();
 
@@ -483,7 +483,7 @@ TEST_F(EmulatorInstructionsTests, CMATest) {
 }
 
 TEST_F(EmulatorInstructionsTests, RALTest) {
-    rom[0] = ASM_RAL;
+    rom[0] = +AsmIns::RAL;
     *acc = 0x04u;
     emulator.step();
 
@@ -510,7 +510,7 @@ TEST_F(EmulatorInstructionsTests, RALTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, RARTest) {
-    rom[0] = ASM_RAR;
+    rom[0] = +AsmIns::RAR;
     *acc = 0x04u;
     emulator.step();
 
@@ -537,7 +537,7 @@ TEST_F(EmulatorInstructionsTests, RARTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, TCCTest) {
-    rom[0] = ASM_TCC;
+    rom[0] = +AsmIns::TCC;
     *acc = 0x07u;
     emulator.step();
 
@@ -559,7 +559,7 @@ TEST_F(EmulatorInstructionsTests, TCCTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, DACTest) {
-    rom[0] = ASM_DAC;
+    rom[0] = +AsmIns::DAC;
     *acc = 0x07u;
     emulator.step();
 
@@ -580,7 +580,7 @@ TEST_F(EmulatorInstructionsTests, DACTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, TCSTest) {
-    rom[0] = ASM_TCS;
+    rom[0] = +AsmIns::TCS;
     emulator.step();
 
     EXPECT_EQ(*pc, 0x001u);
@@ -600,7 +600,7 @@ TEST_F(EmulatorInstructionsTests, TCSTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, STCTest) {
-    rom[0] = ASM_STC;
+    rom[0] = +AsmIns::STC;
     emulator.step();
 
     EXPECT_EQ(*pc, 0x001u);
@@ -613,7 +613,7 @@ TEST_F(EmulatorInstructionsTests, STCTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, DAATest) {
-    rom[0] = ASM_DAA;
+    rom[0] = +AsmIns::DAA;
     *acc = 5u;
     emulator.step();
 
@@ -641,7 +641,7 @@ TEST_F(EmulatorInstructionsTests, DAATest) {
 }
 
 TEST_F(EmulatorInstructionsTests, KBPTest) {
-    rom[0] = ASM_KBP;
+    rom[0] = +AsmIns::KBP;
     emulator.step();
 
     EXPECT_EQ(*pc, 0x001u);
@@ -690,7 +690,7 @@ TEST_F(EmulatorInstructionsTests, KBPTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, DCLTest) {
-    rom[0] = ASM_DCL;
+    rom[0] = +AsmIns::DCL;
     *acc = 0x02u;
     *ramSrcAddr = 0b01010101u;
     emulator.step();
@@ -706,8 +706,8 @@ TEST_F(EmulatorInstructionsTests, DCLTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, LDMTest) {
-    rom[0] = ASM_LDM | 0x0Fu;
-    rom[1] = ASM_LDM | 0x02u;
+    rom[0] = +AsmIns::LDM | 0x0Fu;
+    rom[1] = +AsmIns::LDM | 0x02u;
     emulator.step();
 
     EXPECT_EQ(*pc, 0x001u);
@@ -725,7 +725,7 @@ TEST_F(EmulatorInstructionsTests, LDMTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, LDTest) {
-    rom[0] = ASM_LD | ASM_R2;
+    rom[0] = +AsmIns::LD | ASM_R2;
     registers[1] = 0x20;
     emulator.step();
 
@@ -739,7 +739,7 @@ TEST_F(EmulatorInstructionsTests, LDTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, XCHTest) {
-    rom[0] = ASM_XCH | ASM_R2;
+    rom[0] = +AsmIns::XCH | ASM_R2;
     *acc = 0x07u;
     registers[1] = 0x24;
     emulator.step();
@@ -754,7 +754,7 @@ TEST_F(EmulatorInstructionsTests, XCHTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, ADDTest) {
-    rom[0] = ASM_ADD | ASM_R2;
+    rom[0] = +AsmIns::ADD | ASM_R2;
     *acc = 0x07u;
     registers[1] = 0x20u;
     emulator.step();
@@ -783,7 +783,7 @@ TEST_F(EmulatorInstructionsTests, ADDTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, SUBTest) {
-    rom[0] = ASM_SUB | ASM_R2;
+    rom[0] = +AsmIns::SUB | ASM_R2;
     *acc = 0x07u;
     registers[1] = 0x20u;
     emulator.step();
@@ -814,7 +814,7 @@ TEST_F(EmulatorInstructionsTests, SUBTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, INCTest) {
-    rom[0] = ASM_INC | ASM_R2;
+    rom[0] = +AsmIns::INC | ASM_R2;
     registers[1] = 0xE0u;
     emulator.step();
 
@@ -833,7 +833,7 @@ TEST_F(EmulatorInstructionsTests, INCTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, BBLTest) {
-    rom[0] = ASM_BBL | ASM_R2;
+    rom[0] = +AsmIns::BBL | ASM_R2;
     registers[1] = 0x10u;
     stack[0] = 0x010u;
     *stackDepth = 1u;
@@ -850,7 +850,7 @@ TEST_F(EmulatorInstructionsTests, BBLTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, JUNTest) {
-    rom[0] = ASM_JUN | 0x01u;
+    rom[0] = +AsmIns::JUN | 0x01u;
     rom[1] = 0x42u;
     emulator.step();
 
@@ -864,7 +864,7 @@ TEST_F(EmulatorInstructionsTests, JUNTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, JMSTest) {
-    rom[0] = ASM_JMS | 0x01u;
+    rom[0] = +AsmIns::JMS | 0x01u;
     rom[1] = 0x42u;
     emulator.step();
 
@@ -879,7 +879,7 @@ TEST_F(EmulatorInstructionsTests, JMSTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, FIMTest) {
-    rom[0] = ASM_FIM | ASM_P1;
+    rom[0] = +AsmIns::FIM | ASM_P1;
     rom[1] = 0x42;
     emulator.step();
 
@@ -893,7 +893,7 @@ TEST_F(EmulatorInstructionsTests, FIMTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, SRCTest) {
-    rom[0] = ASM_SRC | ASM_P2;
+    rom[0] = +AsmIns::SRC | ASM_P2;
     registers[2] = 0x42u;
     emulator.step();
 
@@ -909,7 +909,7 @@ TEST_F(EmulatorInstructionsTests, SRCTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, JCNTest) {
-    rom[0] = ASM_JCN | ASM_CON_AEZ;
+    rom[0] = +AsmIns::JCN | ASM_CON_AEZ;
     rom[1] = 0x42u;
     emulator.step();
 
@@ -921,7 +921,7 @@ TEST_F(EmulatorInstructionsTests, JCNTest) {
 
     EXPECT_EQ(*pc, 0x002u);
 
-    rom[0] = ASM_JCN | ASM_CON_ANZ;
+    rom[0] = +AsmIns::JCN | ASM_CON_ANZ;
     *pc = 0u;
     emulator.step();
 
@@ -933,7 +933,7 @@ TEST_F(EmulatorInstructionsTests, JCNTest) {
 
     EXPECT_EQ(*pc, 0x002u);
 
-    rom[0] = ASM_JCN | ASM_CON_CEZ;
+    rom[0] = +AsmIns::JCN | ASM_CON_CEZ;
     *pc = 0u;
     emulator.step();
 
@@ -945,7 +945,7 @@ TEST_F(EmulatorInstructionsTests, JCNTest) {
 
     EXPECT_EQ(*pc, 0x002u);
 
-    rom[0] = ASM_JCN | ASM_CON_CNZ;
+    rom[0] = +AsmIns::JCN | ASM_CON_CNZ;
     *pc = 0u;
     emulator.step();
 
@@ -957,7 +957,7 @@ TEST_F(EmulatorInstructionsTests, JCNTest) {
 
     EXPECT_EQ(*pc, 0x002u);
 
-    rom[0] = ASM_JCN | ASM_CON_TEZ;
+    rom[0] = +AsmIns::JCN | ASM_CON_TEZ;
     *pc = 0u;
     emulator.step();
 
@@ -969,7 +969,7 @@ TEST_F(EmulatorInstructionsTests, JCNTest) {
 
     EXPECT_EQ(*pc, 0x002u);
 
-    rom[0] = ASM_JCN | ASM_CON_TNZ;
+    rom[0] = +AsmIns::JCN | ASM_CON_TNZ;
     *pc = 0u;
     emulator.step();
 
@@ -983,7 +983,7 @@ TEST_F(EmulatorInstructionsTests, JCNTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, FINTest) {
-    rom[0] = ASM_FIN | ASM_P2;
+    rom[0] = +AsmIns::FIN | ASM_P2;
     rom[0x42] = 0x21u;
     registers[0] = 0x42u;
     emulator.step();
@@ -993,7 +993,7 @@ TEST_F(EmulatorInstructionsTests, FINTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, JINTest) {
-    rom[0] = ASM_JIN | ASM_P1;
+    rom[0] = +AsmIns::JIN | ASM_P1;
     registers[1] = 0x42u;
     emulator.step();
 
@@ -1001,7 +1001,7 @@ TEST_F(EmulatorInstructionsTests, JINTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, ISZTest) {
-    rom[0] = ASM_ISZ | ASM_R1;
+    rom[0] = +AsmIns::ISZ | ASM_R1;
     rom[1] = 0x42u;
     registers[0] = 0x0Eu;
     emulator.step();

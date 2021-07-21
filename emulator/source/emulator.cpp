@@ -16,7 +16,7 @@ bool Emulator::loadProgram(const char* filename)
     bool ret = assembler.assemble(filename, bytecode);
 
     if (ret) {
-        m_rom.load(0x00, bytecode.data(), bytecode.size());
+        m_rom.load(bytecode.data(), bytecode.size());
     }
 
     return ret;
@@ -24,7 +24,7 @@ bool Emulator::loadProgram(const char* filename)
 
 void Emulator::loadProgram(const uint8_t* bytecode, size_t codeSize)
 {
-    m_rom.load(0x00, bytecode, codeSize);
+    m_rom.load(bytecode, codeSize);
 }
 
 void Emulator::step(size_t times)

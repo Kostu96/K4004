@@ -37,7 +37,8 @@ private:
     bool parseDecNumber(const std::string_view& str, uint16_t& value);
     bool isMnemonic(std::string& token, MnemonicDesc& desc);
 
-    uint16_t m_address;
+    size_t m_address;
+    size_t m_metalMaskLength;
     std::unordered_map<std::string, uint16_t> m_symbolTable;
     std::unordered_map<std::string, MnemonicDesc> m_mnemonics;
 

@@ -1,5 +1,5 @@
 ; add two 4bit numbers on the Intel 4004
-;
+
     FIM P0, $A2	; initialize: R0=2 R1=A
     LD R0       ; load R0 into accumulator
     ADD R1      ; add R1 into accumulator
