@@ -1,7 +1,10 @@
 # K4004
-K4004 is Intel4004 assembler, disassembler and emulator project.
+K4004 originaly started out as Intel4004 assembler, disassembler and emulator project.
+It evolved into project that focuses on capabilities of the two Intel 4-bit processors (4004 and 4040) and tries to expand on them.
 
-Emulator is based on the MCS-4 system, with 16 ROM and 16 RAM chips giving 4096x8 of ROM with 16x4 I/O lines and 1280x4 of RAM memory with 16x4 output lines.
+Emulator tries to "crank everythin up to eleven", meaning amount of ROM and RAM, number of I/O lines and available peripherals.
+
+The ultimate goal is to make something fun (like pong maybe?) running on the system.
 
 # Building
 Standart Cmake build.
