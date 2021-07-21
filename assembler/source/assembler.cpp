@@ -9,52 +9,53 @@
 
 Assembler::Assembler() :
     m_address(0u),
+    m_metalMaskLength(0u),
     m_mnemonics({ // TODO: Make it constexpr
-        { "ADM", { ASM_ADM, InsType::Simple } },
-        { "CLB", { ASM_CLB, InsType::Simple } },
-        { "CLC", { ASM_CLC, InsType::Simple } },
-        { "CMA", { ASM_CMA, InsType::Simple } },
-        { "CMC", { ASM_CMC, InsType::Simple } },
-        { "DAA", { ASM_DAA, InsType::Simple } },
-        { "DAC", { ASM_DAC, InsType::Simple } },
-        { "DCL", { ASM_DCL, InsType::Simple } },
-        { "IAC", { ASM_IAC, InsType::Simple } },
-        { "KBP", { ASM_KBP, InsType::Simple } },
-        { "NOP", { ASM_NOP, InsType::Simple } },
-        { "RAL", { ASM_RAL, InsType::Simple } },
-        { "RAR", { ASM_RAR, InsType::Simple } },
-        { "RD0", { ASM_RD0, InsType::Simple } },
-        { "RD1", { ASM_RD1, InsType::Simple } },
-        { "RD2", { ASM_RD2, InsType::Simple } },
-        { "RD3", { ASM_RD3, InsType::Simple } },
-        { "RDM", { ASM_RDM, InsType::Simple } },
-        { "RDR", { ASM_RDR, InsType::Simple } },
-        { "SBM", { ASM_SBM, InsType::Simple } },
-        { "STC", { ASM_STC, InsType::Simple } },
-        { "TCC", { ASM_TCC, InsType::Simple } },
-        { "TCS", { ASM_TCS, InsType::Simple } },
-        { "WMP", { ASM_WMP, InsType::Simple } },
-        { "WR0", { ASM_WR0, InsType::Simple } },
-        { "WR1", { ASM_WR1, InsType::Simple } },
-        { "WR2", { ASM_WR2, InsType::Simple } },
-        { "WR3", { ASM_WR3, InsType::Simple } },
-        { "WRM", { ASM_WRM, InsType::Simple } },
-        { "WRR", { ASM_WRR, InsType::Simple } },
-        { "ADD", { ASM_ADD, InsType::Complex } },
-        { "BBL", { ASM_BBL, InsType::Complex } },
-        { "FIN", { ASM_FIN, InsType::Complex } },
-        { "INC", { ASM_INC, InsType::Complex } },
-        { "JIN", { ASM_JIN, InsType::Complex } },
-        { "LD",  { ASM_LD,  InsType::Complex } },
-        { "LDM", { ASM_LDM, InsType::Complex } },
-        { "SRC", { ASM_SRC, InsType::Complex } },
-        { "SUB", { ASM_SUB, InsType::Complex } },
-        { "XCH", { ASM_XCH, InsType::Complex } },
-        { "ISZ", { ASM_ISZ, InsType::TwoByte } },
-        { "JCN", { ASM_JCN, InsType::TwoByte } },
-        { "JMS", { ASM_JMS, InsType::TwoByte } },
-        { "JUN", { ASM_JUN, InsType::TwoByte } },
-        { "FIM", { ASM_FIM, InsType::TwoByte } }
+        { "ADM", { +AsmIns::ADM, InsType::Simple } },
+        { "CLB", { +AsmIns::CLB, InsType::Simple } },
+        { "CLC", { +AsmIns::CLC, InsType::Simple } },
+        { "CMA", { +AsmIns::CMA, InsType::Simple } },
+        { "CMC", { +AsmIns::CMC, InsType::Simple } },
+        { "DAA", { +AsmIns::DAA, InsType::Simple } },
+        { "DAC", { +AsmIns::DAC, InsType::Simple } },
+        { "DCL", { +AsmIns::DCL, InsType::Simple } },
+        { "IAC", { +AsmIns::IAC, InsType::Simple } },
+        { "KBP", { +AsmIns::KBP, InsType::Simple } },
+        { "NOP", { +AsmIns::NOP, InsType::Simple } },
+        { "RAL", { +AsmIns::RAL, InsType::Simple } },
+        { "RAR", { +AsmIns::RAR, InsType::Simple } },
+        { "RD0", { +AsmIns::RD0, InsType::Simple } },
+        { "RD1", { +AsmIns::RD1, InsType::Simple } },
+        { "RD2", { +AsmIns::RD2, InsType::Simple } },
+        { "RD3", { +AsmIns::RD3, InsType::Simple } },
+        { "RDM", { +AsmIns::RDM, InsType::Simple } },
+        { "RDR", { +AsmIns::RDR, InsType::Simple } },
+        { "SBM", { +AsmIns::SBM, InsType::Simple } },
+        { "STC", { +AsmIns::STC, InsType::Simple } },
+        { "TCC", { +AsmIns::TCC, InsType::Simple } },
+        { "TCS", { +AsmIns::TCS, InsType::Simple } },
+        { "WMP", { +AsmIns::WMP, InsType::Simple } },
+        { "WR0", { +AsmIns::WR0, InsType::Simple } },
+        { "WR1", { +AsmIns::WR1, InsType::Simple } },
+        { "WR2", { +AsmIns::WR2, InsType::Simple } },
+        { "WR3", { +AsmIns::WR3, InsType::Simple } },
+        { "WRM", { +AsmIns::WRM, InsType::Simple } },
+        { "WRR", { +AsmIns::WRR, InsType::Simple } },
+        { "ADD", { +AsmIns::ADD, InsType::Complex } },
+        { "BBL", { +AsmIns::BBL, InsType::Complex } },
+        { "FIN", { +AsmIns::FIN, InsType::Complex } },
+        { "INC", { +AsmIns::INC, InsType::Complex } },
+        { "JIN", { +AsmIns::JIN, InsType::Complex } },
+        { "LD",  { +AsmIns::LD,  InsType::Complex } },
+        { "LDM", { +AsmIns::LDM, InsType::Complex } },
+        { "SRC", { +AsmIns::SRC, InsType::Complex } },
+        { "SUB", { +AsmIns::SUB, InsType::Complex } },
+        { "XCH", { +AsmIns::XCH, InsType::Complex } },
+        { "ISZ", { +AsmIns::ISZ, InsType::TwoByte } },
+        { "JCN", { +AsmIns::JCN, InsType::TwoByte } },
+        { "JMS", { +AsmIns::JMS, InsType::TwoByte } },
+        { "JUN", { +AsmIns::JUN, InsType::TwoByte } },
+        { "FIM", { +AsmIns::FIM, InsType::TwoByte } }
     }) {}
 
 bool Assembler::assemble(const char* filename, std::vector<uint8_t>& output)
@@ -65,6 +66,7 @@ bool Assembler::assemble(const char* filename, std::vector<uint8_t>& output)
 
     m_symbolTable.clear();
     m_address = 0u;
+    m_metalMaskLength = 2u;
 
     std::stringstream ss;
     std::string line;
@@ -76,8 +78,12 @@ bool Assembler::assemble(const char* filename, std::vector<uint8_t>& output)
     }
     file.close();
 
-    output.reserve(m_address);
+    output.reserve(m_address + m_metalMaskLength);
+    output.push_back(0xFE);
     while (std::getline(ss, line)) {
+        if (m_metalMaskLength-- == 2u)
+            output.push_back(0xFF);
+
         if (!parseLine(line, output))
             return false;
     }
@@ -95,115 +101,115 @@ void Assembler::disassemble(const std::vector<uint8_t>& bytecode, std::vector<st
         uint8_t opcode = getOpcodeFromByte(bytecode[i]);
         // TODO: Refactor
         switch (opcode) {
-        case ASM_NOP: ss << "NOP"; break;
-        case ASM_WRM: ss << "WRM"; break;
-        case ASM_WMP: ss << "WMP"; break;
-        case ASM_WRR: ss << "WRR"; break;
-        case ASM_WR0: ss << "WR0"; break;
-        case ASM_WR1: ss << "WR1"; break;
-        case ASM_WR2: ss << "WR2"; break;
-        case ASM_WR3: ss << "WR3"; break;
-        case ASM_SBM: ss << "SBM"; break;
-        case ASM_RDM: ss << "RDM"; break;
-        case ASM_RDR: ss << "RDR"; break;
-        case ASM_ADM: ss << "ADM"; break;
-        case ASM_RD0: ss << "RD0"; break;
-        case ASM_RD1: ss << "RD1"; break;
-        case ASM_RD2: ss << "RD2"; break;
-        case ASM_RD3: ss << "RD3"; break;
-        case ASM_CLB: ss << "CLB"; break;
-        case ASM_CLC: ss << "CLC"; break;
-        case ASM_IAC: ss << "IAC"; break;
-        case ASM_CMC: ss << "CMC"; break;
-        case ASM_CMA: ss << "CMA"; break;
-        case ASM_RAL: ss << "RAL"; break;
-        case ASM_RAR: ss << "RAR"; break;
-        case ASM_TCC: ss << "TCC"; break;
-        case ASM_DAC: ss << "DAC"; break;
-        case ASM_TCS: ss << "TCS"; break;
-        case ASM_STC: ss << "STC"; break;
-        case ASM_DAA: ss << "DAA"; break;
-        case ASM_KBP: ss << "KBP"; break;
-        case ASM_DCL: ss << "DCL"; break;
-        case ASM_JCN_MASK: {
+        case +AsmIns::NOP: ss << "NOP"; break;
+        case +AsmIns::WRM: ss << "WRM"; break;
+        case +AsmIns::WMP: ss << "WMP"; break;
+        case +AsmIns::WRR: ss << "WRR"; break;
+        case +AsmIns::WR0: ss << "WR0"; break;
+        case +AsmIns::WR1: ss << "WR1"; break;
+        case +AsmIns::WR2: ss << "WR2"; break;
+        case +AsmIns::WR3: ss << "WR3"; break;
+        case +AsmIns::SBM: ss << "SBM"; break;
+        case +AsmIns::RDM: ss << "RDM"; break;
+        case +AsmIns::RDR: ss << "RDR"; break;
+        case +AsmIns::ADM: ss << "ADM"; break;
+        case +AsmIns::RD0: ss << "RD0"; break;
+        case +AsmIns::RD1: ss << "RD1"; break;
+        case +AsmIns::RD2: ss << "RD2"; break;
+        case +AsmIns::RD3: ss << "RD3"; break;
+        case +AsmIns::CLB: ss << "CLB"; break;
+        case +AsmIns::CLC: ss << "CLC"; break;
+        case +AsmIns::IAC: ss << "IAC"; break;
+        case +AsmIns::CMC: ss << "CMC"; break;
+        case +AsmIns::CMA: ss << "CMA"; break;
+        case +AsmIns::RAL: ss << "RAL"; break;
+        case +AsmIns::RAR: ss << "RAR"; break;
+        case +AsmIns::TCC: ss << "TCC"; break;
+        case +AsmIns::DAC: ss << "DAC"; break;
+        case +AsmIns::TCS: ss << "TCS"; break;
+        case +AsmIns::STC: ss << "STC"; break;
+        case +AsmIns::DAA: ss << "DAA"; break;
+        case +AsmIns::KBP: ss << "KBP"; break;
+        case +AsmIns::DCL: ss << "DCL"; break;
+        case +AsmIns::JCN: {
             twoByte = true;
             ss << "JCN %";
             uint8_t reg = bytecode[i] & 0x0Fu;
             ss << std::bitset<4>(reg) << ", $";
             ss << std::setw(2) << +bytecode[++i];
         } break;
-        case ASM_FIM_MASK: {
+        case +AsmIns::FIM: {
             twoByte = true;
             ss << "FIM P";
             uint8_t regPair = (bytecode[i] & 0x0Fu) >> 1;
             ss << +regPair << ", ";
             ss << '$' << std::setw(2) << +bytecode[++i];
         } break;
-        case ASM_SRC_MASK: {
+        case +AsmIns::SRC: {
             ss << "SRC P";
             uint8_t regPair = (bytecode[i] & 0x0Fu) >> 1;
             ss << +regPair;
         } break;
-        case ASM_FIN_MASK: {
+        case +AsmIns::FIN: {
             ss << "FIN P";
             uint8_t regPair = (bytecode[i] & 0x0Fu) >> 1;
             ss << +regPair;
         } break;
-        case ASM_JIN_MASK: {
+        case +AsmIns::JIN: {
             ss << "JIN P";
             uint8_t regPair = (bytecode[i] & 0x0Fu) >> 1;
             ss << +regPair;
         } break;
-        case ASM_JUN_MASK: {
+        case +AsmIns::JUN: {
             twoByte = true;
             ss << "JUN $";
             uint8_t addrHP = bytecode[i] & 0x0Fu;
             ss << +addrHP << std::setw(2) << +bytecode[++i];
         } break;
-        case ASM_JMS_MASK: {
+        case +AsmIns::JMS: {
             twoByte = true;
             ss << "JMS $";
             uint8_t addrHP = bytecode[i] & 0x0Fu;
             ss << +addrHP << std::setw(2) << +bytecode[++i];
         } break;
-        case ASM_INC_MASK: {
+        case +AsmIns::INC: {
             ss << "INC R";
             uint8_t reg = bytecode[i] & 0x0Fu;
             ss << +reg;
         } break;
-        case ASM_ISZ_MASK: {
+        case +AsmIns::ISZ: {
             twoByte = true;
             ss << "ISZ R";
             uint8_t reg = bytecode[i] & 0x0Fu;
             ss << +reg << ", $";
             ss << std::setw(2) << +bytecode[++i];
         } break;
-        case ASM_ADD_MASK: {
+        case +AsmIns::ADD: {
             ss << "ADD R";
             uint8_t reg = bytecode[i] & 0x0Fu;
             ss << +reg;
         } break;
-        case ASM_SUB_MASK: {
+        case +AsmIns::SUB: {
             ss << "SUB R";
             uint8_t reg = bytecode[i] & 0x0Fu;
             ss << +reg;
         } break;
-        case ASM_LD_MASK: {
+        case +AsmIns::LD: {
             ss << "LD R";
             uint8_t reg = bytecode[i] & 0x0Fu;
             ss << +reg;
         } break;
-        case ASM_XCH_MASK: {
+        case +AsmIns::XCH: {
             ss << "XCH R";
             uint8_t reg = bytecode[i] & 0x0Fu;
             ss << +reg;
         } break;
-        case ASM_BBL_MASK: {
+        case +AsmIns::BBL: {
             ss << "BBL $";
             uint8_t ch = bytecode[i] & 0x0Fu;
             ss << +ch;
         } break;
-        case ASM_LDM_MASK: {
+        case +AsmIns::LDM: {
             ss << "LDM $";
             uint8_t ch = bytecode[i] & 0x0Fu;
             ss << +ch;

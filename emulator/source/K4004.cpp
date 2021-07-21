@@ -18,51 +18,51 @@ void K4004::step()
     m_IR = m_rom.getByte(m_PC++);
     uint8_t opcode = getOpcodeFromByte(m_IR);
     switch (opcode) {
-    case ASM_NOP: break;
-    case ASM_WRM: WRM(); break;
-    case ASM_WMP: WMP(); break;
-    case ASM_WRR: WRR(); break;
-    case ASM_WR0: WR0(); break;
-    case ASM_WR1: WR1(); break;
-    case ASM_WR2: WR2(); break;
-    case ASM_WR3: WR3(); break;
-    case ASM_SBM: SBM(); break;
-    case ASM_RDM: RDM(); break;
-    case ASM_RDR: RDR(); break;
-    case ASM_ADM: ADM(); break;
-    case ASM_RD0: RD0(); break;
-    case ASM_RD1: RD1(); break;
-    case ASM_RD2: RD2(); break;
-    case ASM_RD3: RD3(); break;
-    case ASM_CLB: CLB(); break;
-    case ASM_CLC: CLC(); break;
-    case ASM_IAC: IAC(); break;
-    case ASM_CMC: CMC(); break;
-    case ASM_CMA: CMA(); break;
-    case ASM_RAL: RAL(); break;
-    case ASM_RAR: RAR(); break;
-    case ASM_TCC: TCC(); break;
-    case ASM_DAC: DAC(); break;
-    case ASM_TCS: TCS(); break;
-    case ASM_STC: STC(); break;
-    case ASM_DAA: DAA(); break;
-    case ASM_KBP: KBP(); break;
-    case ASM_DCL: DCL(); break;
-    case ASM_JCN_MASK: JCN(); break;
-    case ASM_FIM_MASK: FIM(); break;
-    case ASM_SRC_MASK: SRC(); break;
-    case ASM_FIN_MASK: FIN(); break;
-    case ASM_JIN_MASK: JIN(); break;
-    case ASM_JUN_MASK: JUN(); break;
-    case ASM_JMS_MASK: JMS(); break;
-    case ASM_INC_MASK: INC(); break;
-    case ASM_ISZ_MASK: ISZ(); break;
-    case ASM_ADD_MASK: ADD(); break;
-    case ASM_SUB_MASK: SUB(); break;
-    case ASM_LD_MASK:  LD();  break;
-    case ASM_XCH_MASK: XCH(); break;
-    case ASM_BBL_MASK: BBL(); break;
-    case ASM_LDM_MASK: LDM(); break;
+    case +AsmIns::NOP: break;
+    case +AsmIns::WRM: WRM(); break;
+    case +AsmIns::WMP: WMP(); break;
+    case +AsmIns::WRR: WRR(); break;
+    case +AsmIns::WR0: WR0(); break;
+    case +AsmIns::WR1: WR1(); break;
+    case +AsmIns::WR2: WR2(); break;
+    case +AsmIns::WR3: WR3(); break;
+    case +AsmIns::SBM: SBM(); break;
+    case +AsmIns::RDM: RDM(); break;
+    case +AsmIns::RDR: RDR(); break;
+    case +AsmIns::ADM: ADM(); break;
+    case +AsmIns::RD0: RD0(); break;
+    case +AsmIns::RD1: RD1(); break;
+    case +AsmIns::RD2: RD2(); break;
+    case +AsmIns::RD3: RD3(); break;
+    case +AsmIns::CLB: CLB(); break;
+    case +AsmIns::CLC: CLC(); break;
+    case +AsmIns::IAC: IAC(); break;
+    case +AsmIns::CMC: CMC(); break;
+    case +AsmIns::CMA: CMA(); break;
+    case +AsmIns::RAL: RAL(); break;
+    case +AsmIns::RAR: RAR(); break;
+    case +AsmIns::TCC: TCC(); break;
+    case +AsmIns::DAC: DAC(); break;
+    case +AsmIns::TCS: TCS(); break;
+    case +AsmIns::STC: STC(); break;
+    case +AsmIns::DAA: DAA(); break;
+    case +AsmIns::KBP: KBP(); break;
+    case +AsmIns::DCL: DCL(); break;
+    case +AsmIns::JCN: JCN(); break;
+    case +AsmIns::FIM: FIM(); break;
+    case +AsmIns::SRC: SRC(); break;
+    case +AsmIns::FIN: FIN(); break;
+    case +AsmIns::JIN: JIN(); break;
+    case +AsmIns::JUN: JUN(); break;
+    case +AsmIns::JMS: JMS(); break;
+    case +AsmIns::INC: INC(); break;
+    case +AsmIns::ISZ: ISZ(); break;
+    case +AsmIns::ADD: ADD(); break;
+    case +AsmIns::SUB: SUB(); break;
+    case +AsmIns::LD:  LD();  break;
+    case +AsmIns::XCH: XCH(); break;
+    case +AsmIns::BBL: BBL(); break;
+    case +AsmIns::LDM: LDM(); break;
     }
 
     if (m_PC > BITMASK16_12BITS)
@@ -127,6 +127,7 @@ void K4004::WMP()
 
 void K4004::WRR()
 {
+    m_rom.setIOPOrt(m_Acc);
 }
 
 void K4004::WR0()
@@ -165,6 +166,7 @@ void K4004::RDM()
 
 void K4004::RDR()
 {
+    m_Acc = m_rom.getIOPort() & BITMASK8_4BITS;
 }
 
 void K4004::ADM()
