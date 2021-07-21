@@ -68,6 +68,9 @@ void App::printROM()
         FillRectDecal({ xpos, ypos }, { width, 9 });
     }
 
+    ss << "\n\n";
+    ss << "SRC Address: " << +emulator.getROM().getSrcAddress();
+
     DrawStringDecal({ 2, 2 }, ss.str(), olc::BLACK);
 }
 
@@ -83,7 +86,7 @@ void App::printCPU()
     ss << "-CPU-\n";
     ss << '\n';
     ss << std::setfill('0') << std::hex << std::uppercase;
-    ss << "SP " << std::setw(3) << PC       << "  Acc: " << std::setw(2) << +cpu.getAcc() << '\n';
+    ss << "PC " << std::setw(3) << PC       << "  Acc: " << std::setw(2) << +cpu.getAcc() << '\n';
     ss << "L1 " << std::setw(3) << stack[0] << "  CY:   " << +cpu.getCY() << '\n';
     ss << "L2 " << std::setw(3) << stack[1] << "  Test: " << +cpu.getTest() << '\n';
     ss << "L3 " << std::setw(3) << stack[2] << '\n';
@@ -127,9 +130,13 @@ void App::printRAM()
                 addr &= 0x3F0u;
             }
             ss << "  ";
+            addr >>= 2;
             for (uint16_t k = 0; k < RAM::NUM_STAUS_CHARS; ++k) {
-                ss << +status[k];
+                addr |= k;
+                ss << +status[addr];
+                addr &= 0x0FCu;
             }
+            addr <<= 2;
             if (j == 0) ss << "    " << std::bitset<4>(output[i]);
             ss << '\n';
             addr &= 0x3C0u;

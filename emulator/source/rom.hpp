@@ -16,7 +16,7 @@ public:
     void reset();
     uint8_t getByte(uint16_t address) const { return m_rom[address]; }
 
-    void setSrcAddress(uint8_t address) { m_srcAddress = address; }
+    void setSrcAddress(uint8_t address) { m_srcAddress = address >> 4; }
     uint8_t getSrcAddress() const { return m_srcAddress; }
     const uint8_t* getRomContents() const { return m_rom; }
 private:

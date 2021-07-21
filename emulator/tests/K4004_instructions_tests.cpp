@@ -904,8 +904,8 @@ TEST_F(EmulatorInstructionsTests, SRCTest) {
         EXPECT_EQ(registers[i], i == 2u ? 0x42u : 0x00u);
     EXPECT_EQ(*acc, 0u);
     EXPECT_EQ(*CY, 0u);
-    EXPECT_EQ(*romSrcAddr, 0x42u);
-    EXPECT_EQ(*ramSrcAddr, 0x42u);
+    EXPECT_EQ(*romSrcAddr, 0x04u);
+    EXPECT_EQ(*ramSrcAddr, 0x042u);
 }
 
 TEST_F(EmulatorInstructionsTests, JCNTest) {
@@ -1001,18 +1001,18 @@ TEST_F(EmulatorInstructionsTests, JINTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, ISZTest) {
-    rom[0] = ASM_ISZ | ASM_P1;
+    rom[0] = ASM_ISZ | ASM_R1;
     rom[1] = 0x42u;
-    registers[1] = 0xFEu;
+    registers[0] = 0x0Eu;
     emulator.step();
 
     EXPECT_EQ(*pc, 0x042u);
-    EXPECT_EQ(registers[1], 0xFFu);
+    EXPECT_EQ(registers[0], 0x0Fu);
 
     *pc = 0u;
     emulator.step();
     EXPECT_EQ(*pc, 0x002u);
-    EXPECT_EQ(registers[1], 0x00u);
+    EXPECT_EQ(registers[0], 0x00u);
 }
 
 // TODO: Make tests for instructions that operates on page boundary
