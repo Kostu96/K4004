@@ -19,7 +19,9 @@ public:
     uint8_t getByte(uint16_t address) const { return m_rom[address]; }
     void setSrcAddress(uint8_t address) { m_srcAddress = address >> 4; }
     uint8_t getSrcAddress() const { return m_srcAddress; }
-    void setIOPOrt(uint8_t value);
+    
+    // TODO: unifiy set/get|write/read names
+    void setIOPort(uint8_t value);
     uint8_t getIOPort() const;
 private:
     uint8_t m_srcAddress;

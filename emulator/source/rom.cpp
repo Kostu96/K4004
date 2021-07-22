@@ -49,7 +49,7 @@ void ROM::reset()
     std::memset(m_ioPorts, 0, NUM_ROM_CHIPS);
 }
 
-void ROM::setIOPOrt(uint8_t value)
+void ROM::setIOPort(uint8_t value)
 {
     uint8_t oldValue = m_ioPorts[m_srcAddress];
     uint8_t mask = m_ioPortsMasks[m_srcAddress];
