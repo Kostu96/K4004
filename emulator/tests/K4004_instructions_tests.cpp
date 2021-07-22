@@ -725,7 +725,7 @@ TEST_F(EmulatorInstructionsTests, LDMTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, LDTest) {
-    rom[0] = +AsmIns::LD | ASM_R2;
+    rom[0] = +AsmIns::LD | +AsmReg::R2;
     registers[1] = 0x20;
     emulator.step();
 
@@ -739,7 +739,7 @@ TEST_F(EmulatorInstructionsTests, LDTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, XCHTest) {
-    rom[0] = +AsmIns::XCH | ASM_R2;
+    rom[0] = +AsmIns::XCH | +AsmReg::R2;
     *acc = 0x07u;
     registers[1] = 0x24;
     emulator.step();
@@ -754,7 +754,7 @@ TEST_F(EmulatorInstructionsTests, XCHTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, ADDTest) {
-    rom[0] = +AsmIns::ADD | ASM_R2;
+    rom[0] = +AsmIns::ADD | +AsmReg::R2;
     *acc = 0x07u;
     registers[1] = 0x20u;
     emulator.step();
@@ -783,7 +783,7 @@ TEST_F(EmulatorInstructionsTests, ADDTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, SUBTest) {
-    rom[0] = +AsmIns::SUB | ASM_R2;
+    rom[0] = +AsmIns::SUB | +AsmReg::R2;
     *acc = 0x07u;
     registers[1] = 0x20u;
     emulator.step();
@@ -814,7 +814,7 @@ TEST_F(EmulatorInstructionsTests, SUBTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, INCTest) {
-    rom[0] = +AsmIns::INC | ASM_R2;
+    rom[0] = +AsmIns::INC | +AsmReg::R2;
     registers[1] = 0xE0u;
     emulator.step();
 
@@ -833,7 +833,7 @@ TEST_F(EmulatorInstructionsTests, INCTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, BBLTest) {
-    rom[0] = +AsmIns::BBL | ASM_R2;
+    rom[0] = +AsmIns::BBL | +AsmReg::R2;
     registers[1] = 0x10u;
     stack[0] = 0x010u;
     *stackDepth = 1u;
@@ -879,7 +879,7 @@ TEST_F(EmulatorInstructionsTests, JMSTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, FIMTest) {
-    rom[0] = +AsmIns::FIM | ASM_P1;
+    rom[0] = +AsmIns::FIM | +AsmReg::P1;
     rom[1] = 0x42;
     emulator.step();
 
@@ -893,7 +893,7 @@ TEST_F(EmulatorInstructionsTests, FIMTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, SRCTest) {
-    rom[0] = +AsmIns::SRC | ASM_P2;
+    rom[0] = +AsmIns::SRC | +AsmReg::P2;
     registers[2] = 0x42u;
     emulator.step();
 
@@ -909,7 +909,7 @@ TEST_F(EmulatorInstructionsTests, SRCTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, JCNTest) {
-    rom[0] = +AsmIns::JCN | ASM_CON_AEZ;
+    rom[0] = +AsmIns::JCN | +AsmCon::AEZ;
     rom[1] = 0x42u;
     emulator.step();
 
@@ -921,7 +921,7 @@ TEST_F(EmulatorInstructionsTests, JCNTest) {
 
     EXPECT_EQ(*pc, 0x002u);
 
-    rom[0] = +AsmIns::JCN | ASM_CON_ANZ;
+    rom[0] = +AsmIns::JCN | +AsmCon::ANZ;
     *pc = 0u;
     emulator.step();
 
@@ -933,7 +933,7 @@ TEST_F(EmulatorInstructionsTests, JCNTest) {
 
     EXPECT_EQ(*pc, 0x002u);
 
-    rom[0] = +AsmIns::JCN | ASM_CON_CEZ;
+    rom[0] = +AsmIns::JCN | +AsmCon::CEZ;
     *pc = 0u;
     emulator.step();
 
@@ -945,7 +945,7 @@ TEST_F(EmulatorInstructionsTests, JCNTest) {
 
     EXPECT_EQ(*pc, 0x002u);
 
-    rom[0] = +AsmIns::JCN | ASM_CON_CNZ;
+    rom[0] = +AsmIns::JCN | +AsmCon::CNZ;
     *pc = 0u;
     emulator.step();
 
@@ -957,7 +957,7 @@ TEST_F(EmulatorInstructionsTests, JCNTest) {
 
     EXPECT_EQ(*pc, 0x002u);
 
-    rom[0] = +AsmIns::JCN | ASM_CON_TEZ;
+    rom[0] = +AsmIns::JCN | +AsmCon::TEZ;
     *pc = 0u;
     emulator.step();
 
@@ -969,7 +969,7 @@ TEST_F(EmulatorInstructionsTests, JCNTest) {
 
     EXPECT_EQ(*pc, 0x002u);
 
-    rom[0] = +AsmIns::JCN | ASM_CON_TNZ;
+    rom[0] = +AsmIns::JCN | +AsmCon::TNZ;
     *pc = 0u;
     emulator.step();
 
@@ -983,7 +983,7 @@ TEST_F(EmulatorInstructionsTests, JCNTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, FINTest) {
-    rom[0] = +AsmIns::FIN | ASM_P2;
+    rom[0] = +AsmIns::FIN | +AsmReg::P2;
     rom[0x42] = 0x21u;
     registers[0] = 0x42u;
     emulator.step();
@@ -993,7 +993,7 @@ TEST_F(EmulatorInstructionsTests, FINTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, JINTest) {
-    rom[0] = +AsmIns::JIN | ASM_P1;
+    rom[0] = +AsmIns::JIN | +AsmReg::P1;
     registers[1] = 0x42u;
     emulator.step();
 
@@ -1001,7 +1001,7 @@ TEST_F(EmulatorInstructionsTests, JINTest) {
 }
 
 TEST_F(EmulatorInstructionsTests, ISZTest) {
-    rom[0] = +AsmIns::ISZ | ASM_R1;
+    rom[0] = +AsmIns::ISZ | +AsmReg::R1;
     rom[1] = 0x42u;
     registers[0] = 0x0Eu;
     emulator.step();
