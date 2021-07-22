@@ -14,70 +14,68 @@ K4004::K4004(ROM& rom, RAM& ram) :
     reset();
 }
 
+void K4004::reset()
+{
+    std::memset(m_registers, 0, REGISTERS_SIZE);
+    std::memset(m_stack, 0, STACK_SIZE);
+    m_SP = 0u;
+    m_ACC = 0u;
+    m_test = 0u;
+    m_CM_RAM = 0u;
+    m_ram.reset();
+}
+
 void K4004::step()
 {
-    m_IR = m_rom.getByte(m_PC++);
+    m_IR = m_rom.getByte(getPC());
+    incStack();
+
     uint8_t opcode = getOpcodeFromByte(m_IR);
     switch (opcode) {
     case +AsmIns::NOP: NOP(); break;
-    case +AsmIns::WRM: WRM(m_ram, m_Acc); break;
-    case +AsmIns::WMP: WMP(m_ram, m_Acc); break;
-    case +AsmIns::WRR: WRR(m_rom, m_Acc); break;
-    case +AsmIns::WR0: WR0(m_ram, m_Acc); break;
-    case +AsmIns::WR1: WR1(m_ram, m_Acc); break;
-    case +AsmIns::WR2: WR2(m_ram, m_Acc); break;
-    case +AsmIns::WR3: WR3(m_ram, m_Acc); break;
-    case +AsmIns::SBM: SBM(m_Acc, m_CY, m_ram); break;
-    case +AsmIns::RDM: RDM(m_Acc, m_ram); break;
-    case +AsmIns::RDR: RDR(m_Acc, m_rom); break;
-    case +AsmIns::ADM: ADM(m_Acc, m_CY, m_ram); break;
-    case +AsmIns::RD0: RD0(m_Acc, m_ram); break;
-    case +AsmIns::RD1: RD1(m_Acc, m_ram); break;
-    case +AsmIns::RD2: RD2(m_Acc, m_ram); break;
-    case +AsmIns::RD3: RD3(m_Acc, m_ram); break;
-    case +AsmIns::CLB: CLB(m_Acc, m_CY); break;
-    case +AsmIns::CLC: CLC(m_CY); break;
-    case +AsmIns::IAC: IAC(m_Acc, m_CY); break;
-    case +AsmIns::CMC: CMC(m_CY); break;
-    case +AsmIns::CMA: CMA(m_Acc); break;
-    case +AsmIns::RAL: RAL(m_Acc, m_CY); break;
-    case +AsmIns::RAR: RAR(m_Acc, m_CY); break;
-    case +AsmIns::TCC: TCC(m_Acc, m_CY); break;
-    case +AsmIns::DAC: DAC(m_Acc, m_CY); break;
-    case +AsmIns::TCS: TCS(m_Acc, m_CY); break;
-    case +AsmIns::STC: STC(m_CY); break;
-    case +AsmIns::DAA: DAA(m_Acc, m_CY); break;
-    case +AsmIns::KBP: KBP(m_Acc); break;
-    case +AsmIns::DCL: DCL(m_ram, m_Acc); break;
-    case +AsmIns::JCN: JCN(m_PC, m_IR, m_Acc, m_CY, m_test, m_rom); break;
-    case +AsmIns::FIM: FIM(m_PC, m_registers, m_IR, m_rom); break;
+    case +AsmIns::WRM: WRM(m_ram, m_ACC); break;
+    case +AsmIns::WMP: WMP(m_ram, m_ACC); break;
+    case +AsmIns::WRR: WRR(m_rom, m_ACC); break;
+    case +AsmIns::WR0: WR0(m_ram, m_ACC); break;
+    case +AsmIns::WR1: WR1(m_ram, m_ACC); break;
+    case +AsmIns::WR2: WR2(m_ram, m_ACC); break;
+    case +AsmIns::WR3: WR3(m_ram, m_ACC); break;
+    case +AsmIns::SBM: SBM(m_ACC, m_ram); break;
+    case +AsmIns::RDM: RDM(m_ACC, m_ram); break;
+    case +AsmIns::RDR: RDR(m_ACC, m_rom); break;
+    case +AsmIns::ADM: ADM(m_ACC, m_ram); break;
+    case +AsmIns::RD0: RD0(m_ACC, m_ram); break;
+    case +AsmIns::RD1: RD1(m_ACC, m_ram); break;
+    case +AsmIns::RD2: RD2(m_ACC, m_ram); break;
+    case +AsmIns::RD3: RD3(m_ACC, m_ram); break;
+    case +AsmIns::CLB: CLB(m_ACC); break;
+    case +AsmIns::CLC: CLC(m_ACC); break;
+    case +AsmIns::IAC: IAC(m_ACC); break;
+    case +AsmIns::CMC: CMC(m_ACC); break;
+    case +AsmIns::CMA: CMA(m_ACC); break;
+    case +AsmIns::RAL: RAL(m_ACC); break;
+    case +AsmIns::RAR: RAR(m_ACC); break;
+    case +AsmIns::TCC: TCC(m_ACC); break;
+    case +AsmIns::DAC: DAC(m_ACC); break;
+    case +AsmIns::TCS: TCS(m_ACC); break;
+    case +AsmIns::STC: STC(m_ACC); break;
+    case +AsmIns::DAA: DAA(m_ACC); break;
+    case +AsmIns::KBP: KBP(m_ACC); break;
+    case +AsmIns::DCL: DCL(m_ram, m_ACC); break;
+    case +AsmIns::JCN: JCN(m_stack, m_SP, m_IR, m_ACC, m_test, m_rom); break;
+    case +AsmIns::FIM: FIM(m_stack, m_SP, m_registers, m_IR, m_rom); break;
     case +AsmIns::SRC: SRC(m_ram, m_rom, m_registers, m_IR); break;
-    case +AsmIns::FIN: FIN(m_registers, m_PC, m_IR, m_rom); break;
-    case +AsmIns::JIN: JIN(m_PC, m_registers, m_IR); break;
-    case +AsmIns::JUN: JUN(m_PC, m_IR, m_rom); break;
-    case +AsmIns::JMS: JMS(m_PC, m_stack, m_stackDepth, m_IR, m_rom); break;
+    case +AsmIns::FIN: FIN(m_registers, getPC(), m_IR, m_rom); break;
+    case +AsmIns::JIN: JIN(m_stack, m_SP, m_registers, m_IR); break;
+    case +AsmIns::JUN: JUN(m_stack, m_SP, m_IR, m_rom); break;
+    case +AsmIns::JMS: JMS(m_stack, m_SP, m_IR, m_rom); break;
     case +AsmIns::INC: INC(m_registers, m_IR); break;
-    case +AsmIns::ISZ: ISZ(m_PC, m_registers, m_IR, m_rom); break;
-    case +AsmIns::ADD: ADD(m_Acc, m_CY, m_registers, m_IR); break;
-    case +AsmIns::SUB: SUB(m_Acc, m_CY, m_registers, m_IR); break;
-    case +AsmIns::LD:  LD(m_Acc, m_registers, m_IR);  break;
-    case +AsmIns::XCH: XCH(m_Acc, m_registers, m_IR); break;
-    case +AsmIns::BBL: BBL(m_PC, m_stack, m_stackDepth, m_Acc, m_registers, m_IR); break;
-    case +AsmIns::LDM: LDM(m_Acc, m_IR); break;
+    case +AsmIns::ISZ: ISZ(m_stack, m_SP, m_registers, m_IR, m_rom); break;
+    case +AsmIns::ADD: ADD(m_ACC, m_registers, m_IR); break;
+    case +AsmIns::SUB: SUB(m_ACC, m_registers, m_IR); break;
+    case +AsmIns::LD:  LD(m_ACC, m_registers, m_IR);  break;
+    case +AsmIns::XCH: XCH(m_ACC, m_registers, m_IR); break;
+    case +AsmIns::BBL: BBL(m_stack, m_SP, m_ACC, m_registers, m_IR); break;
+    case +AsmIns::LDM: LDM(m_ACC, m_IR); break;
     }
-
-    if (m_PC > 0x03FFu)
-        m_PC = 0u;
 }
-
-void K4004::reset()
-{
-    m_Acc = 0u;
-    m_CY = 0u;
-    std::memset(m_registers, 0, sizeof(m_registers) / sizeof(m_registers[0]));
-    m_PC = m_stack[0] = m_stack[1] = m_stack[2] = 0u;
-    m_stackDepth = 0u;
-    m_CM_RAM = 0u;
-    m_test = 0u;
-}
-
