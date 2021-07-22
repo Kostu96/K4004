@@ -86,7 +86,7 @@ void App::printCPU()
     ss << "-CPU-\n";
     ss << '\n';
     ss << std::setfill('0') << std::hex << std::uppercase;
-    ss << "PC " << std::setw(3) << PC       << "  Acc: " << std::setw(2) << +cpu.getAcc() << '\n';
+    ss << "PC " << std::setw(3) << PC       << "  Acc: " << std::setw(2) << +cpu.getACC() << '\n';
     ss << "L1 " << std::setw(3) << stack[0] << "  CY:   " << +cpu.getCY() << '\n';
     ss << "L2 " << std::setw(3) << stack[1] << "  Test: " << +cpu.getTest() << '\n';
     ss << "L3 " << std::setw(3) << stack[2] << '\n';

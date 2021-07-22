@@ -22,32 +22,34 @@ void NOP()
 {
 }
 
-void JCN(uint16_t& PC, uint8_t IR, uint8_t acc, uint8_t CY, uint8_t test, const ROM& rom)
+void JCN(uint16_t* stack, uint8_t SP, uint8_t IR, uint8_t ACC, uint8_t test, const ROM& rom)
 {
     uint8_t con = IR & 0x0Fu;
-    uint8_t address = rom.getByte(PC++);
+    uint8_t address = rom.getByte(stack[SP]);
+    stack[SP] = ++stack[SP] & 0x03FFu;
 
     bool shouldJump = false;
     switch (con) {
-    case +AsmCon::AEZ: shouldJump = acc == 0u; break;
-    case +AsmCon::ANZ: shouldJump = acc != 0u; break;
-    case +AsmCon::CEZ: shouldJump = CY == 0u; break;
-    case +AsmCon::CNZ: shouldJump = CY != 0u; break;
+    case +AsmCon::AEZ: shouldJump = (ACC & 0x0Fu) == 0u; break;
+    case +AsmCon::ANZ: shouldJump = (ACC & 0x0Fu) != 0u; break;
+    case +AsmCon::CEZ: shouldJump = !(ACC & 0x10u); break;
+    case +AsmCon::CNZ: shouldJump = ACC & 0x10u; break;
     case +AsmCon::TEZ: shouldJump = test == 0u; break;
     case +AsmCon::TNZ: shouldJump = test != 0u; break;
     }
 
     if (shouldJump) {
-        if ((PC & 0x00FFu) == 0xFE) PC += 2u;
-        PC &= 0x0F00u;
-        PC |= address;
+        if ((stack[SP] & 0x00FFu) == 0xFE) stack[SP] += 2;
+        stack[SP] &= 0x0300u;
+        stack[SP] |= address;
     }
 }
 
-void FIM(uint16_t& PC, uint8_t* registers, uint8_t IR, const ROM& rom)
+void FIM(uint16_t* stack, uint8_t SP, uint8_t* registers, uint8_t IR, const ROM& rom)
 {
     uint8_t reg = (IR & 0x0Fu) >> 1;
-    registers[reg] = rom.getByte(PC++);
+    registers[reg] = rom.getByte(stack[SP]);
+    stack[SP] = ++stack[SP] & 0x03FFu;
 }
 
 void SRC(RAM& ram, ROM& rom, const uint8_t* registers, uint8_t IR)
@@ -66,32 +68,30 @@ void FIN(uint8_t* registers, uint16_t PC, uint8_t IR, const ROM& rom)
     registers[reg] = rom.getByte(addr);
 }
 
-void JIN(uint16_t& PC, const uint8_t* registers, uint8_t IR)
+void JIN(uint16_t* stack, uint8_t SP, const uint8_t* registers, uint8_t IR)
 {
     uint8_t reg = (IR & 0x0Fu) >> 1;
     uint8_t addr = registers[reg];
-    if ((PC & 0x00FFu) == 0xFFu) ++PC;
-    PC &= 0x0F00u;
-    PC |= addr;
+    if ((stack[SP] & 0x00FFu) == 0xFFu) ++stack[SP];
+    stack[SP] &= 0x0300u;
+    stack[SP] |= addr;
 }
 
-void JUN(uint16_t& PC, uint8_t IR, const ROM& rom)
+void JUN(uint16_t* stack, uint8_t SP, uint8_t IR, const ROM& rom)
 {
     uint16_t address = (IR & 0x0Fu) << 8;
-    PC = address | rom.getByte(PC++);
+    stack[SP] = address | rom.getByte(stack[SP]);
 }
 
-void JMS(uint16_t& PC, uint16_t* stack, uint8_t& stackDepth, uint8_t IR, const ROM& rom)
+void JMS(uint16_t* stack, uint8_t& SP, uint8_t IR, const ROM& rom)
 {
     uint16_t address = (IR & 0x0Fu) << 8;
-    address |= rom.getByte(PC++);
+    address |= rom.getByte(stack[SP]);
+    stack[SP] = ++stack[SP] & 0x03FFu;
 
-    stack[2] = stack[1];
-    stack[1] = stack[0];
-    stack[0] = PC;
-    PC = address & 0x03FFu;
-    if (++stackDepth > 3)
-        stackDepth = 3u;
+    ++SP;
+    // TODO: !! Add bounds check !!
+    stack[SP] = address & 0x03FFu;
 }
 
 void INC(uint8_t* registers, uint8_t IR)
@@ -101,244 +101,235 @@ void INC(uint8_t* registers, uint8_t IR)
     setRegisterValue(registers, reg, temp + 1);
 }
 
-void ISZ(uint16_t& PC, uint8_t* registers, uint8_t IR, const ROM& rom)
+void ISZ(uint16_t* stack, uint8_t SP, uint8_t* registers, uint8_t IR, const ROM& rom)
 {
     uint8_t reg = IR & 0x0Fu;
     uint8_t value = getRegisterValue(registers, reg);
     setRegisterValue(registers, reg, value + 1);
-    uint8_t addr = rom.getByte(PC++);
+    uint8_t addr = rom.getByte(stack[SP]);
+    stack[SP] = ++stack[SP] & 0x03FFu;
+
     if (((value + 1) & 0x0Fu) != 0u) {
-        if ((PC & 0x00FFu) == 0xFEu) PC += 2u;
-        PC &= 0x0F00u;
-        PC |= addr;
+        if ((stack[SP] & 0x00FFu) == 0xFEu) stack[SP] += 2u;
+        stack[SP] &= 0x0300u;
+        stack[SP] |= addr;
     }
 }
 
-void ADD(uint8_t& acc, uint8_t& CY, const uint8_t* registers, uint8_t IR)
+void ADD(uint8_t& ACC, const uint8_t* registers, uint8_t IR)
 {
     uint8_t temp = IR & 0x0Fu;
+    uint8_t CY = ACC >> 4;
     temp = getRegisterValue(registers, temp) + CY;
-    temp += acc;
-    acc = temp & 0x0Fu;
-    CY = (temp >> 4) & 1u;
+    ACC = temp + ACC & 0x0Fu;
 }
 
-void SUB(uint8_t& acc, uint8_t& CY, const uint8_t* registers, uint8_t IR)
+void SUB(uint8_t& ACC, const uint8_t* registers, uint8_t IR)
 {
-    CY = CY == 0u ? 1u : 0u;
+    uint8_t CY = ACC >> 4 ? 0u : 1u;
     uint8_t temp = IR & 0x0Fu;
     temp = (~getRegisterValue(registers, temp) & 0x0Fu) + CY;
-    temp += acc;
-    acc = temp & 0x0Fu;
-    CY = (temp >> 4) & 1u;
+    ACC = temp + ACC & 0x0Fu;
 }
 
-void LD(uint8_t& acc, const uint8_t* registers, uint8_t IR)
+void LD(uint8_t& ACC, const uint8_t* registers, uint8_t IR)
 {
     uint8_t reg = IR & 0x0Fu;
-    acc = getRegisterValue(registers, reg);
+    ACC = getRegisterValue(registers, reg) | (ACC & 0x10u);
 }
 
-void XCH(uint8_t& acc, uint8_t* registers, uint8_t IR)
+void XCH(uint8_t& ACC, uint8_t* registers, uint8_t IR)
 {
     uint8_t reg = IR & 0x0Fu;
-    uint8_t temp = acc;
-    acc = getRegisterValue(registers, reg);
+    uint8_t temp = ACC & 0x0Fu;
+    ACC = getRegisterValue(registers, reg) | (ACC & 0x10u);
     setRegisterValue(registers, reg, temp);
 }
 
-void BBL(uint16_t& PC, uint16_t* stack, uint8_t& stackDepth, uint8_t& acc, const uint8_t* registers, uint8_t IR)
+void BBL(uint16_t* stack, uint8_t& SP, uint8_t& ACC, const uint8_t* registers, uint8_t IR)
 {
-    if (stackDepth > 0) {
-        --stackDepth;
-        PC = stack[0];
-        stack[0] = stack[1];
-        stack[1] = stack[2];
-        stack[2] = 0u;
+    if (SP > 0) {
+        // TODO: !! Add bounds check !!
+        stack[SP] = 0u;
+        --SP;
     }
 
     uint8_t reg = IR & 0x0Fu;
-    acc = getRegisterValue(registers, reg);
+    ACC = getRegisterValue(registers, reg) | (ACC & 0x10u);
 }
 
-void LDM(uint8_t& acc, uint8_t IR)
+void LDM(uint8_t& ACC, uint8_t IR)
 {
-    acc = IR & 0x0Fu;
+    ACC = (IR & 0x0Fu) | (ACC & 0x10u);
 }
 
-void WRM(RAM& ram, uint8_t acc)
+void WRM(RAM& ram, uint8_t ACC)
 {
-    ram.writeRAM(acc);
+    ram.writeRAM(ACC & 0x0Fu);
 }
 
-void WMP(RAM& ram, uint8_t acc)
+void WMP(RAM& ram, uint8_t ACC)
 {
-    ram.writeOutputPort(acc);
+    ram.writeOutputPort(ACC & 0x0Fu);
 }
 
-void WRR(ROM& rom, uint8_t acc)
+void WRR(ROM& rom, uint8_t ACC)
 {
-    rom.setIOPort(acc);
+    rom.setIOPort(ACC & 0x0Fu);
 }
 
-void WR0(RAM& ram, uint8_t acc)
+void WR0(RAM& ram, uint8_t ACC)
 {
-    ram.writeStatus(acc, 0u);
+    ram.writeStatus(ACC & 0x0Fu, 0u);
 }
 
-void WR1(RAM& ram, uint8_t acc)
+void WR1(RAM& ram, uint8_t ACC)
 {
-    ram.writeStatus(acc, 1u);
+    ram.writeStatus(ACC & 0x0Fu, 1u);
 }
 
-void WR2(RAM& ram, uint8_t acc)
+void WR2(RAM& ram, uint8_t ACC)
 {
-    ram.writeStatus(acc, 2u);
+    ram.writeStatus(ACC & 0x0Fu, 2u);
 }
 
-void WR3(RAM& ram, uint8_t acc)
+void WR3(RAM& ram, uint8_t ACC)
 {
-    ram.writeStatus(acc, 3u);
+    ram.writeStatus(ACC & 0x0Fu, 3u);
 }
 
-void SBM(uint8_t& acc, uint8_t& CY, const RAM& ram)
+void SBM(uint8_t& ACC, const RAM& ram)
 {
-    CY = CY == 0u ? 1u : 0u;
+    uint8_t CY = ACC >> 4 ? 0u : 1u;
     uint8_t temp = (~ram.readRAM() & 0x0Fu) + CY;
-    temp += acc;
-    acc = temp & 0x0Fu;
-    CY = (temp >> 4) & 1u;
+    ACC = temp + ACC & 0x0Fu;
 }
 
-void RDM(uint8_t& acc, const RAM& ram)
+void RDM(uint8_t& ACC, const RAM& ram)
 {
-    acc = ram.readRAM() & 0x0Fu;
+    ACC = (ram.readRAM() & 0x0Fu) | (ACC & 0x10u);
 }
 
-void RDR(uint8_t& acc, const ROM& rom)
+void RDR(uint8_t& ACC, const ROM& rom)
 {
-    acc = rom.getIOPort() & 0x0Fu;
+    ACC = (rom.getIOPort() & 0x0Fu) | (ACC & 0x10u);
 }
 
-void ADM(uint8_t& acc, uint8_t& CY, const RAM& ram)
+void ADM(uint8_t& ACC, const RAM& ram)
 {
+    uint8_t CY = ACC >> 4;
     uint8_t temp = (ram.readRAM() & 0x0Fu) + CY;
-    temp += acc;
-    acc = temp & 0x0Fu;
-    CY = (temp >> 4) & 1u;
+    ACC = temp + ACC & 0x0Fu;
 }
 
-void RD0(uint8_t& acc, const RAM& ram)
+void RD0(uint8_t& ACC, const RAM& ram)
 {
-    acc = ram.readStatus(0u) & 0x0Fu;
+    ACC = (ram.readStatus(0u) & 0x0Fu) | (ACC & 0x10u);
 }
 
-void RD1(uint8_t& acc, const RAM& ram)
+void RD1(uint8_t& ACC, const RAM& ram)
 {
-    acc = ram.readStatus(1u) & 0x0Fu;
+    ACC = (ram.readStatus(1u) & 0x0Fu) | (ACC & 0x10u);
 }
 
-void RD2(uint8_t& acc, const RAM& ram)
+void RD2(uint8_t& ACC, const RAM& ram)
 {
-    acc = ram.readStatus(2u) & 0x0Fu;
+    ACC = (ram.readStatus(2u) & 0x0Fu) | (ACC & 0x10u);
 }
 
-void RD3(uint8_t& acc, const RAM& ram)
+void RD3(uint8_t& ACC, const RAM& ram)
 {
-    acc = ram.readStatus(3u) & 0x0Fu;
+    ACC = (ram.readStatus(3u) & 0x0Fu) | (ACC & 0x10u);
 }
 
-void CLB(uint8_t& acc, uint8_t& CY)
+void CLB(uint8_t& ACC)
 {
-    acc = 0u;
-    CY = 0u;
+    ACC = 0u;
 }
 
-void CLC(uint8_t& CY)
+void CLC(uint8_t& ACC)
 {
-    CY = 0u;
+    ACC = ACC & 0x0Fu;
 }
 
-void IAC(uint8_t& acc, uint8_t& CY)
+void IAC(uint8_t& ACC)
 {
-    ++acc;
-    acc &= 0x0Fu;
-    CY = acc == 0u ? 1u : 0u;
+    ACC &= 0x0Fu;
+    ++ACC;
 }
 
-void CMC(uint8_t& CY)
+void CMC(uint8_t& ACC)
 {
-    CY = CY == 0u ? 1u : 0u;
+    ACC = ACC >> 4 ? ACC & 0x0Fu : ACC | 0x10u;
 }
 
-void CMA(uint8_t& acc)
+void CMA(uint8_t& ACC)
 {
-    acc = ~acc & 0x0Fu;
+    uint8_t temp = ACC & 0x0Fu;
+    ACC &= 0x10u;
+    ACC |= ~temp & 0x0Fu;
 }
 
-void RAL(uint8_t& acc, uint8_t& CY)
+void RAL(uint8_t& ACC)
 {
-    uint8_t tempByte1 = CY;
-    CY = (acc >> 3) & 1u;
-    acc = (acc << 1) & 0x0Fu;
-    acc |= tempByte1;
+    uint8_t CY = ACC & 1u;
+    ACC >>= 1;
+    ACC |= CY << 4;
 }
 
-void RAR(uint8_t& acc, uint8_t& CY)
+void RAR(uint8_t& ACC)
 {
-    uint8_t tempByte1 = CY;
-    CY = acc & 1u;
-    acc = (acc >> 1) & 0x0Fu;
-    acc |= tempByte1 << 3;
+    uint8_t CY = ACC >> 4;
+    ACC <<= 1;
+    ACC |= CY;
 }
 
-void TCC(uint8_t& acc, uint8_t& CY)
+void TCC(uint8_t& ACC)
 {
-    acc = CY;
-    CY = 0u;
+    ACC >>= 4;
 }
 
-void DAC(uint8_t& acc, uint8_t& CY)
+void DAC(uint8_t& ACC)
 {
-    --acc;
-    acc &= 0x0Fu;
-    CY = acc == 0x0Fu ? 0u : 1u;
+    ACC &= 0x0Fu;
+    --ACC;
+    if (ACC > 0x0Fu)
+        ACC &= 0x0Fu;
+    else
+        ACC |= 0x10u;
 }
 
-void TCS(uint8_t& acc, uint8_t& CY)
+void TCS(uint8_t& ACC)
 {
-    acc = CY == 0 ? 9u : 10u;
-    CY = 0u;
+    ACC = ACC >> 4 ? 10u : 9u;
 }
 
-void STC(uint8_t& CY)
+void STC(uint8_t& ACC)
 {
-    CY = 1u;
+    ACC |= 0x10u;
 }
 
-void DAA(uint8_t& acc, uint8_t& CY)
+void DAA(uint8_t& ACC)
 {
-    if (CY == 1u || acc > 9u) {
-        uint8_t temp = acc + 6u;
-        acc = temp & 0x0Fu;
-        if ((temp >> 4) & 1u)
-            CY = 1u;
+    if (ACC > 9u) {
+        ACC += 6u;
     }
 }
 
-void KBP(uint8_t& acc)
+void KBP(uint8_t& ACC)
 {
-    if (acc == 0b0000u) return;
-    if (acc == 0b0001u) return;
-    if (acc == 0b0010u) return;
-    if (acc == 0b0100u) { acc = 0b0011u; return; }
-    if (acc == 0b1000u) { acc = 0b0100u; return; }
-    acc = 0b1111u;
+    uint8_t temp = ACC & 0x0Fu;
+    if (temp == 0b0000u) return;
+    if (temp == 0b0001u) return;
+    if (temp == 0b0010u) return;
+    if (temp == 0b0100u) { ACC = 0b0011u | (ACC & 0x10u); return; }
+    if (temp == 0b1000u) { ACC = 0b0100u | (ACC & 0x10u); return; }
+    ACC = 0b1111u | (ACC & 0x10u);
 }
 
-void DCL(RAM& ram, uint8_t acc)
+void DCL(RAM& ram, uint8_t ACC)
 {
-    uint8_t temp = acc & 0x07u;
+    uint8_t temp = ACC & 0x07u;
     switch (temp) {
     case 0b000:
         ram.setRAMBank(0u);
