@@ -8,9 +8,7 @@ ROM::ROM()
 }
 
 bool ROM::load(const uint8_t* objectCode, size_t objectCodeLength)
-{
-    // TODO: add out of bounds check
-    
+{   
     if (objectCode == nullptr || objectCodeLength == 0)
         return false;
 
@@ -35,8 +33,12 @@ bool ROM::load(const uint8_t* objectCode, size_t objectCodeLength)
         if (i >= objectCodeLength)
             return false; // Somethin went terribly wrong
     }
+    ++i;
 
-    for (size_t j = 0; i < objectCodeLength; ++i)
+    if (objectCodeLength - i > ROM_SIZE)
+        return false;
+
+    for (size_t j = 0; i < objectCodeLength; ++i, ++j)
         m_rom[j] = objectCode[i];
 
     return true;
@@ -47,9 +49,10 @@ void ROM::reset()
     m_srcAddress = 0u;
     std::memset(m_rom, 0, ROM_SIZE);
     std::memset(m_ioPorts, 0, NUM_ROM_CHIPS);
+    std::memset(m_ioPortsMasks, 0, NUM_ROM_CHIPS);
 }
 
-void ROM::setIOPort(uint8_t value)
+void ROM::writeIOPort(uint8_t value)
 {
     uint8_t oldValue = m_ioPorts[m_srcAddress];
     uint8_t mask = m_ioPortsMasks[m_srcAddress];
@@ -62,7 +65,7 @@ void ROM::setIOPort(uint8_t value)
     m_ioPorts[m_srcAddress] = newValue;
 }
 
-uint8_t ROM::getIOPort() const
+uint8_t ROM::readIOPort() const
 {
     uint8_t portValue = m_ioPorts[m_srcAddress];
     uint8_t mask = m_ioPortsMasks[m_srcAddress];

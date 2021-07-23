@@ -35,8 +35,14 @@ uint8_t RAM::readStatus(uint8_t index) const
 
 void RAM::writeOutputPort(uint8_t character)
 {
-    uint8_t addr = (m_srcAddress >> 6) & 0x03u;
+    uint8_t addr = m_srcAddress >> 6;
     m_oPorts[addr] = character & 0x0Fu;
+}
+
+uint8_t RAM::readOutputPort() const
+{
+    uint8_t addr = m_srcAddress >> 6;
+    return m_oPorts[addr] & 0x0F;
 }
 
 void RAM::setRAMBank(uint8_t index)

@@ -25,7 +25,7 @@ void NOP()
 void JCN(uint16_t* stack, uint8_t SP, uint8_t IR, uint8_t ACC, uint8_t test, const ROM& rom)
 {
     uint8_t con = IR & 0x0Fu;
-    uint8_t address = rom.getByte(stack[SP]);
+    uint8_t address = rom.readByte(stack[SP]);
     stack[SP] = ++stack[SP] & 0x03FFu;
 
     bool shouldJump = false;
@@ -48,7 +48,7 @@ void JCN(uint16_t* stack, uint8_t SP, uint8_t IR, uint8_t ACC, uint8_t test, con
 void FIM(uint16_t* stack, uint8_t SP, uint8_t* registers, uint8_t IR, const ROM& rom)
 {
     uint8_t reg = (IR & 0x0Fu) >> 1;
-    registers[reg] = rom.getByte(stack[SP]);
+    registers[reg] = rom.readByte(stack[SP]);
     stack[SP] = ++stack[SP] & 0x03FFu;
 }
 
@@ -65,7 +65,7 @@ void FIN(uint8_t* registers, uint16_t PC, uint8_t IR, const ROM& rom)
     uint8_t reg = (IR & 0x0Fu) >> 1;
     uint8_t addr = registers[0];
     if ((PC & 0x00FFu) == 0xFF) addr += ROM::PAGE_SIZE;
-    registers[reg] = rom.getByte(addr);
+    registers[reg] = rom.readByte(addr);
 }
 
 void JIN(uint16_t* stack, uint8_t SP, const uint8_t* registers, uint8_t IR)
@@ -80,13 +80,13 @@ void JIN(uint16_t* stack, uint8_t SP, const uint8_t* registers, uint8_t IR)
 void JUN(uint16_t* stack, uint8_t SP, uint8_t IR, const ROM& rom)
 {
     uint16_t address = (IR & 0x0Fu) << 8;
-    stack[SP] = address | rom.getByte(stack[SP]);
+    stack[SP] = address | rom.readByte(stack[SP]);
 }
 
 void JMS(uint16_t* stack, uint8_t& SP, uint8_t IR, const ROM& rom)
 {
     uint16_t address = (IR & 0x0Fu) << 8;
-    address |= rom.getByte(stack[SP]);
+    address |= rom.readByte(stack[SP]);
     stack[SP] = ++stack[SP] & 0x03FFu;
 
     ++SP;
@@ -106,7 +106,7 @@ void ISZ(uint16_t* stack, uint8_t SP, uint8_t* registers, uint8_t IR, const ROM&
     uint8_t reg = IR & 0x0Fu;
     uint8_t value = getRegisterValue(registers, reg);
     setRegisterValue(registers, reg, value + 1);
-    uint8_t addr = rom.getByte(stack[SP]);
+    uint8_t addr = rom.readByte(stack[SP]);
     stack[SP] = ++stack[SP] & 0x03FFu;
 
     if (((value + 1) & 0x0Fu) != 0u) {
@@ -175,7 +175,7 @@ void WMP(RAM& ram, uint8_t ACC)
 
 void WRR(ROM& rom, uint8_t ACC)
 {
-    rom.setIOPort(ACC & 0x0Fu);
+    rom.writeIOPort(ACC & 0x0Fu);
 }
 
 void WR0(RAM& ram, uint8_t ACC)
@@ -212,7 +212,7 @@ void RDM(uint8_t& ACC, const RAM& ram)
 
 void RDR(uint8_t& ACC, const ROM& rom)
 {
-    ACC = (rom.getIOPort() & 0x0Fu) | (ACC & 0x10u);
+    ACC = (rom.readIOPort() & 0x0Fu) | (ACC & 0x10u);
 }
 
 void ADM(uint8_t& ACC, const RAM& ram)
