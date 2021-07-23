@@ -19,5 +19,7 @@ private:
     void printRAM();
 
     Emulator emulator;
-    std::vector<std::string> disassembly;
+    std::vector<uint8_t> bytecode[4];
+    std::vector<std::string> disassembly[4];
+    size_t current = 0;
 };

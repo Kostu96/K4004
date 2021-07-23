@@ -17,7 +17,7 @@ K4040::K4040(ROM& rom, RAM& ram) :
 void K4040::reset()
 {
     std::memset(m_registers, 0, REGISTERS_SIZE);
-    std::memset(m_stack, 0, STACK_SIZE);
+    std::memset(m_stack, 0, STACK_SIZE * 2);
 
     m_ram.reset();
 }

@@ -93,11 +93,19 @@ bool Assembler::assemble(const char* filename, std::vector<uint8_t>& output)
 
 void Assembler::disassemble(const std::vector<uint8_t>& bytecode, std::vector<std::string>& output)
 {
-    output.reserve(bytecode.size());
+    m_metalMaskLength = 1u;
+    if (bytecode[0] != 0xFEu) {
+        // Error
+    }
+    size_t i = 0;
+    while (bytecode[++i] != 0xFF);
+    m_metalMaskLength += i;
+
+    output.reserve(bytecode.size() - m_metalMaskLength);
     std::stringstream ss;
     ss << std::setfill('0') << std::hex << std::uppercase;
     bool twoByte = false;
-    for (size_t i = 0; i < bytecode.size(); ++i) {
+    for (size_t i = m_metalMaskLength; i < bytecode.size(); ++i) {
         uint8_t opcode = getOpcodeFromByte(bytecode[i]);
         // TODO: Refactor
         switch (opcode) {

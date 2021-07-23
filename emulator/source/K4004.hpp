@@ -1,19 +1,24 @@
 #pragma once
+#include <chrono>
 #include <cstdint>
 
 class ROM;
 class RAM;
+
+using namespace std::chrono_literals;
 
 class K4004
 {
 public:
     static constexpr uint8_t REGISTERS_SIZE = 8u;
     static constexpr uint8_t STACK_SIZE = 4u;
+    static constexpr std::chrono::nanoseconds CYCLE_TIME = 10800ns;
+    static constexpr std::chrono::nanoseconds DOUBLE_CYCLE_TIME = 21600ns;
 
     K4004(ROM& rom, RAM& ram);
 
     void reset();
-    void step();
+    uint8_t step();
 
     const uint16_t* getStack() const { return m_stack; }
     const uint8_t* getRegisters() const { return m_registers; }
@@ -24,7 +29,7 @@ public:
     uint8_t getTest() const { return m_test; }
     void setTest(uint8_t test) { m_test = test & 1u; }
 private:
-    void incStack() { m_stack[m_SP] = ++m_stack[m_SP] & 0x03FFu; }
+    void incPC() { m_stack[m_SP] = ++m_stack[m_SP] & 0x03FFu; }
 
     uint8_t m_registers[REGISTERS_SIZE];
     uint16_t m_stack[STACK_SIZE];
@@ -36,4 +41,7 @@ private:
     RAM& m_ram;
 
     uint8_t m_CM_RAM;
+
+    std::chrono::steady_clock m_clock;
+    
 };
