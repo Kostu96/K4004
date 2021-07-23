@@ -4,27 +4,46 @@
 
 #include "assembler/source/assembler.hpp"
 
+#include <fstream>
+
 Emulator::Emulator() :
     m_ram(),
     m_rom(),
     m_cpu(m_rom, m_ram) {}
 
-bool Emulator::loadProgram(const char* filename)
+bool Emulator::loadProgramFromSource(const char* filename)
 {
     Assembler assembler;
     std::vector<uint8_t> bytecode;
     bool ret = assembler.assemble(filename, bytecode);
 
     if (ret) {
-        m_rom.load(bytecode.data(), bytecode.size());
+        ret = m_rom.load(bytecode.data(), bytecode.size());
     }
 
     return ret;
 }
 
-void Emulator::loadProgram(const uint8_t* bytecode, size_t codeSize)
+bool Emulator::loadProgramFromObjectCode(const char* filename)
 {
-    m_rom.load(bytecode, codeSize);
+    std::fstream file(filename);
+    if (!file.is_open())
+        return false;
+
+    std::vector<uint8_t> bytecode;
+    uint16_t byte;
+    file >> std::hex;
+    while (file >> byte)
+        bytecode.push_back(byte);
+
+    file.close();
+
+    return m_rom.load(bytecode.data(), bytecode.size());
+}
+
+bool Emulator::loadProgramFromMemory(const uint8_t* bytecode, size_t codeSize)
+{
+    return m_rom.load(bytecode, codeSize);
 }
 
 void Emulator::step(size_t times)

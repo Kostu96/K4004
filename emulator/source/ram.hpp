@@ -23,6 +23,7 @@ public:
     void writeStatus(uint8_t character, uint8_t index);
     uint8_t readStatus(uint8_t index) const;
     void writeOutputPort(uint8_t character);
+    uint8_t readOutputPort() const;
 
     void setRAMBank(uint8_t index);
     void setSrcAddress(uint8_t address);

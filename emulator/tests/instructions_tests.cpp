@@ -1,193 +1,42 @@
-#include "emulator/source/emulator.hpp"
+#include "emulator/source/instructions.hpp"
+#include "emulator/source/ram.hpp"
+#include "emulator/source/rom.hpp"
 
 #include "shared/source/assembly.hpp"
 
 #include <gtest/gtest.h>
 
-template<>
-struct WhiteBox<RAM> {
-    static uint8_t* getRAMOutputPorts(RAM& ram) {
-        return ram.m_oPorts;
-    }
+TEST(InstructionsTests, WRMTest) {
+    uint8_t acc = 0x07u;
+    RAM ram;
+    ram.setSrcAddress(0b00100111u); // chip 0 | reg 2 | char 7
 
-    static uint8_t* getRAMStatus(RAM& ram) {
-        return ram.m_status;
-    }
+    WRM(ram, acc);
 
-    static uint8_t* getRAMData(RAM& ram) {
-        return ram.m_ram;
-    }
-
-    static uint16_t* getSrcAddress(RAM& ram) {
-        return &ram.m_srcAddress;
-    }
-};
-
-template<>
-struct WhiteBox<ROM> {
-    static uint8_t* getROMData(ROM& rom) {
-        return rom.m_rom;
-    }
-
-    static uint8_t* getSrcAddress(ROM& rom) {
-        return &rom.m_srcAddress;
-    }
-};
-
-template<>
-struct WhiteBox<K4004> {
-    static uint8_t* getAcc(K4004& cpu) {
-        return &cpu.m_Acc;
-    }
-
-    static uint8_t* getCY(K4004& cpu) {
-        return &cpu.m_CY;
-    }
-
-    static uint8_t* getTest(K4004& cpu) {
-        return &cpu.m_test;
-    }
-
-    static uint16_t* getPC(K4004& cpu) {
-        return &cpu.m_PC;
-    }
-
-    static uint16_t* getStack(K4004& cpu) {
-        return cpu.m_stack;
-    }
-
-    static uint8_t* getStackDepth(K4004& cpu) {
-        return &cpu.m_stackDepth;
-    }
-
-    static uint8_t* gerRegisters(K4004& cpu) {
-        return cpu.m_registers;
-    }
-};
-
-template<>
-struct WhiteBox<Emulator> {
-    static RAM& getRAM(Emulator& emulator) {
-        return emulator.m_ram;
-    }
-
-    static ROM& getROM(Emulator& emulator) {
-        return emulator.m_rom;
-    }
-
-    static K4004& getCPU(Emulator& emulator) {
-        return emulator.m_cpu;
-    }
-};
-
-struct EmulatorInstructionsTests : public testing::Test {
-    void SetUp() override {
-        auto& ramObj = WhiteBox<Emulator>::getRAM(emulator);
-        ram = WhiteBox<RAM>::getRAMData(ramObj);
-        ramStatus = WhiteBox<RAM>::getRAMStatus(ramObj);
-        ramOutput = WhiteBox<RAM>::getRAMOutputPorts(ramObj);
-        ramSrcAddr = WhiteBox<RAM>::getSrcAddress(ramObj);
-        ASSERT_NE(ram, nullptr);
-        ASSERT_NE(ramStatus, nullptr);
-        ASSERT_NE(ramOutput, nullptr);
-        ASSERT_NE(ramSrcAddr, nullptr);
-
-        auto& romObj = WhiteBox<Emulator>::getROM(emulator);
-        rom = WhiteBox<ROM>::getROMData(romObj);
-        romSrcAddr = WhiteBox<ROM>::getSrcAddress(romObj);
-        ASSERT_NE(rom, nullptr);
-        ASSERT_NE(romSrcAddr, nullptr);
-
-        auto& cpu = WhiteBox<Emulator>::getCPU(emulator);
-        acc = WhiteBox<K4004>::getAcc(cpu);
-        CY = WhiteBox<K4004>::getCY(cpu);
-        test = WhiteBox<K4004>::getTest(cpu);
-        pc = WhiteBox<K4004>::getPC(cpu);
-        stack = WhiteBox<K4004>::getStack(cpu);
-        stackDepth = WhiteBox<K4004>::getStackDepth(cpu);
-        registers = WhiteBox<K4004>::gerRegisters(cpu);
-        ASSERT_NE(acc, nullptr);
-        ASSERT_NE(CY, nullptr);
-        ASSERT_NE(test, nullptr);
-        ASSERT_NE(pc, nullptr);
-        ASSERT_NE(stack, nullptr);
-        ASSERT_NE(stackDepth, nullptr);
-        ASSERT_NE(registers, nullptr);
-    }
-
-    void TearDown() override {
-        emulator.reset();
-    }
-
-    Emulator emulator;
-    uint8_t* rom = nullptr;
-    uint8_t* romSrcAddr = nullptr;
-    uint8_t* ram = nullptr;
-    uint8_t* ramStatus = nullptr;
-    uint8_t* ramOutput = nullptr;
-    uint16_t* ramSrcAddr = nullptr;
-    uint8_t* acc = nullptr;
-    uint8_t* CY = nullptr;
-    uint8_t* test = nullptr;
-    uint16_t* pc = nullptr;
-    uint16_t* stack = nullptr;
-    uint8_t* stackDepth = nullptr;
-    uint8_t* registers = nullptr;
-};
-
-TEST_F(EmulatorInstructionsTests, NOPTest) {
-    rom[0] = +AsmIns::NOP;
-    emulator.step();
-
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x00u);
-    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(ram.readRAM(), acc);
 }
 
-TEST_F(EmulatorInstructionsTests, WRMTest) {
-    rom[0] = +AsmIns::WRM;
-    *acc = 0x07u;
-    *ramSrcAddr = 0b00100111u; // chip 0 | reg 2 | char 7
-    emulator.step();
+TEST(InstructionsTests, WMPTest) {
+    uint8_t acc = 0x07u;
+    RAM ram;
+    ram.setSrcAddress(0b10000000u); // chip 2
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x07u);
-    EXPECT_EQ(*CY, 0u);
-    EXPECT_EQ(ram[*ramSrcAddr], *acc);
+    WMP(ram, acc);
+
+    EXPECT_EQ(ram.readOutputPort(), acc);
 }
 
-TEST_F(EmulatorInstructionsTests, WMPTest) {
-    rom[0] = +AsmIns::WMP;
-    *acc = 0x07u;
-    *ramSrcAddr = 0b10000000u; // chip 2
-    emulator.step();
+TEST(EmulatorInstructionsTests, WRRTest) {
+    uint8_t acc = 0x07u;
+    ROM rom;
+    rom.setSrcAddress(0u);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x07u);
-    EXPECT_EQ(*CY, 0u);
-    EXPECT_EQ(ramOutput[2], *acc);
+    WRR(rom, acc);
+
+    EXPECT_EQ(rom.getIOPort(0u), acc);
 }
 
-TEST_F(EmulatorInstructionsTests, WRRTest) {
-    rom[0] = +AsmIns::WRR;
-    emulator.step();
-
-    // TODO: Decide how to handle I/O metal config
-}
-
-TEST_F(EmulatorInstructionsTests, WR0Test) {
+/*TEST_F(EmulatorInstructionsTests, WR0Test) {
     rom[0] = +AsmIns::WR0;
     *acc = 0x07u;
     *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
@@ -1013,6 +862,6 @@ TEST_F(EmulatorInstructionsTests, ISZTest) {
     emulator.step();
     EXPECT_EQ(*pc, 0x002u);
     EXPECT_EQ(registers[0], 0x00u);
-}
+}*/
 
 // TODO: Make tests for instructions that operates on page boundary

@@ -10,7 +10,7 @@ bool App::OnUserCreate()
     Assembler assembler;
     std::vector<uint8_t> bytecode;
     assembler.assemble("programs/mcs4_evaluation.asm", bytecode);
-    emulator.loadProgram(bytecode.data(), bytecode.size());
+    emulator.loadProgramFromMemory(bytecode.data(), bytecode.size());
     assembler.disassemble(bytecode, disassembly);
     return true;
 }

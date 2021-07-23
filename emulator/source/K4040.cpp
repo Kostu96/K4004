@@ -24,7 +24,7 @@ void K4040::reset()
 
 void K4040::step()
 {
-    m_IR = m_rom.getByte(getPC());
+    m_IR = m_rom.readByte(getPC());
     incStack();
 
     uint8_t opcode = getOpcodeFromByte(m_IR);
