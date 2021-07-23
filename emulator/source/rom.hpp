@@ -1,6 +1,4 @@
 #pragma once
-#include "shared/source/whitebox.hpp"
-
 #include <cstdint>
 
 class ROM
@@ -23,11 +21,12 @@ public:
     uint8_t getSrcAddress() const { return m_srcAddress; }
     const uint8_t* getRomContents() const { return m_rom; }
     uint8_t getIOPort(uint8_t idx) const { return m_ioPorts[idx]; }
+
+    ROM(const ROM&) = delete;
+    ROM& operator=(const ROM&) = delete;
 private:
     uint8_t m_srcAddress;
     uint8_t m_rom[ROM_SIZE];
     uint8_t m_ioPorts[NUM_ROM_CHIPS];
     uint8_t m_ioPortsMasks[NUM_ROM_CHIPS];
-
-    ALLOW_WHITEBOX(ROM);
 };
