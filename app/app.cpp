@@ -8,19 +8,42 @@
 bool App::OnUserCreate()
 {
     Assembler assembler;
-    std::vector<uint8_t> bytecode;
-    assembler.assemble("programs/mcs4_evaluation.asm", bytecode);
-    emulator.loadProgramFromMemory(bytecode.data(), bytecode.size());
-    assembler.disassemble(bytecode, disassembly);
+    assembler.assemble("programs/4bit_addition.asm", bytecode[0]);
+    assembler.disassemble(bytecode[0], disassembly[0]);
+    assembler.assemble("programs/ram_test.asm", bytecode[1]);
+    assembler.disassemble(bytecode[1], disassembly[1]);
+    assembler.assemble("programs/4bit_and_subroutine.asm", bytecode[2]);
+    assembler.disassemble(bytecode[2], disassembly[2]);
+    assembler.assemble("programs/mcs4_evaluation.asm", bytecode[3]);
+    assembler.disassemble(bytecode[3], disassembly[3]);
     return true;
 }
 
 bool App::OnUserUpdate(float fElapsedTime)
 {
-    if (GetKey(olc::SPACE).bPressed)
+    if (GetKey(olc::K1).bPressed) {
+        emulator.reset(true);
+        emulator.loadProgramFromMemory(bytecode[0].data(), bytecode[0].size());
+        current = 0;
+    }
+    else if (GetKey(olc::K2).bPressed) {
+        emulator.reset(true);
+        emulator.loadProgramFromMemory(bytecode[1].data(), bytecode[1].size());
+        current = 1;
+    }
+    else if (GetKey(olc::K3).bPressed) {
+        emulator.reset(true);
+        emulator.loadProgramFromMemory(bytecode[2].data(), bytecode[2].size());
+        current = 2;
+    }
+    else if (GetKey(olc::K4).bPressed) {
+        emulator.reset(true);
+        emulator.loadProgramFromMemory(bytecode[3].data(), bytecode[3].size());
+        current = 3;
+    }
+    else if (GetKey(olc::SPACE).bPressed)
         emulator.step();
-
-    if (GetKey(olc::R).bPressed)
+    else if (GetKey(olc::R).bPressed)
         emulator.reset();
 
     Clear(olc::DARK_CYAN);
@@ -58,7 +81,7 @@ void App::printROM()
 
     FillRectDecal({ xpos, ypos }, { 17, 9 });
 
-    bool isTwobyte = PCnext < disassembly.size() ? disassembly[PCnext].empty() : false;
+    bool isTwobyte = PCnext < disassembly[current].size() ? disassembly[current][PCnext].empty() : false;
     if (isTwobyte) {
         bool isNewLine = (pageIdx + 1) % numberOfColumns == 0;
         float width = isNewLine ? 17 : 24; // 24
@@ -86,10 +109,10 @@ void App::printCPU()
     ss << "-CPU-\n";
     ss << '\n';
     ss << std::setfill('0') << std::hex << std::uppercase;
-    ss << "PC " << std::setw(3) << PC       << "  Acc: " << std::setw(2) << +cpu.getACC() << '\n';
-    ss << "L1 " << std::setw(3) << stack[0] << "  CY:   " << +cpu.getCY() << '\n';
-    ss << "L2 " << std::setw(3) << stack[1] << "  Test: " << +cpu.getTest() << '\n';
-    ss << "L3 " << std::setw(3) << stack[2] << '\n';
+    ss << "L0 " << std::setw(3) << stack[0] << "  Acc: " << std::setw(2) << +cpu.getACC() << '\n';
+    ss << "L1 " << std::setw(3) << stack[1] << "  CY:   " << +cpu.getCY() << '\n';
+    ss << "L2 " << std::setw(3) << stack[2] << "  Test: " << +cpu.getTest() << '\n';
+    ss << "L3 " << std::setw(3) << stack[3] << '\n';
     ss << '\n';
 
     ss << "R0R1 " << std::setw(2) << +registers[0] << " R8R9 " << std::setw(2) << +registers[4] << '\n';
@@ -100,7 +123,7 @@ void App::printCPU()
     
     size_t PCnext = PC + 1ull;
     ss << "Curr.Ins.:\n";
-    ss << (PCnext < disassembly.size() ? disassembly[PC] : "ERROR!") << "\n\n";
+    ss << (PCnext < disassembly[current].size() ? disassembly[current][PC] : "ERROR!") << "\n\n";
 
     DrawStringDecal({ 232, 2 }, ss.str(), olc::BLACK);
 }
