@@ -1,6 +1,4 @@
 #pragma once
-#include "shared/source/whitebox.hpp"
-
 #include <cstdint>
 
 class RAM
@@ -39,6 +37,4 @@ private:
     uint8_t m_ram[RAM_SIZE];
     uint8_t m_status[STATUS_SIZE];
     uint8_t m_oPorts[OUTPUT_SIZE];
-
-    ALLOW_WHITEBOX(RAM);
 };

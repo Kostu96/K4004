@@ -1,6 +1,4 @@
 #pragma once
-#include "shared/source/whitebox.hpp"
-
 #include <cstdint>
 
 class ROM;
@@ -38,6 +36,4 @@ private:
     RAM& m_ram;
 
     uint8_t m_CM_RAM;
-
-    ALLOW_WHITEBOX(K4004);
 };
