@@ -21,7 +21,6 @@ TEST_P(DisassemblerTests, givenProgramByteCodeWhenDisassemblingThenCorrectDisass
     std::vector<std::string> output;
     assembler.disassemble(testParam.byteCode, output);
     
-    EXPECT_EQ(testParam.byteCode.size(), output.size());
     EXPECT_EQ(output.size(), testParam.refDisassembly.size());
     ASSERT_LE(output.size(), testParam.refDisassembly.size());
 
@@ -32,6 +31,7 @@ TEST_P(DisassemblerTests, givenProgramByteCodeWhenDisassemblingThenCorrectDisass
 INSTANTIATE_TEST_SUITE_P(Parametrized, DisassemblerTests,
     testing::Values(
         DisassemblerTestParam({
+            0xFE, 0xFF,
             0x20, 0xA2, 0xA0, 0x81, 0xB1, 0x40, 0x05
         },
         {
@@ -42,6 +42,7 @@ INSTANTIATE_TEST_SUITE_P(Parametrized, DisassemblerTests,
             "JUN $005", ""
         }),
         DisassemblerTestParam({
+            0xFE, 0xFF,
             0x28, 0x00, 0x29, 0xEA, 0xB0, 0x68, 0x29, 0xEA,
             0xB1, 0x50, 0x18, 0xB2, 0xE1, 0x40, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -86,6 +87,7 @@ INSTANTIATE_TEST_SUITE_P(Parametrized, DisassemblerTests,
             "JUN $023", ""
         }),
         DisassemblerTestParam({
+            0xFE, 0xFF,
             0x20, 0x00, 0x22, 0x00, 0xDC, 0xB2, 0x21, 0xE0,
             0xF2, 0x71, 0x06, 0x60, 0x72, 0x06, 0x20, 0x00,
             0x22, 0x00, 0xDC, 0xB2, 0x21, 0xE4, 0xF2, 0xE5,
@@ -121,6 +123,7 @@ INSTANTIATE_TEST_SUITE_P(Parametrized, DisassemblerTests,
             "JUN $020", ""
         }),
         DisassemblerTestParam({
+            0xFE, 0xFF,
             0xE2, 0xCF, 0x2A, 0x41, 0x50, 0xDE, 0x50, 0xE5,
             0x20, 0xFE, 0x50, 0xEE, 0x50, 0xE5, 0x50, 0xEE,
             0x50, 0xE5, 0x2A, 0x42, 0x5F, 0xFF, 0x50, 0x1A,

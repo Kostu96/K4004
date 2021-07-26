@@ -56,8 +56,8 @@ void SRC(RAM& ram, ROM& rom, const uint8_t* registers, uint8_t IR)
 {
     uint8_t reg = (IR & 0x0Fu) >> 1;
     uint8_t addr = registers[reg];
-    rom.setSrcAddress(addr);
-    ram.setSrcAddress(addr);
+    rom.writeSrcAddress(addr);
+    ram.writeSrcAddress(addr);
 }
 
 void FIN(uint8_t* registers, uint16_t PC, uint8_t IR, const ROM& rom)
@@ -121,7 +121,7 @@ void ADD(uint8_t& ACC, const uint8_t* registers, uint8_t IR)
     uint8_t temp = IR & 0x0Fu;
     uint8_t CY = ACC >> 4;
     temp = getRegisterValue(registers, temp) + CY;
-    ACC = temp + ACC & 0x0Fu;
+    ACC = (ACC & 0x0Fu) + temp;
 }
 
 void SUB(uint8_t& ACC, const uint8_t* registers, uint8_t IR)
@@ -129,7 +129,7 @@ void SUB(uint8_t& ACC, const uint8_t* registers, uint8_t IR)
     uint8_t CY = ACC >> 4 ? 0u : 1u;
     uint8_t temp = IR & 0x0Fu;
     temp = (~getRegisterValue(registers, temp) & 0x0Fu) + CY;
-    ACC = temp + ACC & 0x0Fu;
+    ACC = (ACC & 0x0Fu) + temp;
 }
 
 void LD(uint8_t& ACC, const uint8_t* registers, uint8_t IR)
@@ -202,7 +202,7 @@ void SBM(uint8_t& ACC, const RAM& ram)
 {
     uint8_t CY = ACC >> 4 ? 0u : 1u;
     uint8_t temp = (~ram.readRAM() & 0x0Fu) + CY;
-    ACC = temp + ACC & 0x0Fu;
+    ACC = (ACC & 0x0Fu) + temp;
 }
 
 void RDM(uint8_t& ACC, const RAM& ram)
@@ -219,7 +219,7 @@ void ADM(uint8_t& ACC, const RAM& ram)
 {
     uint8_t CY = ACC >> 4;
     uint8_t temp = (ram.readRAM() & 0x0Fu) + CY;
-    ACC = temp + ACC & 0x0Fu;
+    ACC = (ACC & 0x0Fu) + temp;
 }
 
 void RD0(uint8_t& ACC, const RAM& ram)
@@ -272,16 +272,17 @@ void CMA(uint8_t& ACC)
 
 void RAL(uint8_t& ACC)
 {
-    uint8_t CY = ACC & 1u;
-    ACC >>= 1;
-    ACC |= CY << 4;
+    uint8_t CY = ACC >> 4;
+    ACC <<= 1;
+    ACC |= CY;
+    ACC &= 0x1Fu;
 }
 
 void RAR(uint8_t& ACC)
 {
-    uint8_t CY = ACC >> 4;
-    ACC <<= 1;
-    ACC |= CY;
+    uint8_t CY = ACC & 1u;
+    ACC >>= 1;
+    ACC |= CY << 4;
 }
 
 void TCC(uint8_t& ACC)

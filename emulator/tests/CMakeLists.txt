@@ -4,8 +4,6 @@ set(K4004_EMULATOR_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt
     ${CMAKE_CURRENT_SOURCE_DIR}/instructions_tests.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
-    ${SHARED_DIR}/source/assembly.cpp
-    ${SHARED_DIR}/source/assembly.hpp
 )
 
 add_executable(${TARGET_EMULATOR_TESTS_NAME} ${K4004_EMULATOR_TEST_SOURCES})

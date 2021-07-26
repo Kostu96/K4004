@@ -16,11 +16,11 @@ public:
     uint8_t readByte(uint16_t address) const { return m_rom[address]; }
     void writeIOPort(uint8_t value);
     uint8_t readIOPort() const;
+    void writeSrcAddress(uint8_t address) { m_srcAddress = address >> 4; }
     
-    void setSrcAddress(uint8_t address) { m_srcAddress = address >> 4; }
-    uint8_t getSrcAddress() const { return m_srcAddress; }
     const uint8_t* getRomContents() const { return m_rom; }
     uint8_t getIOPort(uint8_t idx) const { return m_ioPorts[idx]; }
+    uint8_t getSrcAddress() const { return m_srcAddress; }
 
     ROM(const ROM&) = delete;
     ROM& operator=(const ROM&) = delete;
