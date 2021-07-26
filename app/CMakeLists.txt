@@ -14,7 +14,7 @@ target_include_directories(${TARGET_ASSEMBLER_NAME} PUBLIC
 )
 
 target_link_libraries(${TARGET_APP_NAME} PRIVATE
-    ${TARGET_EMULATOR_NAME}
+    ${TARGET_EMULATOR_LIB_NAME}
 )
 
 if(MSVC)
