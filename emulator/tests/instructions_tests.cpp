@@ -500,6 +500,7 @@ TEST(InstructionsTests, BBLTest) {
     uint8_t sp = 1u;
     registers[1] = 0x10u;
     stack[0] = 0x010u;
+    stack[sp] = 0u;
     
     BBL(stack, sp, acc, registers, 0xF2u);
 
@@ -651,6 +652,7 @@ TEST(InstructionsTests, JINTest) {
     uint16_t stack[4];
     uint8_t sp = 1u;
     registers[1] = 0x42u;
+    stack[sp] = 0u;
     
     JIN(stack, sp, registers, 0xF2u);
 
