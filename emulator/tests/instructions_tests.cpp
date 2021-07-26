@@ -2,14 +2,12 @@
 #include "emulator/source/ram.hpp"
 #include "emulator/source/rom.hpp"
 
-#include "shared/source/assembly.hpp"
-
 #include <gtest/gtest.h>
 
 TEST(InstructionsTests, WRMTest) {
     uint8_t acc = 0x07u;
     RAM ram;
-    ram.setSrcAddress(0b00100111u); // chip 0 | reg 2 | char 7
+    ram.writeSrcAddress(0b00100111u); // chip 0 | reg 2 | char 7
 
     WRM(ram, acc);
 
@@ -19,526 +17,379 @@ TEST(InstructionsTests, WRMTest) {
 TEST(InstructionsTests, WMPTest) {
     uint8_t acc = 0x07u;
     RAM ram;
-    ram.setSrcAddress(0b10000000u); // chip 2
+    ram.writeSrcAddress(0b10000000u); // chip 2
 
     WMP(ram, acc);
 
     EXPECT_EQ(ram.readOutputPort(), acc);
 }
 
-TEST(EmulatorInstructionsTests, WRRTest) {
+TEST(InstructionsTests, WRRTest) {
     uint8_t acc = 0x07u;
     ROM rom;
-    rom.setSrcAddress(0u);
+    rom.writeSrcAddress(0u);
 
     WRR(rom, acc);
 
     EXPECT_EQ(rom.getIOPort(0u), acc);
 }
 
-/*TEST_F(EmulatorInstructionsTests, WR0Test) {
-    rom[0] = +AsmIns::WR0;
-    *acc = 0x07u;
-    *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
-    emulator.step();
+TEST(InstructionsTests, WR0Test) {
+    uint8_t acc = 0x07u;
+    RAM ram;
+    ram.writeSrcAddress(0b10100000u); // chip 2 | reg 2
+    
+    WR0(ram, acc);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x07u);
-    EXPECT_EQ(*CY, 0u);
-    EXPECT_EQ(ramStatus[40], *acc);
+    EXPECT_EQ(ram.getStatusContents()[40], acc);
 }
 
-TEST_F(EmulatorInstructionsTests, WR1Test) {
-    rom[0] = +AsmIns::WR1;
-    *acc = 0x07u;
-    *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
-    emulator.step();
+TEST(InstructionsTests, WR1Test) {
+    uint8_t acc = 0x07u;
+    RAM ram;
+    ram.writeSrcAddress(0b10100000u); // chip 2 | reg 2
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x07u);
-    EXPECT_EQ(*CY, 0u);
-    EXPECT_EQ(ramStatus[41], *acc);
+    WR1(ram, acc);
+
+    EXPECT_EQ(ram.getStatusContents()[41], acc);
 }
 
-TEST_F(EmulatorInstructionsTests, WR2Test) {
-    rom[0] = +AsmIns::WR2;
-    *acc = 0x07u;
-    *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
-    emulator.step();
+TEST(InstructionsTests, WR2Test) {
+    uint8_t acc = 0x07u;
+    RAM ram;
+    ram.writeSrcAddress(0b10100000u); // chip 2 | reg 2
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x07u);
-    EXPECT_EQ(*CY, 0u);
-    EXPECT_EQ(ramStatus[42], *acc);
+    WR2(ram, acc);
+
+    EXPECT_EQ(ram.getStatusContents()[42], acc);
 }
 
-TEST_F(EmulatorInstructionsTests, WR3Test) {
-    rom[0] = +AsmIns::WR3;
-    *acc = 0x07u;
-    *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
-    emulator.step();
+TEST(InstructionsTests, WR3Test) {
+    uint8_t acc = 0x07u;
+    RAM ram;
+    ram.writeSrcAddress(0b10100000u); // chip 2 | reg 2
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x07u);
-    EXPECT_EQ(*CY, 0u);
-    EXPECT_EQ(ramStatus[43], *acc);
+    WR3(ram, acc);
+
+    EXPECT_EQ(ram.getStatusContents()[43], acc);
 }
 
-TEST_F(EmulatorInstructionsTests, SBMTest) {
-    rom[0] = +AsmIns::SBM;
-    *acc = 0x07u;
-    *ramSrcAddr = 0b00100111u; // chip 0 | reg 2 | char 7
-    ram[*ramSrcAddr] = 0x02u;
-    emulator.step();
+TEST(InstructionsTests, SBMTest) {
+    uint8_t acc = 0x07u;
+    RAM ram;
+    ram.writeSrcAddress(0b00100111u); // chip 0 | reg 2 | char 7
+    ram.writeRAM(0x02u);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x07u - 0x02u);
-    EXPECT_EQ(*CY, 1u);
+    SBM(acc, ram);
 
-    *pc = 0u;
-    *CY = 0u;
-    ram[*ramSrcAddr] = 0x0Fu;
-    emulator.step();
+    EXPECT_EQ(acc, (0x07u - 0x02u) | 1u << 4);
 
-    EXPECT_EQ(*acc, (0x05u - 0x0Fu) & 0x0F);
-    EXPECT_EQ(*CY, 0u);
+    acc &= 0x0Fu;
+    ram.writeRAM(0x0Fu);
 
-    *pc = 0u;
-    *CY = 1u;
-    ram[*ramSrcAddr] = 0x03u;
-    emulator.step();
+    SBM(acc, ram);
 
-    EXPECT_EQ(*acc, 0x06u - 0x03u - 1u);
-    EXPECT_EQ(*CY, 1u);
+    EXPECT_EQ(acc, (0x05u - 0x0Fu) & 0x0F);
+
+    acc |= 1u << 4;
+    ram.writeRAM(0x03u);
+
+    SBM(acc, ram);
+
+    EXPECT_EQ(acc, ((0x06u - 0x03u - 1u) | 1u << 4) & 0x1Fu);
 }
 
-TEST_F(EmulatorInstructionsTests, RDMTest) {
-    rom[0] = +AsmIns::RDM;
-    *ramSrcAddr = 0b00100111u; // chip 0 | reg 2 | char 7
-    ram[*ramSrcAddr] = 0x07u;
-    emulator.step();
+TEST(InstructionsTests, RDMTest) {
+    uint8_t acc = 0u;
+    RAM ram;
+    ram.writeSrcAddress(0b00100111u); // chip 0 | reg 2 | char 7
+    ram.writeRAM(0x07u);
+    
+    RDM(acc, ram);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x07u);
-    EXPECT_EQ(*CY, 0u);
-    EXPECT_EQ(ram[*ramSrcAddr], *acc);
+    EXPECT_EQ(acc, 0x07u);
 }
 
-TEST_F(EmulatorInstructionsTests, RDRTest) {
-    rom[0] = +AsmIns::RDR;
-    emulator.step();
+TEST(InstructionsTests, RDRTest) {
+    uint8_t acc = 0x0Fu;
+    ROM rom;
 
-    // TODO: Decide how to handle I/O metal config
+    RDR(acc, rom);
+
+    EXPECT_EQ(acc, 0u);
 }
 
-TEST_F(EmulatorInstructionsTests, ADMTest) {
-    rom[0] = +AsmIns::ADM;
-    *acc = 0x07u;
-    *ramSrcAddr = 0b00100111u; // chip 0 | reg 2 | char 7
-    ram[*ramSrcAddr] = 0x02u;
-    emulator.step();
+TEST(InstructionsTests, ADMTest) {
+    uint8_t acc = 0x07u;
+    RAM ram;
+    ram.writeSrcAddress(0b00100111u); // chip 0 | reg 2 | char 7
+    ram.writeRAM(0x02u);
+    
+    ADM(acc, ram);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x02u + 0x07u);
-    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(acc, 0x02u + 0x07u);
 
-    *pc = 0u;
-    ram[*ramSrcAddr] = 0x0Fu;
-    emulator.step();
+    ram.writeRAM(0x0Fu);
+    
+    ADM(acc, ram);
 
-    EXPECT_EQ(*acc, (0x09u + 0x0Fu) & 0x0F);
-    EXPECT_EQ(*CY, 1u);
+    EXPECT_EQ(acc, ((0x09u + 0x0Fu) & 0x0F) | 1u << 4);
 
-    *pc = 0u;
-    ram[*ramSrcAddr] = 0x02u;
-    emulator.step();
+    ram.writeRAM(0x02u);
 
-    EXPECT_EQ(*acc, 0x08u + 0x02u + 1u);
-    EXPECT_EQ(*CY, 0u);
+    ADM(acc, ram);
+
+    EXPECT_EQ(acc, 0x08u + 0x02u + 1u);
 }
 
-TEST_F(EmulatorInstructionsTests, RD0Test) {
-    rom[0] = +AsmIns::RD0;
-    *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
-    ramStatus[40] = 0x07u;
-    emulator.step();
+TEST(InstructionsTests, RD0Test) {
+    uint8_t acc = 0u;
+    RAM ram;
+    ram.writeSrcAddress(0b10100000u); // chip 2 | reg 2
+    ram.writeStatus(0x07u, 0u);
+    
+    RD0(acc, ram);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x07u);
-    EXPECT_EQ(*CY, 0u);
-    EXPECT_EQ(ramStatus[40], *acc);
+    EXPECT_EQ(acc, 0x07u);
 }
 
-TEST_F(EmulatorInstructionsTests, RD1Test) {
-    rom[0] = +AsmIns::RD1;
-    *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
-    ramStatus[41] = 0x07u;
-    emulator.step();
+TEST(InstructionsTests, RD1Test) {
+    uint8_t acc = 0u;
+    RAM ram;
+    ram.writeSrcAddress(0b10100000u); // chip 2 | reg 2
+    ram.writeStatus(0x07u, 1u);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x07u);
-    EXPECT_EQ(*CY, 0u);
-    EXPECT_EQ(ramStatus[41], *acc);
+    RD1(acc, ram);
+
+    EXPECT_EQ(acc, 0x07u);
 }
 
-TEST_F(EmulatorInstructionsTests, RD2Test) {
-    rom[0] = +AsmIns::RD2;
-    *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
-    ramStatus[42] = 0x07u;
-    emulator.step();
+TEST(InstructionsTests, RD2Test) {
+    uint8_t acc = 0u;
+    RAM ram;
+    ram.writeSrcAddress(0b10100000u); // chip 2 | reg 2
+    ram.writeStatus(0x07u, 2u);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x07u);
-    EXPECT_EQ(*CY, 0u);
-    EXPECT_EQ(ramStatus[42], *acc);
+    RD2(acc, ram);
+
+    EXPECT_EQ(acc, 0x07u);
 }
 
-TEST_F(EmulatorInstructionsTests, RD3Test) {
-    rom[0] = +AsmIns::RD3;
-    *ramSrcAddr = 0b10100000u; // chip 2 | reg 2
-    ramStatus[43] = 0x07u;
-    emulator.step();
+TEST(InstructionsTests, RD3Test) {
+    uint8_t acc = 0u;
+    RAM ram;
+    ram.writeSrcAddress(0b10100000u); // chip 2 | reg 2
+    ram.writeStatus(0x07u, 3u);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x07u);
-    EXPECT_EQ(*CY, 0u);
-    EXPECT_EQ(ramStatus[43], *acc);
+    RD3(acc, ram);
+
+    EXPECT_EQ(acc, 0x07u);
 }
 
-TEST_F(EmulatorInstructionsTests, CLBTest) {
-    rom[0] = +AsmIns::CLB;
-    *acc = 0x07u;
-    *CY = 1u;
-    emulator.step();
+TEST(InstructionsTests, CLBTest) {
+    uint8_t acc = 0x17u;
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x00u);
-    EXPECT_EQ(*CY, 0x00u);
+    CLB(acc);
+
+    EXPECT_EQ(acc, 0x00u);
 }
 
-TEST_F(EmulatorInstructionsTests, CLCTest) {
-    rom[0] = +AsmIns::CLC;
-    *CY = 1u;
-    emulator.step();
+TEST(InstructionsTests, CLCTest) {
+    uint8_t acc = 0x17u;
+    
+    CLC(acc);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x00u);
-    EXPECT_EQ(*CY, 0x00u);
+    EXPECT_EQ(acc, 0x07u);
 }
 
-TEST_F(EmulatorInstructionsTests, IACTest) {
-    rom[0] = +AsmIns::IAC;
-    *acc = 0x07u;
-    emulator.step();
+TEST(InstructionsTests, IACTest) {
+    uint8_t acc = 0x0Eu;
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x08u);
-    EXPECT_EQ(*CY, 0u);
+    IAC(acc);
 
-    *pc = 0u;
-    *acc = 0x0Fu;
-    emulator.step();
+    EXPECT_EQ(acc, 0x0Fu);
 
-    EXPECT_EQ(*acc, 0x0u);
-    EXPECT_EQ(*CY, 1u);
+    IAC(acc);
+
+    EXPECT_EQ(acc, 0x10u);
+
+    IAC(acc);
+
+    EXPECT_EQ(acc, 0x01u);
 }
 
-TEST_F(EmulatorInstructionsTests, CMCTest) {
-    rom[0] = +AsmIns::CMC;
-    emulator.step();
+TEST(InstructionsTests, CMCTest) {
+    uint8_t acc = 0x07u;
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x00u);
-    EXPECT_EQ(*CY, 1u);
+    CMC(acc);
 
-    *pc = 0u;
-    emulator.step();
+    EXPECT_EQ(acc, 0x17u);
 
-    EXPECT_EQ(*CY, 0u);
+    CMC(acc);
+
+    EXPECT_EQ(acc, 0x07u);
 }
 
-TEST_F(EmulatorInstructionsTests, CMATest) {
-    rom[0] = +AsmIns::CMA;
-    *acc = 0x04u;
-    emulator.step();
+TEST(InstructionsTests, CMATest) {
+    uint8_t acc = 0x04u;
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, ~0x04u & 0x0F);
-    EXPECT_EQ(*CY, 0u);
+    CMA(acc);
+
+    EXPECT_EQ(acc, ~0x04u & 0x0F);
 }
 
-TEST_F(EmulatorInstructionsTests, RALTest) {
-    rom[0] = +AsmIns::RAL;
-    *acc = 0x04u;
-    emulator.step();
+TEST(InstructionsTests, RALTest) {
+    uint8_t acc = 0x04u;
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x08u);
-    EXPECT_EQ(*CY, 0u);
+    RAL(acc);
 
-    *pc = 0u;
-    *acc = 0x0Au;
-    emulator.step();
+    EXPECT_EQ(acc, 0x08u);
 
-    EXPECT_EQ(*acc, 0x04u);
-    EXPECT_EQ(*CY, 1u);
+    acc = 0x0Au;
 
-    *pc = 0u;
-    emulator.step();
+    RAL(acc);
 
-    EXPECT_EQ(*acc, 0x09u);
-    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(acc, 0x14u);
+
+    RAL(acc);
+
+    EXPECT_EQ(acc, 0x09u);
 }
 
-TEST_F(EmulatorInstructionsTests, RARTest) {
-    rom[0] = +AsmIns::RAR;
-    *acc = 0x04u;
-    emulator.step();
+TEST(InstructionsTests, RARTest) {
+    uint8_t acc = 0x04u;
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x02u);
-    EXPECT_EQ(*CY, 0u);
+    RAR(acc);
 
-    *pc = 0u;
-    *acc = 0x05u;
-    emulator.step();
+    EXPECT_EQ(acc, 0x02u);
 
-    EXPECT_EQ(*acc, 0x02u);
-    EXPECT_EQ(*CY, 1u);
+    acc = 0x05u;
 
-    *pc = 0u;
-    emulator.step();
+    RAR(acc);
 
-    EXPECT_EQ(*acc, 0x09u);
-    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(acc, 0x12u);
+
+    RAR(acc);
+
+    EXPECT_EQ(acc, 0x09u);
 }
 
-TEST_F(EmulatorInstructionsTests, TCCTest) {
-    rom[0] = +AsmIns::TCC;
-    *acc = 0x07u;
-    emulator.step();
+TEST(InstructionsTests, TCCTest) {
+    uint8_t acc = 0x07u;
+    
+    TCC(acc);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x00u);
-    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(acc, 0x00u);
 
-    *pc = 0u;
-    *acc = 0x07u;
-    *CY = 1u;
-    emulator.step();
+    acc = 0x17u;
 
-    EXPECT_EQ(*acc, 0x01u);
-    EXPECT_EQ(*CY, 0u);
+    TCC(acc);
+
+    EXPECT_EQ(acc, 0x01u);
 }
 
-TEST_F(EmulatorInstructionsTests, DACTest) {
-    rom[0] = +AsmIns::DAC;
-    *acc = 0x07u;
-    emulator.step();
+TEST(InstructionsTests, DACTest) {
+    uint8_t acc = 0x07u;
+    
+    DAC(acc);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x06u);
-    EXPECT_EQ(*CY, 1u);
+    EXPECT_EQ(acc, 0x16u);
 
-    *pc = 0u;
-    *acc = 0x00u;
-    emulator.step();
+    acc = 0x00u;
+    
+    DAC(acc);
 
-    EXPECT_EQ(*acc, 0x0Fu);
-    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(acc, 0x0Fu);
 }
 
-TEST_F(EmulatorInstructionsTests, TCSTest) {
-    rom[0] = +AsmIns::TCS;
-    emulator.step();
+TEST(InstructionsTests, TCSTest) {
+    uint8_t acc = 0x07u;
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 9u);
-    EXPECT_EQ(*CY, 0u);
+    TCS(acc);
 
-    *pc = 0u;
-    *CY = 1u;
-    emulator.step();
+    EXPECT_EQ(acc, 0x09u);
 
-    EXPECT_EQ(*acc, 10u);
-    EXPECT_EQ(*CY, 0u);
+    acc = 0x19u;
+    
+    TCS(acc);
+
+    EXPECT_EQ(acc, 0x0Au);
 }
 
-TEST_F(EmulatorInstructionsTests, STCTest) {
-    rom[0] = +AsmIns::STC;
-    emulator.step();
+TEST(InstructionsTests, STCTest) {
+    uint8_t acc = 0x07u;
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x00u);
-    EXPECT_EQ(*CY, 1u);
+    STC(acc);
+
+    EXPECT_EQ(acc, 0x17u);
 }
 
-TEST_F(EmulatorInstructionsTests, DAATest) {
-    rom[0] = +AsmIns::DAA;
-    *acc = 5u;
-    emulator.step();
+TEST(InstructionsTests, DAATest) {
+    uint8_t acc = 0x05u;
+    
+    DAA(acc);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 5u);
-    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(acc, 0x05u);
 
-    *pc = 0u;
-    *acc = 10u;
-    emulator.step();
+    acc = 0x0Au;
+    
+    DAA(acc);
 
-    EXPECT_EQ(*acc, 0x00u);
-    EXPECT_EQ(*CY, 1u);
+    EXPECT_EQ(acc, 0x10u);
 
-    *pc = 0u;
-    *acc = 2u;
-    emulator.step();
+    acc = 0x12u;
 
-    EXPECT_EQ(*acc, 8u);
-    EXPECT_EQ(*CY, 1u);
+    DAA(acc);
+
+    EXPECT_EQ(acc, 0x18u);
 }
 
-TEST_F(EmulatorInstructionsTests, KBPTest) {
-    rom[0] = +AsmIns::KBP;
-    emulator.step();
+TEST(InstructionsTests, KBPTest) {
+    uint8_t acc = 0u;
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*CY, 0u);
-    EXPECT_EQ(*acc, 0b0000u);
+    KBP(acc);
 
-    *pc = 0u;
-    *acc = 0b0001u;
-    emulator.step();
+    EXPECT_EQ(acc, 0b0000u);
 
-    EXPECT_EQ(*acc, 0b0001u);
+    acc = 0b0001u;
 
-    *pc = 0u;
-    *acc = 0b0010u;
-    emulator.step();
+    KBP(acc);
 
-    EXPECT_EQ(*acc, 0b0010u);
+    EXPECT_EQ(acc, 0b0001u);
 
-    *pc = 0u;
-    *acc = 0b0100u;
-    emulator.step();
+    acc = 0b0010u;
+    
+    KBP(acc);
 
-    EXPECT_EQ(*acc, 0b0011u);
+    EXPECT_EQ(acc, 0b0010u);
 
-    *pc = 0u;
-    *acc = 0b1000u;
-    emulator.step();
+    acc = 0b0100u;
+    
+    KBP(acc);
 
-    EXPECT_EQ(*acc, 0b0100u);
+    EXPECT_EQ(acc, 0b0011u);
 
-    *pc = 0u;
-    *acc = 0b0011u;
-    emulator.step();
+    acc = 0b1000u;
+    
+    KBP(acc);
 
-    EXPECT_EQ(*acc, 0b1111u);
+    EXPECT_EQ(acc, 0b0100u);
 
-    *pc = 0u;
-    *acc = 0b1111u;
-    emulator.step();
+    acc = 0b0011u;
+    
+    KBP(acc);
 
-    EXPECT_EQ(*acc, 0b1111u);
+    EXPECT_EQ(acc, 0b1111u);
+
+    acc = 0b1111u;
+    
+    KBP(acc);
+
+    EXPECT_EQ(acc, 0b1111u);
 }
 
-TEST_F(EmulatorInstructionsTests, DCLTest) {
+// TODO:
+/*TEST_F(EmulatorInstructionsTests, DCLTest) {
     rom[0] = +AsmIns::DCL;
     *acc = 0x02u;
     *ramSrcAddr = 0b01010101u;
@@ -552,167 +403,124 @@ TEST_F(EmulatorInstructionsTests, DCLTest) {
     EXPECT_EQ(*CY, 0u);
     EXPECT_EQ(*acc, 0x02u);
     EXPECT_EQ(*ramSrcAddr, 0b1001010101u);
+}*/
+
+TEST(InstructionsTests, LDMTest) {
+    uint8_t acc = 0x10u;
+    
+    LDM(acc, 0xF7u);
+   
+    EXPECT_EQ(acc, 0x17u);
 }
 
-TEST_F(EmulatorInstructionsTests, LDMTest) {
-    rom[0] = +AsmIns::LDM | 0x0Fu;
-    rom[1] = +AsmIns::LDM | 0x02u;
-    emulator.step();
-
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0x0Fu);
-    EXPECT_EQ(*CY, 0u);
-
-    emulator.step();
-
-    EXPECT_EQ(*pc, 0x002u);
-    EXPECT_EQ(*acc, 0x02u);
-}
-
-TEST_F(EmulatorInstructionsTests, LDTest) {
-    rom[0] = +AsmIns::LD | +AsmReg::R2;
+TEST(InstructionsTests, LDTest) {
+    uint8_t acc = 0x10u;
+    uint8_t registers[8];
     registers[1] = 0x20;
-    emulator.step();
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], i == 1 ? 0x20 : 0x00u);
-    EXPECT_EQ(*acc, 0x02u);
-    EXPECT_EQ(*CY, 0u);
+    LD(acc, registers, 0xF2u);
+
+    EXPECT_EQ(acc, 0x12u);
 }
 
-TEST_F(EmulatorInstructionsTests, XCHTest) {
-    rom[0] = +AsmIns::XCH | +AsmReg::R2;
-    *acc = 0x07u;
+TEST(InstructionsTests, XCHTest) {
+    uint8_t acc = 0x07u;
+    uint8_t registers[8];
     registers[1] = 0x24;
-    emulator.step();
+    
+    XCH(acc, registers, 0xF2u);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], i == 1 ? 0x74 : 0x00u);
-    EXPECT_EQ(*acc, 0x02u);
-    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(acc, 0x02u);
+    EXPECT_EQ(registers[1], 0x74u);
 }
 
-TEST_F(EmulatorInstructionsTests, ADDTest) {
-    rom[0] = +AsmIns::ADD | +AsmReg::R2;
-    *acc = 0x07u;
+TEST(InstructionsTests, ADDTest) {
+    uint8_t acc = 0x07u;
+    uint8_t registers[8];
     registers[1] = 0x20u;
-    emulator.step();
+    
+    ADD(acc, registers, 0xF2u);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], i == 1 ? 0x20 : 0x00u);
-    EXPECT_EQ(*acc, 0x02u + 0x07u);
-    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(acc, 0x02u + 0x07u);
 
-    *pc = 0u;
     registers[1] = 0xF0u;
-    emulator.step();
+    
+    ADD(acc, registers, 0xF2u);
 
-    EXPECT_EQ(*acc, (0x09u + 0x0Fu) & 0x0F);
-    EXPECT_EQ(*CY, 1u);
+    EXPECT_EQ(acc, 0x09u + 0x0Fu);
 
-    *pc = 0u;
     registers[1] = 0x20u;
-    emulator.step();
+    
+    ADD(acc, registers, 0xF2u);
 
-    EXPECT_EQ(*acc, 0x08u + 0x02u + 1u);
-    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(acc, 0x08u + 0x02u + 1u);
 }
 
-TEST_F(EmulatorInstructionsTests, SUBTest) {
-    rom[0] = +AsmIns::SUB | +AsmReg::R2;
-    *acc = 0x07u;
+TEST(InstructionsTests, SUBTest) {
+    uint8_t acc = 0x07u;
+    uint8_t registers[8];
     registers[1] = 0x20u;
-    emulator.step();
+    
+    SUB(acc, registers, 0xF2u);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], i == 1 ? 0x20 : 0x00u);
-    EXPECT_EQ(*acc, 0x07u - 0x02u);
-    EXPECT_EQ(*CY, 1u);
+    EXPECT_EQ(acc, (0x07u - 0x02u) | 1u << 4);
 
-    *pc = 0u;
-    *CY = 0u;
+    acc &= 0x0Fu;
     registers[1] = 0xF0u;
-    emulator.step();
+    
+    SUB(acc, registers, 0xF2u);
 
-    EXPECT_EQ(*acc, (0x05u - 0x0Fu) & 0x0F);
-    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(acc, (0x05u - 0x0Fu) & 0x0F);
 
-    *pc = 0u;
-    *CY = 1u;
+    acc |= 1u << 4;
     registers[1] = 0x30u;
-    emulator.step();
+    
+    SUB(acc, registers, 0xF2u);
 
-    EXPECT_EQ(*acc, 0x06u - 0x03u - 1u);
-    EXPECT_EQ(*CY, 1u);
+    EXPECT_EQ(acc, (0x06u - 0x03u - 1u) | 1u << 4);
 }
 
-TEST_F(EmulatorInstructionsTests, INCTest) {
-    rom[0] = +AsmIns::INC | +AsmReg::R2;
+TEST(InstructionsTests, INCTest) {
+    uint8_t registers[8];
     registers[1] = 0xE0u;
-    emulator.step();
+    
+    INC(registers, 0xF2u);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], i == 1 ? 0xF0 : 0x00u);
-    EXPECT_EQ(*acc, 0u);
-    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(registers[1], 0xF0u);
 
-    *pc = 0u;
-    emulator.step();
+    INC(registers, 0xF2u);
 
     EXPECT_EQ(registers[1], 0x00u);
 }
 
-TEST_F(EmulatorInstructionsTests, BBLTest) {
-    rom[0] = +AsmIns::BBL | +AsmReg::R2;
+TEST(InstructionsTests, BBLTest) {
+    uint8_t acc;
+    uint8_t registers[8];
+    uint16_t stack[4];
+    uint8_t sp = 1u;
     registers[1] = 0x10u;
     stack[0] = 0x010u;
-    *stackDepth = 1u;
-    emulator.step();
+    
+    BBL(stack, sp, acc, registers, 0xF2u);
 
-    EXPECT_EQ(*pc, 0x010u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    EXPECT_EQ(*stackDepth, 0u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], i == 1 ? 0x10u : 0x00u);
-    EXPECT_EQ(*acc, 1u);
-    EXPECT_EQ(*CY, 0u);
+    EXPECT_EQ(sp, 0u);
+    EXPECT_EQ(stack[sp], 0x010u);
+    EXPECT_EQ(acc, 0x01u);
 }
 
-TEST_F(EmulatorInstructionsTests, JUNTest) {
-    rom[0] = +AsmIns::JUN | 0x01u;
+// TODO: add means to edit rom
+/*TEST(InstructionsTests, JUNTest) {
     rom[1] = 0x42u;
-    emulator.step();
+    ROM rom;
+    uint16_t stack[4];
+    uint8_t sp = 1u;
 
-    EXPECT_EQ(*pc, 0x142u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], 0x00u);
-    EXPECT_EQ(*acc, 0u);
-    EXPECT_EQ(*CY, 0u);
+    JUN(stack, sp, 0xF1u, rom);
+
+    EXPECT_EQ(stack[sp], 0x142u);
 }
 
-TEST_F(EmulatorInstructionsTests, JMSTest) {
+TEST(InstructionsTests, JMSTest) {
     rom[0] = +AsmIns::JMS | 0x01u;
     rom[1] = 0x42u;
     emulator.step();
@@ -739,25 +547,22 @@ TEST_F(EmulatorInstructionsTests, FIMTest) {
         EXPECT_EQ(registers[i], i == 1u ? 0x42u : 0x00u);
     EXPECT_EQ(*acc, 0u);
     EXPECT_EQ(*CY, 0u);
-}
+}*/
 
-TEST_F(EmulatorInstructionsTests, SRCTest) {
-    rom[0] = +AsmIns::SRC | +AsmReg::P2;
+TEST(InstructionsTests, SRCTest) {
+    uint8_t registers[8];
+    ROM rom;
+    RAM ram;
     registers[2] = 0x42u;
-    emulator.step();
+    
+    SRC(ram, rom, registers, 0xF4u);
 
-    EXPECT_EQ(*pc, 0x001u);
-    for (uint8_t i = 0; i < 3u; ++i)
-        EXPECT_EQ(stack[i], 0x000u);
-    for (uint8_t i = 0; i < 8u; ++i)
-        EXPECT_EQ(registers[i], i == 2u ? 0x42u : 0x00u);
-    EXPECT_EQ(*acc, 0u);
-    EXPECT_EQ(*CY, 0u);
-    EXPECT_EQ(*romSrcAddr, 0x04u);
-    EXPECT_EQ(*ramSrcAddr, 0x042u);
+    EXPECT_EQ(rom.getSrcAddress(), 0x04u);
+    EXPECT_EQ(ram.getSrcAddress(), 0x042u);
 }
 
-TEST_F(EmulatorInstructionsTests, JCNTest) {
+// TODO: add means to edit rom
+/*TEST_F(EmulatorInstructionsTests, JCNTest) {
     rom[0] = +AsmIns::JCN | +AsmCon::AEZ;
     rom[1] = 0x42u;
     emulator.step();
@@ -839,17 +644,21 @@ TEST_F(EmulatorInstructionsTests, FINTest) {
 
     EXPECT_EQ(*pc, 0x001u);
     EXPECT_EQ(registers[2], 0x21u);
-}
+}*/
 
-TEST_F(EmulatorInstructionsTests, JINTest) {
-    rom[0] = +AsmIns::JIN | +AsmReg::P1;
+TEST(InstructionsTests, JINTest) {
+    uint8_t registers[8];
+    uint16_t stack[4];
+    uint8_t sp = 1u;
     registers[1] = 0x42u;
-    emulator.step();
+    
+    JIN(stack, sp, registers, 0xF2u);
 
-    EXPECT_EQ(*pc, 0x042u);
+    EXPECT_EQ(stack[sp], 0x042u);
 }
 
-TEST_F(EmulatorInstructionsTests, ISZTest) {
+// TODO: add means to edit rom
+/*TEST_F(EmulatorInstructionsTests, ISZTest) {
     rom[0] = +AsmIns::ISZ | +AsmReg::R1;
     rom[1] = 0x42u;
     registers[0] = 0x0Eu;

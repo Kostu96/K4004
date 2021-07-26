@@ -22,13 +22,13 @@ public:
     uint8_t readStatus(uint8_t index) const;
     void writeOutputPort(uint8_t character);
     uint8_t readOutputPort() const;
+    void writeSrcAddress(uint8_t address);
 
     void setRAMBank(uint8_t index);
-    void setSrcAddress(uint8_t address);
-    uint16_t getSrcAddress() const { return m_srcAddress & 0x3FFu; }
     const uint8_t* getRamContents() const { return m_ram; }
     const uint8_t* getStatusContents() const { return m_status; }
     const uint8_t* getOutputContents() const { return m_oPorts; }
+    uint16_t getSrcAddress() const { return m_srcAddress & 0x3FFu; }
     
     RAM(const RAM&) = delete;
     RAM& operator=(const RAM&) = delete;

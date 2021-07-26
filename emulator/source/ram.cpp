@@ -51,7 +51,7 @@ void RAM::setRAMBank(uint8_t index)
     m_srcAddress |= static_cast<uint16_t>(index) << 8;
 }
 
-void RAM::setSrcAddress(uint8_t address)
+void RAM::writeSrcAddress(uint8_t address)
 {
     m_srcAddress &= 0x0300u;
     m_srcAddress |= address;
