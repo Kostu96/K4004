@@ -498,7 +498,7 @@ TEST(InstructionsTests, BBLTest) {
     uint8_t registers[8];
     uint16_t stack[4];
     uint8_t sp = 1u;
-    registers[1] = 0x10u;
+    registers[1] = 0x20u;
     stack[0] = 0x010u;
     stack[sp] = 0u;
     
@@ -506,7 +506,7 @@ TEST(InstructionsTests, BBLTest) {
 
     EXPECT_EQ(sp, 0u);
     EXPECT_EQ(stack[sp], 0x010u);
-    EXPECT_EQ(acc, 0x01u);
+    EXPECT_EQ(acc, 0x02u);
 }
 
 // TODO: add means to edit rom
