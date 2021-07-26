@@ -494,7 +494,7 @@ TEST(InstructionsTests, INCTest) {
 }
 
 TEST(InstructionsTests, BBLTest) {
-    uint8_t acc;
+    uint8_t acc = 0u;
     uint8_t registers[8];
     uint16_t stack[4];
     uint8_t sp = 1u;

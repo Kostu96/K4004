@@ -284,7 +284,7 @@ bool Assembler::checkForSymbols(std::string& line)
     if (!isMnemonic(token, desc)) {
         size_t hasEqualSign = token.find('=');
         if (hasEqualSign == token.npos) {
-            m_symbolTable.insert(std::make_pair<>(token, m_address));
+            m_symbolTable.insert(std::make_pair<>(token, static_cast<uint16_t>(m_address)));
             if (token1End != line.npos) {
                 size_t token2Start = line.find_first_not_of(" ", token1End);
                 line = line.substr(token2Start);
