@@ -58,7 +58,7 @@ Assembler::Assembler() :
         { "FIM", { +AsmIns::FIM, InsType::TwoByte } }
     }) {}
 
-bool Assembler::assemble(const char* filename, std::vector<uint8_t>& output)
+bool Assembler::assemble(const char* filename, std::vector<uint8_t>& output, bool i4004ModeEnabled)
 {
     std::fstream file(filename);
     if (!file.is_open())
@@ -91,10 +91,11 @@ bool Assembler::assemble(const char* filename, std::vector<uint8_t>& output)
     return true;
 }
 
-void Assembler::disassemble(const std::vector<uint8_t>& bytecode, std::vector<std::string>& output)
+bool Assembler::disassemble(const std::vector<uint8_t>& bytecode, std::vector<std::string>& output)
 {
     m_metalMaskLength = 1u;
     if (bytecode[0] != 0xFEu) {
+        return false;
         // Error
     }
     size_t i = 0;
@@ -233,6 +234,8 @@ void Assembler::disassemble(const std::vector<uint8_t>& bytecode, std::vector<st
             twoByte = false;
         }
     }
+
+    return true;
 }
 
 bool Assembler::trimComments(std::string& line)
