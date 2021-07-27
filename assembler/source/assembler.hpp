@@ -1,6 +1,4 @@
 #pragma once
-#include "shared/source/whitebox.hpp"
-
 #include <cstdint>
 #include <string>
 #include <unordered_map>
@@ -41,6 +39,4 @@ private:
     size_t m_metalMaskLength;
     std::unordered_map<std::string, uint16_t> m_symbolTable;
     std::unordered_map<std::string, MnemonicDesc> m_mnemonics;
-
-    ALLOW_WHITEBOX(Assembler);
 };

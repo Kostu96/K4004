@@ -3,13 +3,11 @@
 #include "emulator/source/ram.hpp"
 #include "emulator/source/rom.hpp"
 
-#include "shared/source/whitebox.hpp"
-
 class Emulator
 {
 public:
     Emulator();
-    // TODO: add load from binary and change names accordingly
+    // TODO: add load from binary
     bool loadProgramFromSource(const char* filename);
     bool loadProgramFromObjectCode(const char* filename);
     bool loadProgramFromMemory(const uint8_t* bytecode, size_t codeSize);
@@ -23,6 +21,4 @@ private:
     RAM m_ram;
     ROM m_rom;
     K4004 m_cpu;
-
-    ALLOW_WHITEBOX(Emulator);
 };
