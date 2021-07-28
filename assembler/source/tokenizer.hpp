@@ -9,16 +9,22 @@ public:
         Text,
         Number,
         Separator,
-        Symbol
+        Symbol,
+        NewLine
     };
 
     struct Token {
         std::string str = "";
+        unsigned int value = 0u;
         TokenType type = TokenType::Invalid;
 
         Token() = default;
+        Token(const char* str, TokenType type);
+        Token(unsigned int value, TokenType type);
+        Token(const Token& other) = default;
         Token(Token&& other) noexcept;
         Token& operator=(Token&& other) noexcept;
+        Token& operator=(const Token& other) = default;
     };
 
     static Token getNext(std::istream& stream);
@@ -28,6 +34,9 @@ private:
     enum class State : unsigned int {
         Entry,
         EatComment,
+        EatCommentNL,
+        BinNumber,
+        HexNumber,
 
         Finish,
         Invalid
@@ -35,11 +44,17 @@ private:
 
     static State entryState(Token& token, char ch);
     static State eatCommentState(Token& token, char ch);
+    static State eatCommentNLState(Token& token, char ch);
+    static State BinNumberState(Token& token, char ch);
+    static State HexNumberState(Token& token, char ch);
 
     typedef State(*StateFunctionPtr)(Token&, char);
     static constexpr StateFunctionPtr m_stateFunctions[static_cast<unsigned int>(State::Finish)] = {
         entryState,
-        eatCommentState
+        eatCommentState,
+        eatCommentNLState,
+        BinNumberState,
+        HexNumberState,
     };
 
     static State m_currentState;

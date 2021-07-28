@@ -1,5 +1,6 @@
 #include "assembler/source/tokenizer.hpp"
 
+#include <fstream>
 #include <gtest/gtest.h>
 
 TEST(TokenizerTests, givenEmptyStramWhenGetNextThenInvalidTokenIsReturned) {
@@ -22,34 +23,55 @@ TEST(TokenizerTests, givenOneLineCommentWhenGetNextThenInvalidTokenIsReturned) {
     EXPECT_EQ(token.type, Tokenizer::TokenType::Invalid);
 }
 
-TEST(TokenizerTests, givenNewLinesWhenGetNextThenInvalidTokenIsReturned) {
+TEST(TokenizerTests, givenNewLineWhenGetNextThenNewLineTokenIsReturned) {
     std::stringstream ss;
-    ss.str("\n\n");
+    ss.str("\n");
 
     Tokenizer::Token token;
     token = Tokenizer::getNext(ss);
 
-    EXPECT_EQ(token.type, Tokenizer::TokenType::Invalid);
+    EXPECT_EQ(token.str, "\n");
+    EXPECT_EQ(token.type, Tokenizer::TokenType::NewLine);
 }
 
-// TODO: give proper test name
-TEST(TokenizerTests, fooTestName) {
-    std::stringstream ss;
-    ss.str("    FIM P0, $42");
+TEST(TokenizerTests, givenProgramSourceWhenTokenizingThenProperTokensAreReturned) {
+    std::ifstream file("programs/4bit_addition.asm");
+    std::vector<Tokenizer::Token> refTokens({
+        Tokenizer::Token("FIM", Tokenizer::TokenType::Text),
+        Tokenizer::Token("P0", Tokenizer::TokenType::Text),
+        Tokenizer::Token(",", Tokenizer::TokenType::Separator),
+        Tokenizer::Token(0x42u, Tokenizer::TokenType::Number),
+        Tokenizer::Token("\n", Tokenizer::TokenType::NewLine),
+        Tokenizer::Token("LD", Tokenizer::TokenType::Text),
+        Tokenizer::Token("R0", Tokenizer::TokenType::Text),
+        Tokenizer::Token("\n", Tokenizer::TokenType::NewLine),
+        Tokenizer::Token("ADD", Tokenizer::TokenType::Text),
+        Tokenizer::Token("R1", Tokenizer::TokenType::Text),
+        Tokenizer::Token("\n", Tokenizer::TokenType::NewLine),
+        Tokenizer::Token("XCH", Tokenizer::TokenType::Text),
+        Tokenizer::Token("R1", Tokenizer::TokenType::Text),
+        Tokenizer::Token("\n", Tokenizer::TokenType::NewLine),
+        Tokenizer::Token("\n", Tokenizer::TokenType::NewLine),
+        Tokenizer::Token("DONE", Tokenizer::TokenType::Text),
+        Tokenizer::Token("\n", Tokenizer::TokenType::NewLine),
+        Tokenizer::Token("JUN", Tokenizer::TokenType::Text),
+        Tokenizer::Token("DONE", Tokenizer::TokenType::Text),
+        Tokenizer::Token("\n", Tokenizer::TokenType::NewLine),
+    });
 
     Tokenizer::Token token;
-    token = Tokenizer::getNext(ss);
+    size_t tokenCount = 0;
+    do {
+        token = Tokenizer::getNext(file);
 
-    EXPECT_EQ(token.str, "FIM");
-    EXPECT_EQ(token.type, Tokenizer::TokenType::Text);
+        ASSERT_LT(tokenCount, refTokens.size());
+        EXPECT_EQ(token.str, refTokens[tokenCount].str);
+        EXPECT_EQ(token.value, refTokens[tokenCount].value);
+        EXPECT_EQ(token.type, refTokens[tokenCount].type);
 
-    token = Tokenizer::getNext(ss);
+        if (token.type != Tokenizer::TokenType::Invalid)
+            ++tokenCount;
+    } while (token.type != Tokenizer::TokenType::Invalid);
 
-    EXPECT_EQ(token.str, "P0");
-    EXPECT_EQ(token.type, Tokenizer::TokenType::Text);
-
-    token = Tokenizer::getNext(ss);
-
-    EXPECT_EQ(token.str, ",");
-    EXPECT_EQ(token.type, Tokenizer::TokenType::Separator);
+    EXPECT_EQ(tokenCount, refTokens.size());
 }

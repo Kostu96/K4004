@@ -29,10 +29,6 @@ private:
     uint16_t parseOperand(const std::string& token);
     bool parseRegister(const std::string_view& str, uint16_t& value);
     bool parseRegisterPair(const std::string_view& str, uint16_t& value);
-    bool parseHexNumber(const std::string_view& str, uint16_t& value);
-    bool parseBinNumber(const std::string_view& str, uint16_t& value);
-    bool parseOctNumber(const std::string_view& str, uint16_t& value);
-    bool parseDecNumber(const std::string_view& str, uint16_t& value);
     bool isMnemonic(std::string& token, MnemonicDesc& desc);
 
     size_t m_address;

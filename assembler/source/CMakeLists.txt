@@ -2,6 +2,8 @@ set(K4004_ASSEMBLER_LIB_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt
     ${CMAKE_CURRENT_SOURCE_DIR}/assembler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/assembler.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/conversions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/conversions.hpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tokenizer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tokenizer.hpp
     ${SHARED_DIR}/source/assembly.cpp

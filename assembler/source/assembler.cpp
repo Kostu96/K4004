@@ -1,4 +1,5 @@
 #include "assembler/source/assembler.hpp"
+#include "assembler/source/conversions.hpp"
 
 #include "shared/source/assembly.hpp"
 
@@ -408,21 +409,17 @@ std::uint16_t Assembler::parseOperand(const std::string& token)
         parseRegisterPair(token, word);
         return word;
     case '$':
-        parseHexNumber(token, word);
-        return word;
+        return textToHex(token);
     case '0':
         if (token.size() == 1)
             break;
 
-        parseOctNumber(token, word);
-        return word;
+        return textToOct(token);
     case '%':
-        parseBinNumber(token, word);
-        return word;
+        return textToBin(token);
     }
 
-    parseDecNumber(token, word);
-    return word;
+    return textToDec(token);
 }
 
 bool Assembler::parseRegister(const std::string_view& str, uint16_t& value)
@@ -460,81 +457,6 @@ bool Assembler::parseRegisterPair(const std::string_view& str, uint16_t& value)
 
 
     value = 2 * (str[1] - '0');
-    return true;
-}
-
-bool Assembler::parseHexNumber(const std::string_view& str, uint16_t& value)
-{
-    size_t length = str.size();
-    if (length == 5 || length == 0)
-        return false; // String representation of a to big number or empty
-
-    value = 0;
-    for (size_t i = 1; i < length; ++i) {
-        if (str[i] >= '0' && str[i] <= '9')
-            value += (1 << 4 * (length - i - 1)) * (str[i] - '0');
-        else if (str[i] >= 'a' && str[i] <= 'f')
-            value += (1 << 4 * (length - i - 1)) * (str[i] - 'a' + 10);
-        else if (str[i] >= 'A' && str[i] <= 'F')
-            value += (1 << 4 * (length - i - 1)) * (str[i] - 'A' + 10);
-        else
-            return false; // Illformed bin number
-    }
-
-    return true;
-}
-
-bool Assembler::parseBinNumber(const std::string_view& str, uint16_t& value)
-{
-    size_t length = str.size();
-    if (length == 18 || length == 0)
-        return false; // String representation of a to big number or empty
-
-    value = 0;
-    for (size_t i = 1; i < length; ++i) {
-        if (str[i] == '1')
-            value += 1 << (length - i - 1);
-        else if (str[i] != '0')
-            return false; // Illformed bin number
-    }
-
-    return true;
-}
-
-bool Assembler::parseOctNumber(const std::string_view& str, uint16_t& value)
-{
-    size_t length = str.size();
-    if (length == 8 || length == 0)
-        return false; // String representation of a to big number or empty
-
-    value = 0;
-    for (size_t i = 0; i < length; ++i) {
-        if (str[i] >= '0' && str[i] <= '7')
-            value += (1 << 3 * (length - i - 1)) * (str[i] - '0');
-        else
-            return false; // Illformed bin number
-    }
-
-    return true;
-}
-
-bool Assembler::parseDecNumber(const std::string_view& str, uint16_t& value)
-{
-    size_t length = str.size();
-    if (length == 6 || length == 0)
-        return false;
-
-    value = 0;
-    uint16_t base = 1;
-    for (size_t i = length; i > 0; --i) {
-        if (str[i - 1] >= '0' && str[i - 1] <= '9') {
-            value += base * (str[i - 1] - '0');
-            base *= 10;
-        }
-        else
-            return false; // Illformed dec number
-    }
-
     return true;
 }
 
