@@ -1,61 +1,75 @@
 #pragma once
 #include <iostream>
 #include <functional>
+#include <variant>
 
 class Tokenizer {
 public:
     enum class TokenType {
         Invalid = -1,
-        Text,
+        NewLine,
+        Comma,
+        Minus,
+        Plus,
+        Star,
+        Equal,
         Number,
-        Separator,
-        Symbol,
-        NewLine
+        Register,
+        RegisterPair,
+        Mnemonic,
+        Label,
+        BytePragma,
+        EndPragma
     };
 
     struct Token {
-        std::string str = "";
-        unsigned int value = 0u;
-        TokenType type = TokenType::Invalid;
+        TokenType type;
+        std::string text;
+        size_t line;
+        unsigned int value;
 
-        Token() = default;
-        Token(const char* str, TokenType type);
-        Token(unsigned int value, TokenType type);
+        Token();
+        Token(TokenType type, std::string&& text, size_t line, unsigned int value = 0u) noexcept;
         Token(const Token& other) = default;
         Token(Token&& other) noexcept;
         Token& operator=(Token&& other) noexcept;
         Token& operator=(const Token& other) = default;
     };
 
-    static Token getNext(std::istream& stream);
+    enum class InsType {
+        Simple,
+        Complex,
+        TwoByte
+    };
 
-    Tokenizer() = delete;
+    struct MnemonicDesc {
+        uint8_t byte;
+        InsType type;
+    };
+
+    Tokenizer(std::istream& stream);
+    Token getNext();
 private:
-    enum class State : unsigned int {
-        Entry,
-        EatComment,
-        EatCommentNL,
-        BinNumber,
-        HexNumber,
+    char peekChar();
+    bool getChar();
+    bool getCharIfMatch(char ch);
+    bool getCharIfNotMatch(char ch);
+    Token pragma();
+    Token hexNumber();
+    Token octNumber();
+    Token binNumber();
+    Token decNumber();
+    Token label();
+    bool isLetter(char ch);
+    bool isAlphaNumeric(char ch);
+    bool isDecDigit(char ch);
+    bool isHexDigit(char ch);
+    bool isOctDigit(char ch);
 
-        Finish,
-        Invalid
-    };
+    std::istream& m_stream;
+    char m_currentCh;
+    size_t m_line;
+    int m_col;
 
-    static State entryState(Token& token, char ch);
-    static State eatCommentState(Token& token, char ch);
-    static State eatCommentNLState(Token& token, char ch);
-    static State BinNumberState(Token& token, char ch);
-    static State HexNumberState(Token& token, char ch);
-
-    typedef State(*StateFunctionPtr)(Token&, char);
-    static constexpr StateFunctionPtr m_stateFunctions[static_cast<unsigned int>(State::Finish)] = {
-        entryState,
-        eatCommentState,
-        eatCommentNLState,
-        BinNumberState,
-        HexNumberState,
-    };
-
-    static State m_currentState;
+    static const std::unordered_map<std::string, MnemonicDesc> m_mnemonics;
 };
