@@ -154,6 +154,7 @@ void BBL(uint16_t* stack, uint8_t& SP, uint8_t& ACC, const uint8_t* registers, u
         --SP;
     }
 
+    // TODO: fix this, should load lsb 4bits to acc directly
     uint8_t reg = IR & 0x0Fu;
     ACC = getRegisterValue(registers, reg) | (ACC & 0x10u);
 }

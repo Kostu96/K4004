@@ -18,8 +18,7 @@ public:
         RegisterPair,
         Mnemonic,
         Label,
-        BytePragma,
-        EndPragma
+        BytePragma
     };
 
     struct Token {
@@ -59,7 +58,7 @@ private:
     Token octNumber();
     Token binNumber();
     Token decNumber();
-    Token label();
+    Token identifier();
     bool isLetter(char ch);
     bool isAlphaNumeric(char ch);
     bool isDecDigit(char ch);
@@ -72,4 +71,5 @@ private:
     int m_col;
 
     static const std::unordered_map<std::string, MnemonicDesc> m_mnemonics;
+    static const std::unordered_map<std::string, uint8_t> m_registers;
 };

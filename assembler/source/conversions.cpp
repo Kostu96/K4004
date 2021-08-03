@@ -16,7 +16,7 @@ unsigned int textToHex(const std::string_view& str)
         else if (str[i] >= 'A' && str[i] <= 'F')
             value += (1 << 4 * (length - i - 1)) * (str[i] - 'A' + 10);
         else
-            assert(false);
+            assert(false && "Error");
     }
 
     return value;

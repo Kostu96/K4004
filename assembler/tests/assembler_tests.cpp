@@ -26,7 +26,7 @@ TEST_P(AssemblerTests, givenProgramAssemblyCodeWhenAssemblingThenCorrectByteCode
     ASSERT_LE(byteCode.size(), testParam.refByteCode.size());
 
     for (size_t i = 0u; i < byteCode.size(); ++i)
-        EXPECT_EQ(byteCode[i], testParam.refByteCode[i]) << "At byte " << i;
+        EXPECT_EQ(byteCode[i], testParam.refByteCode[i]) << "  i == " << i;
 }
 
 INSTANTIATE_TEST_SUITE_P(Parametrized, AssemblerTests,

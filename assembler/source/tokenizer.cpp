@@ -41,11 +41,11 @@ Tokenizer::Token Tokenizer::getNext()
         switch (m_currentCh) {
         case ';':
             while (getCharIfNotMatch('\n'));
-            break;
+            break; // Ignore comment.
         case ' ':
         case '\r':
         case '\t': break; // Ignore whitespace.
-        case '\n': return Token(TokenType::NewLine, "\n", m_line);
+        case '\n': return Token(TokenType::NewLine, "\n", m_line++);
         case ',': return Token(TokenType::Comma, ",", m_line);
         case '-': return Token(TokenType::Minus, "-", m_line);
         case '+': return Token(TokenType::Plus, "+", m_line);
@@ -67,7 +67,7 @@ Tokenizer::Token Tokenizer::getNext()
                 return decNumber();
 
             if (isLetter(m_currentCh))
-                return label();
+                return identifier();
 
             // TODO: Make better error handling
             std::cout << "Unexpected character: '" << m_currentCh << "' in line: " << m_line << " col: " << m_col << '\n';
@@ -90,7 +90,6 @@ bool Tokenizer::getChar()
     bool ret = static_cast<bool>(m_stream.get(m_currentCh));
     ++m_col;
     if (ret && m_currentCh == '\n') {
-        ++m_line;
         m_col = -1;
     }
     return ret;
@@ -189,7 +188,7 @@ Tokenizer::Token Tokenizer::decNumber()
     return Token(TokenType::Number, std::move(text), m_line, textToDec(text));
 }
 
-Tokenizer::Token Tokenizer::label()
+Tokenizer::Token Tokenizer::identifier()
 {
     std::string text;
     text.push_back(m_currentCh);
@@ -210,9 +209,20 @@ Tokenizer::Token Tokenizer::label()
             auto desc = x->second;
             return Token(TokenType::Mnemonic, std::move(text), m_line, desc.byte);
         }
+
+        if (text.size() == 2 && (text[0] == 'R' || text[0] == 'P')) {
+            auto x = m_registers.find(text);
+            if (x != m_registers.end()) {
+                auto byte = x->second;
+                return Token(text[0] == 'R' ? TokenType::Register : TokenType::RegisterPair,
+                             std::move(text),
+                             m_line,
+                             byte);
+            }
+        }
     }
 
-    return Token();
+    return Token(TokenType::Label, std::move(text), m_line);
 }
 
 bool Tokenizer::isLetter(char ch)
@@ -304,4 +314,31 @@ const std::unordered_map<std::string, Tokenizer::MnemonicDesc> Tokenizer::m_mnem
     { "DAA", { +AsmIns::DAA, InsType::Simple } },
     { "KBP", { +AsmIns::KBP, InsType::Simple } },
     { "DCL", { +AsmIns::DCL, InsType::Simple } },
+};
+
+const std::unordered_map<std::string, uint8_t> Tokenizer::m_registers = {
+    { "R0", +AsmReg::R0 },
+    { "R1", +AsmReg::R1 },
+    { "R2", +AsmReg::R2 },
+    { "R3", +AsmReg::R3 },
+    { "R4", +AsmReg::R4 },
+    { "R5", +AsmReg::R5 },
+    { "R6", +AsmReg::R6 },
+    { "R7", +AsmReg::R7 },
+    { "R8", +AsmReg::R8 },
+    { "R9", +AsmReg::R9 },
+    { "RA", +AsmReg::RA },
+    { "RB", +AsmReg::RB },
+    { "RC", +AsmReg::RC },
+    { "RD", +AsmReg::RD },
+    { "RE", +AsmReg::RE },
+    { "RF", +AsmReg::RF },
+    { "P0", +AsmReg::P0 },
+    { "P1", +AsmReg::P1 },
+    { "P2", +AsmReg::P2 },
+    { "P3", +AsmReg::P3 },
+    { "P4", +AsmReg::P4 },
+    { "P5", +AsmReg::P5 },
+    { "P6", +AsmReg::P6 },
+    { "P7", +AsmReg::P7 }
 };

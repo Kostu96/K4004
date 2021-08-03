@@ -409,14 +409,14 @@ std::uint16_t Assembler::parseOperand(const std::string& token)
         parseRegisterPair(token, word);
         return word;
     case '$':
-        return textToHex(token);
+        return textToHex(token.substr(1));
     case '0':
         if (token.size() == 1)
             break;
 
-        return textToOct(token);
+        return textToOct(token.substr(1));
     case '%':
-        return textToBin(token);
+        return textToBin(token.substr(1));
     }
 
     return textToDec(token);
