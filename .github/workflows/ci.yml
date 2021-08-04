@@ -82,6 +82,7 @@ jobs:
           -D CMAKE_BUILD_TYPE=${{matrix.config.build_type}}
           -G Ninja
           -D CMAKE_MAKE_PROGRAM=ninja
+          -D CMAKE_CXX_CLANG_TIDY=clang-tidy;-checks=*
           RESULT_VARIABLE result)
           
         if (NOT result EQUAL 0)
