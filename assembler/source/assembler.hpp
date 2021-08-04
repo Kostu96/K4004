@@ -11,7 +11,6 @@ public:
     bool disassemble(const std::vector<uint8_t>& bytecode, std::vector<std::string>& output);
 private:
     enum class InsType {
-        Invalid,
         Simple,
         Complex,
         TwoByte
@@ -19,7 +18,7 @@ private:
 
     struct MnemonicDesc {
         uint8_t byte = 0;
-        InsType type = InsType::Invalid;
+        InsType type = InsType::Simple;
     };
 
     bool trimComments(std::string& line);
