@@ -1,4 +1,3 @@
-#pragma once
 #include "emulator/source/emulator.hpp"
 #include "emulator/source/rom.hpp"
 

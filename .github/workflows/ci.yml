@@ -16,6 +16,14 @@ jobs:
       fail-fast: false
       matrix:
         config:
+         - {
+            name: "Windows MSVC Debug",
+            os: windows-latest,
+            build_type: "Debug",
+            cc: "cl",
+            cxx: "cl",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          }
         - {
             name: "Windows MSVC Release",
             os: windows-latest,
@@ -24,25 +32,17 @@ jobs:
             cxx: "cl",
             environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
           }
-        - {
-            name: "Windows MSVC Debug",
-            os: windows-latest,
-            build_type: "Debug",
-            cc: "cl",
-            cxx: "cl",
-            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
-          }
-        #- {
-        #    name: "Ubuntu GCC Release",
-        #    os: ubuntu-latest,
-        #    build_type: "Release",
-        #    cc: "gcc",
-        #    cxx: "g++"
-        #  }
         #- {
         #    name: "Ubuntu GCC Debug",
         #    os: ubuntu-latest,
         #    build_type: "Debug",
+        #    cc: "gcc",
+        #    cxx: "g++"
+        #  }
+        #- {
+        #    name: "Ubuntu GCC Release",
+        #    os: ubuntu-latest,
+        #    build_type: "Release",
         #    cc: "gcc",
         #    cxx: "g++"
         #  }
