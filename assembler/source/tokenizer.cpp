@@ -18,14 +18,14 @@ Tokenizer::Token::Token(Token&& other) noexcept :
     type(other.type),
     text(std::move(other.text)),
     line(other.line),
-    value(std::move(other.value)) {}
+    value(other.value) {}
 
 Tokenizer::Token& Tokenizer::Token::operator=(Token && other) noexcept
 {
     type = other.type;
     text = std::move(other.text);
     line = other.line;
-    value = std::move(other.value);
+    value = other.value;
     return *this;
 }
 

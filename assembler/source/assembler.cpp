@@ -246,7 +246,7 @@ bool Assembler::disassemble(const std::vector<uint8_t>& bytecode, std::vector<st
         output.push_back(ss.str());
         ss.str(std::string());
         if (twoByte) {
-            output.push_back(std::string());
+            output.emplace_back(std::string());
             twoByte = false;
         }
     }
@@ -279,7 +279,7 @@ bool Assembler::checkForSymbols(std::string& line)
 
     if (token[0] == '*') {
         token = token.substr(2);
-        uint16_t newAddress = std::atoi(token.c_str());
+        uint16_t newAddress = std::strtol(token.c_str(), nullptr, 0);
         uint16_t addressDiff = newAddress - m_address;
         m_address = newAddress;
         line = line.substr(0, 2) + std::to_string(addressDiff);
@@ -384,7 +384,7 @@ bool Assembler::parseLine(const std::string& line, std::vector<uint8_t>& output)
                 auto ret = m_symbolTable.find(token);
                 std::uint16_t addr = ret != m_symbolTable.end() ? ret->second : parseOperand(token);
                 uint16_t addrHP = addr & 0x0F00u;
-                addrHP >>= 8;
+                addrHP >>= 8u;
                 output.push_back(desc.byte | addrHP);
                 output.push_back(addr & 0x00FFu);
             }
