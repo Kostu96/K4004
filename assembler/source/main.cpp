@@ -80,7 +80,7 @@ int main(int argc, const char* argv[])
         }
         else {
             std::ofstream fout(outputFile);
-            for (auto str : disassembly)
+            for (const auto& str : disassembly)
                 fout << str << '\n';
         }
     }

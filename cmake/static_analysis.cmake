@@ -10,6 +10,7 @@ if (CMAKE_CXX_CLANG_TIDY)
             cert-*,\
             modernize-*,-modernize-use-trailing-return-type,\
             performance-*"
+        "--warnings-as-errors=*"
     )
     
     list(APPEND CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY_CONFIG})
