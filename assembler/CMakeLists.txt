@@ -1,5 +1,8 @@
+set(TARGET_ASSEMBLER_LIB_NAME ${TARGET_ASSEMBLER_NAME}_lib)
+set(TARGET_ASSEMBLER_LIB_NAME ${TARGET_ASSEMBLER_LIB_NAME} PARENT_SCOPE)
 add_subdirectory(source)
 
 if (${BUILD_TESTS})
+    set(TARGET_ASSEMBLER_TESTS_NAME ${TARGET_ASSEMBLER_NAME}_tests)
     add_subdirectory(tests)
 endif()

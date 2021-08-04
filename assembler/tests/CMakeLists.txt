@@ -1,11 +1,9 @@
-set(TARGET_ASSEMBLER_TESTS_NAME assembler_tests)
-
 set(K4004_ASSEMBLER_TEST_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt
-    ${CMAKE_CURRENT_SOURCE_DIR}/assembler_internals_tests.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/assembler_tests.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/disassembler_tests.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tokenizer_tests.cpp
 )
 
 add_executable(${TARGET_ASSEMBLER_TESTS_NAME} ${K4004_ASSEMBLER_TEST_SOURCES})
@@ -17,11 +15,14 @@ target_compile_definitions(${TARGET_ASSEMBLER_TESTS_NAME} PRIVATE
 
 target_link_libraries(${TARGET_ASSEMBLER_TESTS_NAME} PRIVATE
     gtest
-    ${TARGET_ASSEMBLER_NAME}
+    ${TARGET_ASSEMBLER_LIB_NAME}
 )
 
-set_target_properties(${TARGET_ASSEMBLER_TESTS_NAME} PROPERTIES FOLDER assembler)
+set_target_properties(${TARGET_ASSEMBLER_TESTS_NAME} PROPERTIES
+    FOLDER assembler
+    CXX_CLANG_TIDY ""
+)
 
 if(MSVC)
-	set_target_properties(${TARGET_ASSEMBLER_TESTS_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
+    set_target_properties(${TARGET_ASSEMBLER_TESTS_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_SOURCE_DIR})
 endif()

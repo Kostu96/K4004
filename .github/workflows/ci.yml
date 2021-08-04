@@ -17,14 +17,6 @@ jobs:
       matrix:
         config:
         - {
-            name: "Windows MSVC Release",
-            os: windows-latest,
-            build_type: "Release",
-            cc: "cl",
-            cxx: "cl",
-            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
-          }
-        - {
             name: "Windows MSVC Debug",
             os: windows-latest,
             build_type: "Debug",
@@ -32,17 +24,25 @@ jobs:
             cxx: "cl",
             environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
           }
-        #- {
-        #    name: "Ubuntu GCC Release",
-        #    os: ubuntu-latest,
-        #    build_type: "Release",
-        #    cc: "gcc",
-        #    cxx: "g++"
-        #  }
+        - {
+            name: "Windows MSVC Release",
+            os: windows-latest,
+            build_type: "Release",
+            cc: "cl",
+            cxx: "cl",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          }
         #- {
         #    name: "Ubuntu GCC Debug",
         #    os: ubuntu-latest,
         #    build_type: "Debug",
+        #    cc: "gcc",
+        #    cxx: "g++"
+        #  }
+        #- {
+        #    name: "Ubuntu GCC Release",
+        #    os: ubuntu-latest,
+        #    build_type: "Release",
         #    cc: "gcc",
         #    cxx: "g++"
         #  }
@@ -82,6 +82,7 @@ jobs:
           -D CMAKE_BUILD_TYPE=${{matrix.config.build_type}}
           -G Ninja
           -D CMAKE_MAKE_PROGRAM=ninja
+          -D STATIC_ANALYSIS=ON
           RESULT_VARIABLE result)
           
         if (NOT result EQUAL 0)

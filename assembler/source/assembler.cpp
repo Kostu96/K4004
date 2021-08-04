@@ -1,4 +1,5 @@
 #include "assembler/source/assembler.hpp"
+#include "assembler/source/conversions.hpp"
 
 #include "shared/source/assembly.hpp"
 
@@ -11,54 +12,69 @@ Assembler::Assembler() :
     m_address(0u),
     m_metalMaskLength(0u),
     m_mnemonics({ // TODO: Make it constexpr
-        { "ADM", { +AsmIns::ADM, InsType::Simple } },
-        { "CLB", { +AsmIns::CLB, InsType::Simple } },
-        { "CLC", { +AsmIns::CLC, InsType::Simple } },
-        { "CMA", { +AsmIns::CMA, InsType::Simple } },
-        { "CMC", { +AsmIns::CMC, InsType::Simple } },
-        { "DAA", { +AsmIns::DAA, InsType::Simple } },
-        { "DAC", { +AsmIns::DAC, InsType::Simple } },
-        { "DCL", { +AsmIns::DCL, InsType::Simple } },
-        { "IAC", { +AsmIns::IAC, InsType::Simple } },
-        { "KBP", { +AsmIns::KBP, InsType::Simple } },
         { "NOP", { +AsmIns::NOP, InsType::Simple } },
-        { "RAL", { +AsmIns::RAL, InsType::Simple } },
-        { "RAR", { +AsmIns::RAR, InsType::Simple } },
-        { "RD0", { +AsmIns::RD0, InsType::Simple } },
-        { "RD1", { +AsmIns::RD1, InsType::Simple } },
-        { "RD2", { +AsmIns::RD2, InsType::Simple } },
-        { "RD3", { +AsmIns::RD3, InsType::Simple } },
-        { "RDM", { +AsmIns::RDM, InsType::Simple } },
-        { "RDR", { +AsmIns::RDR, InsType::Simple } },
-        { "SBM", { +AsmIns::SBM, InsType::Simple } },
-        { "STC", { +AsmIns::STC, InsType::Simple } },
-        { "TCC", { +AsmIns::TCC, InsType::Simple } },
-        { "TCS", { +AsmIns::TCS, InsType::Simple } },
+        { "HLT", { +AsmIns::HLT, InsType::Simple } },
+        { "BBS", { +AsmIns::BBS, InsType::Simple } },
+        { "LCR", { +AsmIns::LCR, InsType::Simple } },
+        { "OR4", { +AsmIns::OR4, InsType::Simple } },
+        { "OR5", { +AsmIns::OR5, InsType::Simple } },
+        { "AN6", { +AsmIns::AN6, InsType::Simple } },
+        { "AN7", { +AsmIns::AN7, InsType::Simple } },
+        { "DB0", { +AsmIns::DB0, InsType::Simple } },
+        { "DB1", { +AsmIns::DB1, InsType::Simple } },
+        { "SB0", { +AsmIns::SB0, InsType::Simple } },
+        { "SB1", { +AsmIns::SB1, InsType::Simple } },
+        { "EIN", { +AsmIns::EIN, InsType::Simple } },
+        { "DIN", { +AsmIns::DIN, InsType::Simple } },
+        { "RPM", { +AsmIns::DIN, InsType::Simple } },
+        { "JCN", { +AsmIns::JCN, InsType::TwoByte } },
+        { "FIM", { +AsmIns::FIM, InsType::TwoByte } },
+        { "SRC", { +AsmIns::SRC, InsType::Complex } },
+        { "FIN", { +AsmIns::FIN, InsType::Complex } },
+        { "JIN", { +AsmIns::JIN, InsType::Complex } },
+        { "JUN", { +AsmIns::JUN, InsType::TwoByte } },
+        { "JMS", { +AsmIns::JMS, InsType::TwoByte } },
+        { "INC", { +AsmIns::INC, InsType::Complex } },
+        { "ISZ", { +AsmIns::ISZ, InsType::TwoByte } },
+        { "ADD", { +AsmIns::ADD, InsType::Complex } },
+        { "SUB", { +AsmIns::SUB, InsType::Complex } },
+        { "LD",  { +AsmIns::LD,  InsType::Complex } },
+        { "XCH", { +AsmIns::XCH, InsType::Complex } },
+        { "BBL", { +AsmIns::BBL, InsType::Complex } },
+        { "LDM", { +AsmIns::LDM, InsType::Complex } },
+        { "WRM", { +AsmIns::WRM, InsType::Simple } },
         { "WMP", { +AsmIns::WMP, InsType::Simple } },
+        { "WRR", { +AsmIns::WRR, InsType::Simple } },
+        { "WPM", { +AsmIns::WPM, InsType::Simple } },
         { "WR0", { +AsmIns::WR0, InsType::Simple } },
         { "WR1", { +AsmIns::WR1, InsType::Simple } },
         { "WR2", { +AsmIns::WR2, InsType::Simple } },
         { "WR3", { +AsmIns::WR3, InsType::Simple } },
-        { "WRM", { +AsmIns::WRM, InsType::Simple } },
-        { "WRR", { +AsmIns::WRR, InsType::Simple } },
-        { "ADD", { +AsmIns::ADD, InsType::Complex } },
-        { "BBL", { +AsmIns::BBL, InsType::Complex } },
-        { "FIN", { +AsmIns::FIN, InsType::Complex } },
-        { "INC", { +AsmIns::INC, InsType::Complex } },
-        { "JIN", { +AsmIns::JIN, InsType::Complex } },
-        { "LD",  { +AsmIns::LD,  InsType::Complex } },
-        { "LDM", { +AsmIns::LDM, InsType::Complex } },
-        { "SRC", { +AsmIns::SRC, InsType::Complex } },
-        { "SUB", { +AsmIns::SUB, InsType::Complex } },
-        { "XCH", { +AsmIns::XCH, InsType::Complex } },
-        { "ISZ", { +AsmIns::ISZ, InsType::TwoByte } },
-        { "JCN", { +AsmIns::JCN, InsType::TwoByte } },
-        { "JMS", { +AsmIns::JMS, InsType::TwoByte } },
-        { "JUN", { +AsmIns::JUN, InsType::TwoByte } },
-        { "FIM", { +AsmIns::FIM, InsType::TwoByte } }
+        { "SBM", { +AsmIns::SBM, InsType::Simple } },
+        { "RDM", { +AsmIns::RDM, InsType::Simple } },
+        { "RDR", { +AsmIns::RDR, InsType::Simple } },
+        { "ADM", { +AsmIns::ADM, InsType::Simple } },
+        { "RD0", { +AsmIns::RD0, InsType::Simple } },
+        { "RD1", { +AsmIns::RD1, InsType::Simple } },
+        { "RD2", { +AsmIns::RD2, InsType::Simple } },
+        { "RD3", { +AsmIns::RD3, InsType::Simple } },
+        { "CLB", { +AsmIns::CLB, InsType::Simple } },
+        { "CLC", { +AsmIns::CLC, InsType::Simple } },
+        { "IAC", { +AsmIns::IAC, InsType::Simple } },
+        { "CMC", { +AsmIns::CMC, InsType::Simple } },
+        { "CMA", { +AsmIns::CMA, InsType::Simple } },
+        { "RAL", { +AsmIns::RAL, InsType::Simple } },
+        { "RAR", { +AsmIns::RAR, InsType::Simple } },
+        { "TCC", { +AsmIns::TCC, InsType::Simple } },
+        { "DAC", { +AsmIns::DAC, InsType::Simple } },
+        { "TCS", { +AsmIns::TCS, InsType::Simple } },
+        { "STC", { +AsmIns::STC, InsType::Simple } },
+        { "DAA", { +AsmIns::DAA, InsType::Simple } },
+        { "KBP", { +AsmIns::KBP, InsType::Simple } },
+        { "DCL", { +AsmIns::DCL, InsType::Simple } },
     }) {}
 
-bool Assembler::assemble(const char* filename, std::vector<uint8_t>& output)
+bool Assembler::assemble(const char* filename, std::vector<uint8_t>& output, bool i4004ModeEnabled)
 {
     std::fstream file(filename);
     if (!file.is_open())
@@ -91,10 +107,11 @@ bool Assembler::assemble(const char* filename, std::vector<uint8_t>& output)
     return true;
 }
 
-void Assembler::disassemble(const std::vector<uint8_t>& bytecode, std::vector<std::string>& output)
+bool Assembler::disassemble(const std::vector<uint8_t>& bytecode, std::vector<std::string>& output)
 {
     m_metalMaskLength = 1u;
     if (bytecode[0] != 0xFEu) {
+        return false;
         // Error
     }
     size_t i = 0;
@@ -229,10 +246,12 @@ void Assembler::disassemble(const std::vector<uint8_t>& bytecode, std::vector<st
         output.push_back(ss.str());
         ss.str(std::string());
         if (twoByte) {
-            output.push_back(std::string());
+            output.emplace_back(std::string());
             twoByte = false;
         }
     }
+
+    return true;
 }
 
 bool Assembler::trimComments(std::string& line)
@@ -252,7 +271,7 @@ bool Assembler::trimWhiteSpaces(std::string& line)
 
 bool Assembler::checkForSymbols(std::string& line)
 {
-    size_t token1End = line.find_first_of(" ");
+    size_t token1End = line.find_first_of(' ');
     std::string token = line.substr(0, token1End);
     
     if (token[0] == '$')
@@ -260,7 +279,7 @@ bool Assembler::checkForSymbols(std::string& line)
 
     if (token[0] == '*') {
         token = token.substr(2);
-        uint16_t newAddress = std::atoi(token.c_str());
+        uint16_t newAddress = std::strtol(token.c_str(), nullptr, 0);
         uint16_t addressDiff = newAddress - m_address;
         m_address = newAddress;
         line = line.substr(0, 2) + std::to_string(addressDiff);
@@ -286,7 +305,7 @@ bool Assembler::checkForSymbols(std::string& line)
         if (hasEqualSign == token.npos) {
             m_symbolTable.insert(std::make_pair<>(token, static_cast<uint16_t>(m_address)));
             if (token1End != line.npos) {
-                size_t token2Start = line.find_first_not_of(" ", token1End);
+                size_t token2Start = line.find_first_not_of(' ', token1End);
                 line = line.substr(token2Start);
                 return checkForSymbols(line);
             }
@@ -323,7 +342,7 @@ bool Assembler::parseLine(const std::string& line, std::vector<uint8_t>& output)
         return true;
     }
 
-    size_t token2Beg, token2End, token1End = line.find_first_of(" ");
+    size_t token2Beg, token2End, token1End = line.find_first_of(' ');
     token = line.substr(0, token1End); // TODO: change token to string_view
 
     MnemonicDesc desc;
@@ -339,8 +358,8 @@ bool Assembler::parseLine(const std::string& line, std::vector<uint8_t>& output)
             if (token1End == line.npos) {
                 return false; // Error: Missing instruction operand
             }
-            token2Beg = line.find_first_not_of(" ", token1End);
-            token2End = line.find_first_of(" ", token2Beg);
+            token2Beg = line.find_first_not_of(' ', token1End);
+            token2End = line.find_first_of(' ', token2Beg);
             token = line.substr(token2Beg, token2End - token2Beg + 1);
             output.push_back(desc.byte | parseOperand(token));
             break;
@@ -348,8 +367,8 @@ bool Assembler::parseLine(const std::string& line, std::vector<uint8_t>& output)
             if (token1End == line.npos) {
                 return false; // Error: Missing instruction operand
             }
-            token2Beg = line.find_first_not_of(" ", token1End);
-            token2End = line.find_first_of(" ", token2Beg);
+            token2Beg = line.find_first_not_of(' ', token1End);
+            token2End = line.find_first_of(' ', token2Beg);
             token = line.substr(token2Beg, token2End - token2Beg);
             if (token[token.size() - 1] == ',') {
                 // Should be 2 operands
@@ -365,7 +384,7 @@ bool Assembler::parseLine(const std::string& line, std::vector<uint8_t>& output)
                 auto ret = m_symbolTable.find(token);
                 std::uint16_t addr = ret != m_symbolTable.end() ? ret->second : parseOperand(token);
                 uint16_t addrHP = addr & 0x0F00u;
-                addrHP >>= 8;
+                addrHP >>= 8u;
                 output.push_back(desc.byte | addrHP);
                 output.push_back(addr & 0x00FFu);
             }
@@ -390,21 +409,17 @@ std::uint16_t Assembler::parseOperand(const std::string& token)
         parseRegisterPair(token, word);
         return word;
     case '$':
-        parseHexNumber(token, word);
-        return word;
+        return textToHex(token.substr(1));
     case '0':
         if (token.size() == 1)
             break;
 
-        parseOctNumber(token, word);
-        return word;
+        return textToOct(token.substr(1));
     case '%':
-        parseBinNumber(token, word);
-        return word;
+        return textToBin(token.substr(1));
     }
 
-    parseDecNumber(token, word);
-    return word;
+    return textToDec(token);
 }
 
 bool Assembler::parseRegister(const std::string_view& str, uint16_t& value)
@@ -445,88 +460,13 @@ bool Assembler::parseRegisterPair(const std::string_view& str, uint16_t& value)
     return true;
 }
 
-bool Assembler::parseHexNumber(const std::string_view& str, uint16_t& value)
-{
-    size_t length = str.size();
-    if (length == 5 || length == 0)
-        return false; // String representation of a to big number or empty
-
-    value = 0;
-    for (size_t i = 1; i < length; ++i) {
-        if (str[i] >= '0' && str[i] <= '9')
-            value += (1 << 4 * (length - i - 1)) * (str[i] - '0');
-        else if (str[i] >= 'a' && str[i] <= 'f')
-            value += (1 << 4 * (length - i - 1)) * (str[i] - 'a' + 10);
-        else if (str[i] >= 'A' && str[i] <= 'F')
-            value += (1 << 4 * (length - i - 1)) * (str[i] - 'A' + 10);
-        else
-            return false; // Illformed bin number
-    }
-
-    return true;
-}
-
-bool Assembler::parseBinNumber(const std::string_view& str, uint16_t& value)
-{
-    size_t length = str.size();
-    if (length == 18 || length == 0)
-        return false; // String representation of a to big number or empty
-
-    value = 0;
-    for (size_t i = 1; i < length; ++i) {
-        if (str[i] == '1')
-            value += 1 << (length - i - 1);
-        else if (str[i] != '0')
-            return false; // Illformed bin number
-    }
-
-    return true;
-}
-
-bool Assembler::parseOctNumber(const std::string_view& str, uint16_t& value)
-{
-    size_t length = str.size();
-    if (length == 8 || length == 0)
-        return false; // String representation of a to big number or empty
-
-    value = 0;
-    for (size_t i = 0; i < length; ++i) {
-        if (str[i] >= '0' && str[i] <= '7')
-            value += (1 << 3 * (length - i - 1)) * (str[i] - '0');
-        else
-            return false; // Illformed bin number
-    }
-
-    return true;
-}
-
-bool Assembler::parseDecNumber(const std::string_view& str, uint16_t& value)
-{
-    size_t length = str.size();
-    if (length == 6 || length == 0)
-        return false;
-
-    value = 0;
-    uint16_t base = 1;
-    for (size_t i = length; i > 0; --i) {
-        if (str[i - 1] >= '0' && str[i - 1] <= '9') {
-            value += base * (str[i - 1] - '0');
-            base *= 10;
-        }
-        else
-            return false; // Illformed dec number
-    }
-
-    return true;
-}
-
 bool Assembler::isMnemonic(std::string& token, MnemonicDesc& desc)
 {
     if (token.size() > 3) return false;
 
-    for (size_t i = 0; i < token.size(); ++i)
-        if (token[i] >= 'a' && token[i] <= 'z')
-            token[i] -= 'a' - 'A';
+    for (auto& ch : token)
+        if (ch >= 'a' && ch <= 'z')
+            ch -= 'a' - 'A';
 
     auto x = m_mnemonics.find(token);
     if (x != m_mnemonics.end()) {

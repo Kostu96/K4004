@@ -1,17 +1,34 @@
-set(K4004_ASSEMBLER_SOURCES
+set(K4004_ASSEMBLER_LIB_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt
     ${CMAKE_CURRENT_SOURCE_DIR}/assembler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/assembler.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/conversions.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/conversions.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tokenizer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tokenizer.hpp
     ${SHARED_DIR}/source/assembly.cpp
     ${SHARED_DIR}/source/assembly.hpp
-    ${SHARED_DIR}/source/whitebox.hpp
 )
 
-add_library(${TARGET_ASSEMBLER_NAME} STATIC ${K4004_ASSEMBLER_SOURCES})
+add_library(${TARGET_ASSEMBLER_LIB_NAME} STATIC ${K4004_ASSEMBLER_LIB_SOURCES})
+source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${K4004_ASSEMBLER_LIB_SOURCES})
+
+target_include_directories(${TARGET_ASSEMBLER_LIB_NAME} PUBLIC
+    ${CMAKE_SOURCE_DIR}
+)
+
+set_target_properties(${TARGET_ASSEMBLER_LIB_NAME} PROPERTIES FOLDER assembler)
+
+set(K4004_ASSEMBLER_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/CMakeLists.txt
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+)
+
+add_executable(${TARGET_ASSEMBLER_NAME} ${K4004_ASSEMBLER_SOURCES})
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${K4004_ASSEMBLER_SOURCES})
 
-target_include_directories(${TARGET_ASSEMBLER_NAME} PUBLIC
-    ${CMAKE_SOURCE_DIR}
+target_link_libraries(${TARGET_ASSEMBLER_NAME} PRIVATE
+    ${TARGET_ASSEMBLER_LIB_NAME}
 )
 
 set_target_properties(${TARGET_ASSEMBLER_NAME} PROPERTIES FOLDER assembler)

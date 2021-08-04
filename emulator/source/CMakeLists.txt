@@ -13,18 +13,17 @@ set(K4004_EMULATOR_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/rom.hpp
     ${SHARED_DIR}/source/assembly.cpp
     ${SHARED_DIR}/source/assembly.hpp
-    ${SHARED_DIR}/source/whitebox.hpp
 )
 
-add_library(${TARGET_EMULATOR_NAME} STATIC ${K4004_EMULATOR_SOURCES})
+add_library(${TARGET_EMULATOR_LIB_NAME} STATIC ${K4004_EMULATOR_SOURCES})
 source_group(TREE ${CMAKE_SOURCE_DIR} FILES ${K4004_EMULATOR_SOURCES})
 
-target_include_directories(${TARGET_EMULATOR_NAME} PUBLIC
+target_include_directories(${TARGET_EMULATOR_LIB_NAME} PUBLIC
     ${CMAKE_SOURCE_DIR}
 )
 
-target_link_libraries(${TARGET_EMULATOR_NAME} PRIVATE
-    ${TARGET_ASSEMBLER_NAME}
+target_link_libraries(${TARGET_EMULATOR_LIB_NAME} PRIVATE
+    ${TARGET_ASSEMBLER_LIB_NAME}
 )
 
-set_target_properties(${TARGET_EMULATOR_NAME} PROPERTIES FOLDER emulator)
+set_target_properties(${TARGET_EMULATOR_LIB_NAME} PROPERTIES FOLDER emulator)

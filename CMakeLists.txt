@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 3.18)
 
 option(BUILD_TESTS "Builds tests" ON)
+option(STATIC_ANALYSIS "Build with static analysis" OFF)
+
+if (${STATIC_ANALYSIS})
+    include(cmake/static_analysis.cmake)
+endif()
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -24,10 +29,10 @@ add_subdirectory(third_party)
 
 set(SHARED_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shared)
 
-set(TARGET_ASSEMBLER_NAME assembler_lib)
+set(TARGET_ASSEMBLER_NAME assembler)
 add_subdirectory(assembler)
 
-set(TARGET_EMULATOR_NAME emulator_lib)
+set(TARGET_EMULATOR_NAME emulator)
 add_subdirectory(emulator)
 
 set(TARGET_APP_NAME K4004_app)

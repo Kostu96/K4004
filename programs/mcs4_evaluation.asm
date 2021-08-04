@@ -65,105 +65,105 @@
        ISZ R5, 89     ; 096
        JMS LD_MK      ; 098
        JUN $075       ; 100
-	   JMS LD_MK      ; 102
-	   SRC P0         ; 104
-	   SUB R4         ; 105
-	   SUB R5         ; 106
-	   WRM            ; 107
-	   CLB            ; 108
-	   ISZ R4, 104    ; 109
-	   ISZ R5, 104    ; 111
-	   CLB            ; 113
-	   SRC P5         ; 114
-	   WMP            ; 115
-	   JIN P7         ; 116
-	   STC            ; 117
-	   INC R8         ; 118
-	   LD  R8         ; 119
-	   WRM            ; 120
-	   XCH R9         ; 121
-	   LD  R9         ; 122
-	   WRR            ; 123
-	   DAA            ; 124
-	   WRM            ; 125
-	   ISZ R4, 117    ; 126
-	   CLB            ; 128
-	   DAC            ; 129
-	   WRM            ; 130
-	   KBP            ; 131
-	   WRM            ; 132
-	   ISZ R4, 129    ; 133
-	   CLB            ; 135
-	   DAA            ; 136
-	   WRM            ; 137
-	   IAC            ; 138
-	   ISZ R4, 136    ; 139
-	   LDM 15         ; 141
-	   WRM            ; 142
-	   TCC            ; 143
-	   WRM            ; 144
-	   JCN %1100, 141 ; 145 ; Jump if A != 0
-	   CLB            ; 147
-	   SRC P5         ; 148
-	   WMP            ; 149
-	   LDM 15         ; 150
-	   TCS            ; 151
-	   WRM            ; 152
-	   STC            ; 153
-	   TCS            ; 154
-	   WRM            ; 155
-	   CMC            ; 156
-	   RAR            ; 157
-	   WRM            ; 158
-	   ISZ R4, 156    ; 159
-	   FIM P2, $C0    ; 161
-	   SRC P0         ; 163
-	   RDM            ; 164
-	   ISZ R1, 163    ; 165
-	   RD0            ; 167
-	   RD1            ; 168
-	   RD2            ; 169
-	   RD3            ; 170
-	   INC R0         ; 171
-	   ISZ R4, 163    ; 172
-	   FIM P0, $20    ; 174
-	   FIM P1, $30    ; 176
-	   SRC P0         ; 178
-	   SBM            ; 179
-	   INC R1         ; 180
-	   SRC P1         ; 181
-	   SBM            ; 182
-	   WRM            ; 183
-	   ISZ R3, 178    ; 184
-	   FIM P0, 0      ; 186
-	   FIM P0, $10    ; 188
-	   CLB            ; 190
-	   SRC P5         ; 191
-	   WMP            ; 192
-	   SRC P0         ; 193
-	   ADM            ; 194
-	   INC R1         ; 195
-	   SRC P1         ; 196
-	   ADM            ; 197
-	   WRM            ; 198
-	   ISZ R3, 193    ; 199
-	   SRC P5         ; 201
-	   RD0            ; 202
-	   JCN %0100, 215 ; 203 ; Jump if A == 0
-	   LDM 8          ; 205
-	   SRC P0         ; 206
-	   WMP            ; 207
-	   CLB            ; 208
-	   SRC P5         ; 209
-	   WR0            ; 210
-	   JCN %1001, 211 ; 211 ; Jump if T == 1
-	   JUN 2          ; 213
-	   IAC            ; 215
-	   WR0            ; 216
-	   LDM 2          ; 217
-	   SRC P0         ; 218
-	   WMP            ; 219
-	   JUN 2          ; 220
+       JMS LD_MK      ; 102
+       SRC P0         ; 104
+       SUB R4         ; 105
+       SUB R5         ; 106
+       WRM            ; 107
+       CLB            ; 108
+       ISZ R4, 104    ; 109
+       ISZ R5, 104    ; 111
+       CLB            ; 113
+       SRC P5         ; 114
+       WMP            ; 115
+       JIN P7         ; 116
+       STC            ; 117
+       INC R8         ; 118
+       LD  R8         ; 119
+       WRM            ; 120
+       XCH R9         ; 121
+       LD  R9         ; 122
+       WRR            ; 123
+       DAA            ; 124
+       WRM            ; 125
+       ISZ R4, 117    ; 126
+       CLB            ; 128
+       DAC            ; 129
+       WRM            ; 130
+       KBP            ; 131
+       WRM            ; 132
+       ISZ R4, 129    ; 133
+       CLB            ; 135
+       DAA            ; 136
+       WRM            ; 137
+       IAC            ; 138
+       ISZ R4, 136    ; 139
+       LDM 15         ; 141
+       WRM            ; 142
+       TCC            ; 143
+       WRM            ; 144
+       JCN %1100, 141 ; 145 ; Jump if A != 0
+       CLB            ; 147
+       SRC P5         ; 148
+       WMP            ; 149
+       LDM 15         ; 150
+       TCS            ; 151
+       WRM            ; 152
+       STC            ; 153
+       TCS            ; 154
+       WRM            ; 155
+       CMC            ; 156
+       RAR            ; 157
+       WRM            ; 158
+       ISZ R4, 156    ; 159
+       FIM P2, $C0    ; 161
+       SRC P0         ; 163
+       RDM            ; 164
+       ISZ R1, 163    ; 165
+       RD0            ; 167
+       RD1            ; 168
+       RD2            ; 169
+       RD3            ; 170
+       INC R0         ; 171
+       ISZ R4, 163    ; 172
+       FIM P0, $20    ; 174
+       FIM P1, $30    ; 176
+       SRC P0         ; 178
+       SBM            ; 179
+       INC R1         ; 180
+       SRC P1         ; 181
+       SBM            ; 182
+       WRM            ; 183
+       ISZ R3, 178    ; 184
+       FIM P0, 0      ; 186
+       FIM P0, $10    ; 188
+       CLB            ; 190
+       SRC P5         ; 191
+       WMP            ; 192
+       SRC P0         ; 193
+       ADM            ; 194
+       INC R1         ; 195
+       SRC P1         ; 196
+       ADM            ; 197
+       WRM            ; 198
+       ISZ R3, 193    ; 199
+       SRC P5         ; 201
+       RD0            ; 202
+       JCN %0100, 215 ; 203 ; Jump if A == 0
+       LDM 8          ; 205
+       SRC P0         ; 206
+       WMP            ; 207
+       CLB            ; 208
+       SRC P5         ; 209
+       WR0            ; 210
+       JCN %1001, 211 ; 211 ; Jump if T == 1
+       JUN 2          ; 213
+       IAC            ; 215
+       WR0            ; 216
+       LDM 2          ; 217
+       SRC P0         ; 218
+       WMP            ; 219
+       JUN 2          ; 220
 
 LD_MK  SRC P5         ; 222
        LD R11         ; 223
