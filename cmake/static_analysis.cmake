@@ -4,9 +4,10 @@ find_program(CMAKE_CXX_CLANG_TIDY NAMES clang-tidy)
 if (CMAKE_CXX_CLANG_TIDY)
     set(CLANG_TIDY_CONFIG
         "--checks=\
+            clang-analiser-*,\
             bugprone-*,\
             cert-*,\
-            cppcoreguidelines-*,-cppcoreguidelines-avoid-magic-numbers,-cppcoreguidelines-pro-bounds-constant-array-index"
+            hicpp-*"
     )
     
     list(APPEND CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY_CONFIG})
