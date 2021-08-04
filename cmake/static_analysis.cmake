@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.18)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CLANG_TIDY_CONFIG
+    "--checks=*"
 	"--dump-config"
 )
 
