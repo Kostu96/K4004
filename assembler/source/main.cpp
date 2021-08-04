@@ -55,7 +55,7 @@ int main(int argc, const char* argv[])
     }
 
     bool success = false;
-    if (retVal == 0)
+    if (retVal == 0) {
         if (assemble) {
             success = assembler.assemble(inputFile.c_str(), bytecode, i4004ModeEnabled);
         }
@@ -67,11 +67,12 @@ int main(int argc, const char* argv[])
 
             success = assembler.disassemble(bytecode, disassembly);
         }
+    }
 
     if (!success)
         retVal = -1;
 
-    if (retVal == 0)
+    if (retVal == 0) {
         if (assemble) {
             std::ofstream fout(outputFile, std::ios_base::binary);
             for (size_t i = 0; i < bytecode.size(); ++i)
@@ -82,6 +83,7 @@ int main(int argc, const char* argv[])
             for (size_t i = 0; i < disassembly.size(); ++i)
                 fout << disassembly[i] << '\n';
         }
+    }
 
     return retVal;
 }
