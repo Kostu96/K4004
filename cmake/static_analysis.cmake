@@ -7,7 +7,7 @@ if (CMAKE_CXX_CLANG_TIDY)
             clang-analiser-*,\
             bugprone-*,\
             cert-*,\
-            hicpp-*,-hicpp-braces-around-statements,-hicpp-uppercase-literal-suffix,-hicpp-no-array-decay,-hicpp-signed-bitwise"
+            modernize-*"
     )
     
     list(APPEND CMAKE_CXX_CLANG_TIDY ${CLANG_TIDY_CONFIG})
