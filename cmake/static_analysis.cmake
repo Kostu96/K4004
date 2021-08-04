@@ -8,7 +8,7 @@ if (CMAKE_CXX_CLANG_TIDY)
             clang-diagnostic-*\
             bugprone-*,\
             cert-*,\
-            modernize-*,\
+            modernize-*,-modernize-use-trailing-return-type,\
             performance-*"
     )
     

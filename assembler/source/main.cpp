@@ -75,13 +75,13 @@ int main(int argc, const char* argv[])
     if (retVal == 0) {
         if (assemble) {
             std::ofstream fout(outputFile, std::ios_base::binary);
-            for (size_t i = 0; i < bytecode.size(); ++i)
-                fout << bytecode[i];
+            for (auto byte : bytecode)
+                fout << byte;
         }
         else {
             std::ofstream fout(outputFile);
-            for (size_t i = 0; i < disassembly.size(); ++i)
-                fout << disassembly[i] << '\n';
+            for (auto str : disassembly)
+                fout << str << '\n';
         }
     }
 

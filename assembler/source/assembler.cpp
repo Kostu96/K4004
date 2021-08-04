@@ -271,7 +271,7 @@ bool Assembler::trimWhiteSpaces(std::string& line)
 
 bool Assembler::checkForSymbols(std::string& line)
 {
-    size_t token1End = line.find_first_of(" ");
+    size_t token1End = line.find_first_of(' ');
     std::string token = line.substr(0, token1End);
     
     if (token[0] == '$')
@@ -305,7 +305,7 @@ bool Assembler::checkForSymbols(std::string& line)
         if (hasEqualSign == token.npos) {
             m_symbolTable.insert(std::make_pair<>(token, static_cast<uint16_t>(m_address)));
             if (token1End != line.npos) {
-                size_t token2Start = line.find_first_not_of(" ", token1End);
+                size_t token2Start = line.find_first_not_of(' ', token1End);
                 line = line.substr(token2Start);
                 return checkForSymbols(line);
             }
@@ -342,7 +342,7 @@ bool Assembler::parseLine(const std::string& line, std::vector<uint8_t>& output)
         return true;
     }
 
-    size_t token2Beg, token2End, token1End = line.find_first_of(" ");
+    size_t token2Beg, token2End, token1End = line.find_first_of(' ');
     token = line.substr(0, token1End); // TODO: change token to string_view
 
     MnemonicDesc desc;
@@ -358,8 +358,8 @@ bool Assembler::parseLine(const std::string& line, std::vector<uint8_t>& output)
             if (token1End == line.npos) {
                 return false; // Error: Missing instruction operand
             }
-            token2Beg = line.find_first_not_of(" ", token1End);
-            token2End = line.find_first_of(" ", token2Beg);
+            token2Beg = line.find_first_not_of(' ', token1End);
+            token2End = line.find_first_of(' ', token2Beg);
             token = line.substr(token2Beg, token2End - token2Beg + 1);
             output.push_back(desc.byte | parseOperand(token));
             break;
@@ -367,8 +367,8 @@ bool Assembler::parseLine(const std::string& line, std::vector<uint8_t>& output)
             if (token1End == line.npos) {
                 return false; // Error: Missing instruction operand
             }
-            token2Beg = line.find_first_not_of(" ", token1End);
-            token2End = line.find_first_of(" ", token2Beg);
+            token2Beg = line.find_first_not_of(' ', token1End);
+            token2End = line.find_first_of(' ', token2Beg);
             token = line.substr(token2Beg, token2End - token2Beg);
             if (token[token.size() - 1] == ',') {
                 // Should be 2 operands
@@ -464,9 +464,9 @@ bool Assembler::isMnemonic(std::string& token, MnemonicDesc& desc)
 {
     if (token.size() > 3) return false;
 
-    for (size_t i = 0; i < token.size(); ++i)
-        if (token[i] >= 'a' && token[i] <= 'z')
-            token[i] -= 'a' - 'A';
+    for (auto& ch : token)
+        if (ch >= 'a' && ch <= 'z')
+            ch -= 'a' - 'A';
 
     auto x = m_mnemonics.find(token);
     if (x != m_mnemonics.end()) {
