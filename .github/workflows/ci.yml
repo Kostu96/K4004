@@ -16,7 +16,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-         - {
+        - {
             name: "Windows MSVC Debug",
             os: windows-latest,
             build_type: "Debug",
