@@ -28,7 +28,7 @@ unsigned int textToBin(const std::string_view& str)
     assert(length > 0 && length <= sizeof(unsigned int) * 8);
 
     unsigned int value = 0;
-    for (size_t i = 1; i < length; ++i) {
+    for (size_t i = 0; i < length; ++i) {
         if (str[i] == '1')
             value += 1u << (length - i - 1);
         else if (str[i] != '0')

@@ -9,4 +9,6 @@ The ultimate goal is to make something fun (like simple BASIC interpreter maybe?
 # Building
 Standart Cmake build.
 
-Flag `BUILD_TESTS` is `ON` by default and requires gtest (cloned submodules).
+### Cmake options
+`BUILD_TESTS` - `ON` by default, requires gtest (cloned submodules).
+`STATIC_ANALYSIS` - `OFF` by default, requires clang-tidy. Builds source with clang-tidy checks.
