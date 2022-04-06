@@ -1,18 +1,24 @@
 cmake_minimum_required(VERSION 3.18)
 
 option(BUILD_TESTS "Builds tests" ON)
-option(STATIC_ANALYSIS "Build with static analysis" OFF)
 
-if (${STATIC_ANALYSIS})
-    include(cmake/static_analysis.cmake)
-endif()
+function(assure_out_of_source_builds)
+    # make sure the user doesn't play dirty with symlinks
+    get_filename_component(srcdir "${CMAKE_SOURCE_DIR}" REALPATH)
+    get_filename_component(bindir "${CMAKE_BINARY_DIR}" REALPATH)
+    
+    if("${srcdir}" STREQUAL "${bindir}")
+        message("Warning: in-source builds are disabled")
+        message("Please create a separate build directory and run cmake from there")
+        message(FATAL_ERROR "Quitting configuration")
+    endif()
+endfunction()
 
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+assure_out_of_source_builds()
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
-set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER _Cmake)
-
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/bin)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/output/lib)
