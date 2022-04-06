@@ -1,19 +1,14 @@
 #pragma once
-#include <chrono>
 #include <cstdint>
 
 class ROM;
 class RAM;
-
-using namespace std::chrono_literals;
 
 class K4004
 {
 public:
     static constexpr uint8_t REGISTERS_SIZE = 8u;
     static constexpr uint8_t STACK_SIZE = 4u;
-    static constexpr std::chrono::nanoseconds CYCLE_TIME = 10800ns;
-    static constexpr std::chrono::nanoseconds DOUBLE_CYCLE_TIME = 21600ns;
 
     K4004(ROM& rom, RAM& ram);
 
@@ -41,7 +36,4 @@ private:
     RAM& m_ram;
 
     uint8_t m_CM_RAM;
-
-    std::chrono::steady_clock m_clock;
-    
 };

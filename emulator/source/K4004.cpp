@@ -27,7 +27,6 @@ void K4004::reset()
 
 uint8_t K4004::step()
 {
-    auto startTime = m_clock.now();
     uint8_t cycles = 0u;
 
     m_IR = m_rom.readByte(getPC());
@@ -82,6 +81,5 @@ uint8_t K4004::step()
     case +AsmIns::LDM: cycles = 1u; LDM(m_ACC, m_IR); break;
     }
 
-    while ((m_clock.now() - startTime) < (cycles == 2u ? DOUBLE_CYCLE_TIME : CYCLE_TIME));
     return cycles;
 }

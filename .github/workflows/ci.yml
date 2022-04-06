@@ -1,12 +1,13 @@
-name: GHActionsCI
+name: GHActions
 
-on:
-  pull_request:
-    branches:    
-      - main
-  push:
-    branches:
-      - main
+# Disable CI temporarly
+#on:
+#  pull_request:
+#    branches:    
+#      - main
+#  push:
+#    branches:
+#      - main
     
 jobs:
   ci:
