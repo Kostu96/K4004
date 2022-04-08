@@ -38,8 +38,7 @@ set(SHARED_DIR ${CMAKE_CURRENT_SOURCE_DIR}/shared)
 set(TARGET_ASSEMBLER_NAME assembler)
 add_subdirectory(assembler)
 
-set(TARGET_EMULATOR_NAME emulator)
-add_subdirectory(emulator)
+set(TARGET_EMULATOR_LIB_NAME emulator_core)
+add_subdirectory(emulator_core)
 
-set(TARGET_APP_NAME K4004_app)
-add_subdirectory(app)
+add_subdirectory(emulator_apps)

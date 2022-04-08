@@ -5,6 +5,5 @@ if (${BUILD_TESTS})
     
     set_target_properties(gtest gtest_main PROPERTIES
         FOLDER third_party
-        CXX_CLANG_TIDY ""
     )
 endif()
