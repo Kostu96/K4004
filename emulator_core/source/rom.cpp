@@ -1,4 +1,4 @@
-#include "emulator/source/rom.hpp"
+#include "emulator_core/source/rom.hpp"
 
 #include <cstring>
 

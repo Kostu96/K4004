@@ -1,5 +1,4 @@
-#include "ram.hpp"
-#include "emulator/source/ram.hpp"
+#include "emulator_core/source/ram.hpp"
 
 #include <cstring>
 

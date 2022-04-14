@@ -1,7 +1,7 @@
-#include "emulator/source/K4004.hpp"
-#include "emulator/source/ram.hpp"
-#include "emulator/source/rom.hpp"
-#include "emulator/source/instructions.hpp"
+#include "emulator_core/source/K4004.hpp"
+#include "emulator_core/source/ram.hpp"
+#include "emulator_core/source/rom.hpp"
+#include "emulator_core/source/instructions.hpp"
 
 #include "shared/source/assembly.hpp"
 
@@ -25,7 +25,7 @@ void K4004::reset()
     m_ram.reset();
 }
 
-uint8_t K4004::step()
+uint8_t K4004::clock()
 {
     uint8_t cycles = 0u;
 

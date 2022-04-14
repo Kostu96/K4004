@@ -1,6 +1,4 @@
-#include "emulator/source/emulator.hpp"
-#include "emulator/source/rom.hpp"
-
+#include "emulator_core/source/emulator.hpp"
 #include "assembler/source/assembler.hpp"
 
 #include <fstream>
@@ -48,7 +46,7 @@ bool Emulator::loadProgramFromMemory(const uint8_t* bytecode, size_t codeSize)
 void Emulator::step(size_t times)
 {
     while (times--) {
-        m_cpu.step();
+        m_cpu.clock();
     }
 }
 

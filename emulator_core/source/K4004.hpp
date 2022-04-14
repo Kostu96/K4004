@@ -13,7 +13,7 @@ public:
     K4004(ROM& rom, RAM& ram);
 
     void reset();
-    uint8_t step();
+    uint8_t clock();
 
     const uint16_t* getStack() const { return m_stack; }
     const uint8_t* getRegisters() const { return m_registers; }

@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 
+// Emulates bank of 16 4001 chips
 class ROM
 {
 public:

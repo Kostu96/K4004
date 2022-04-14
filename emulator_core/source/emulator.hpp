@@ -1,7 +1,7 @@
 #pragma once
-#include "emulator/source/K4004.hpp"
-#include "emulator/source/ram.hpp"
-#include "emulator/source/rom.hpp"
+#include "emulator_core/source/K4004.hpp"
+#include "emulator_core/source/ram.hpp"
+#include "emulator_core/source/rom.hpp"
 
 class Emulator
 {
