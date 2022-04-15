@@ -30,3 +30,7 @@ int main()
 // character rom to save on ram
 // 8x8 sprites
 // display? char mode | graphics mode?
+
+// ROM memory map:
+
+// RAM memory map:
